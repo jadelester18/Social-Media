@@ -7,6 +7,7 @@ import Register from "./pages/Register";
 import Verifyemail from "./pages/Verifyemail";
 import Forgetpassword from "./pages/Forgetpassword";
 import Resetpassword from "./pages/Resetpassword";
+import PageNotFound from "./pages/PageNotFound";
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
               <Route path="/verify/email" element={<Verifyemail />} />
               <Route path="/forgot/password" element={<Forgetpassword />} />
               <Route path="/reset/password" element={<Resetpassword />} />
+              <Route path="/*" element={<PageNotFound />} />
             </Routes>
           </Stack>
         </Box>
