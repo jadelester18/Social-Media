@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Box, createTheme, Stack, ThemeProvider } from "@mui/material";
 import Navbar from "../components/Navbar/Navbar";
 import LeftBar from "../components/LeftSideContainer/LeftBar";
@@ -13,6 +13,15 @@ const Home = () => {
       mode: mode,
     },
   });
+
+  useEffect(() => {
+    var data = window.localStorage.getItem("Theme");
+    setMode(JSON.parse(data));
+  }, []);
+
+  useEffect(() => {
+    window.localStorage.setItem("Theme", JSON.stringify(mode));
+  }, [mode]);
 
   return (
     <ThemeProvider theme={darkTheme}>
