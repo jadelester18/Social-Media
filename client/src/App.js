@@ -1,24 +1,32 @@
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+import { BrowserRouter, Route, Routes, Switch } from "react-router-dom";
+import { Box, Stack } from "@mui/material";
+import Home from "./pages/Home";
+import Profile from "./pages/Profile";
+import Register from "./pages/Register";
+import Verifyemail from "./pages/Verifyemail";
+import Forgetpassword from "./pages/Forgetpassword";
+import Resetpassword from "./pages/Resetpassword";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <BrowserRouter>
+        <Box>
+          <Stack direction="row" spacing={2} justifyContent="space-between">
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/Profile" element={<Profile />} />
+              <Route path="/login" element={<Home />} />
+              <Route path="/signup" element={<Register />} />
+              <Route path="/verify/email" element={<Verifyemail />} />
+              <Route path="/forgot/password" element={<Forgetpassword />} />
+              <Route path="/reset/password" element={<Resetpassword />} />
+            </Routes>
+          </Stack>
+        </Box>
+      </BrowserRouter>
+    </>
   );
 }
 
