@@ -21,6 +21,7 @@ function App() {
           <Route path="/verify/email" element={<Verifyemail />} />
           <Route path="/forgot/password" element={<Forgetpassword />} />
           <Route path="/reset/password" element={<Resetpassword />} />
+          <Route path="/*" element={<PageNotFound />} />
         </Routes> 
       </BrowserRouter>
     </>
