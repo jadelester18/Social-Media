@@ -9,7 +9,9 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { IconButton, Link } from "@mui/material";
+import { IconButton, Link, InputAdornment } from "@mui/material";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
 
 import { useState } from "react";
 const theme = createTheme();
@@ -21,9 +23,12 @@ export default function Login() {
     e.preventDefault();
     console.log(email, password);
   };
+  const [showPassword, setShowPassword] = React.useState(false);
 
-  const showHidePassword = () => {
-    return "password";
+  const handleClickShowPassword = () => setShowPassword((show) => !show);
+
+  const handleMouseDownPassword = (event) => {
+    event.preventDefault();
   };
   return (
     <ThemeProvider theme={theme}>
@@ -61,15 +66,27 @@ export default function Login() {
               autoFocus
             />
             <TextField
-              margin="normal"
               required
               fullWidth
               name="password"
               label="Password"
-              type={showHidePassword()}
-              id="password"
               onChange={(e) => setPassword(e.target.value)}
-              autoComplete="current-password"
+              type={showPassword ? "text" : "password"}
+              id="standard-adornment-password"
+              autoComplete="new-password"
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label="toggle password visibility"
+                      onClick={handleClickShowPassword}
+                      onMouseDown={handleMouseDownPassword}
+                    >
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
             />
 
             <Button
