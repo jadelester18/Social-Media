@@ -9,7 +9,7 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { Link } from "react-router-dom";
+import { IconButton, Link } from "@mui/material";
 
 import { useState } from "react";
 const theme = createTheme();
@@ -22,6 +22,9 @@ export default function Login() {
     console.log(email, password);
   };
 
+  const showHidePassword = () => {
+    return "password";
+  };
   return (
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">
@@ -63,7 +66,7 @@ export default function Login() {
               fullWidth
               name="password"
               label="Password"
-              type="password"
+              type={showHidePassword()}
               id="password"
               onChange={(e) => setPassword(e.target.value)}
               autoComplete="current-password"
@@ -79,12 +82,12 @@ export default function Login() {
             </Button>
             <Grid container>
               <Grid item xs>
-                <Link to={"/forgot/password"} variant="body2">
+                <Link href={"/forgot/password"} variant="body2">
                   Forgot password?
                 </Link>
               </Grid>
               <Grid item>
-                <Link to={"/signup"} variant="body2">
+                <Link href={"/signup"} variant="body2">
                   Don't have an account? Sign Up
                 </Link>
               </Grid>
