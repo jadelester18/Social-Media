@@ -6,11 +6,13 @@ import Register from "./pages/Register";
 import Verifyemail from "./pages/Verifyemail";
 import Forgetpassword from "./pages/Forgetpassword";
 import Resetpassword from "./pages/Resetpassword";
+import PageNotFound from "./pages/PageNotFound";
+import Login from "./pages/Login";
 
 function App() {
   return (
     <>
-      <BrowserRouter>
+      <BrowserRouter> 
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/Profile" element={<Profile />} />
@@ -19,7 +21,7 @@ function App() {
           <Route path="/verify/email" element={<Verifyemail />} />
           <Route path="/forgot/password" element={<Forgetpassword />} />
           <Route path="/reset/password" element={<Resetpassword />} />
-        </Routes>
+        </Routes> 
       </BrowserRouter>
     </>
   );

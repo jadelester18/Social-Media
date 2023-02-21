@@ -25,7 +25,7 @@ const Home = () => {
         </Stack>
       </Box>
     </ThemeProvider>
-  );
+  ); 
 };
 
 export default Home;
