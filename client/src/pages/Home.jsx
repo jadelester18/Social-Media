@@ -6,6 +6,8 @@ import Feeds from "../components/MainPostContainer/Feeds";
 import RightBar from "../components/RightSideContainer/RightBar";
 
 const Home = () => {
+  
+  var data = window.localStorage.getItem("Theme");
   const [mode, setMode] = useState("light");
 
   const darkTheme = createTheme({
@@ -15,7 +17,6 @@ const Home = () => {
   });
 
   useEffect(() => {
-    var data = window.localStorage.getItem("Theme");
     setMode(JSON.parse(data));
   }, []);
 
