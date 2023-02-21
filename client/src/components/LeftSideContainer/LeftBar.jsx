@@ -65,6 +65,12 @@ const MaterialUISwitch = styled(Switch)(({ theme }) => ({
 }));
 
 const LeftBar = ({ setThemeMode, mode }) => {
+  var data = JSON.parse(localStorage.getItem("Theme"));
+  var switchPos = false;
+  if (data === "dark") {
+    console.log(data);
+    switchPos = true;
+  }
   return (
     <Box flex={1} p={2} sx={{ display: { xs: "none", sm: "block" } }}>
       <Box position="fixed" sx={{ width: "22%" }}>
@@ -141,9 +147,13 @@ const LeftBar = ({ setThemeMode, mode }) => {
         <Explore />
         <FormGroup>
           <FormControlLabel
-            control={<MaterialUISwitch sx={{ m: 1 }} defaultChecked />}
+            control={
+              <MaterialUISwitch sx={{ m: 1 }} defaultChecked={switchPos} />
+            }
             label="Theme switch"
-            onChange={(e) => setThemeMode(mode === "light" ? "dark" : "light")}
+            onChange={(e) => {
+              setThemeMode(mode === "light" ? "dark" : "light");
+            }}
           />
         </FormGroup>
       </Box>
