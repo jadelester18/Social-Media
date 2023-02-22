@@ -13,8 +13,6 @@ import {
 } from "@mui/material";
 import React from "react";
 import Explore from "./Explore";
-import LightModeIcon from "@mui/icons-material/LightMode";
-import DarkModeIcon from "@mui/icons-material/DarkMode";
 import { styled } from "@mui/material/styles";
 
 const MaterialUISwitch = styled(Switch)(({ theme }) => ({
@@ -68,7 +66,7 @@ const LeftBar = ({ setThemeMode, mode }) => {
   var data = JSON.parse(localStorage.getItem("Theme"));
   var switchPos = false;
   if (data === "dark") {
-    console.log(data);
+    // console.log(data);
     switchPos = true;
   }
   return (
@@ -147,9 +145,7 @@ const LeftBar = ({ setThemeMode, mode }) => {
         <Explore />
         <FormGroup>
           <FormControlLabel
-            control={
-              <MaterialUISwitch sx={{ m: 1 }} defaultChecked={switchPos} />
-            }
+            control={<MaterialUISwitch sx={{ m: 1 }} checked={switchPos} />}
             label="Theme switch"
             onChange={(e) => {
               setThemeMode(mode === "light" ? "dark" : "light");
