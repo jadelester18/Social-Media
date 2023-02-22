@@ -19,7 +19,7 @@ import QuestionAnswerOutlinedIcon from "@mui/icons-material/QuestionAnswerOutlin
 
 const MainPost = () => {
   return (
-    <Box flex={4} p={2}>
+    <Box flex={4} p={2} sx={{ width: { sm: "100%" } }}>
       <Card>
         <CardHeader
           avatar={

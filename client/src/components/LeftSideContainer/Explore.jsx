@@ -54,10 +54,10 @@ const itemData = [
 
 const Explore = () => {
   return (
-    <Box sx={{ display: { xs: "none", sm: "block" } }}>
+    <Box>
       <Typography variant="body2">Explore</Typography>
       <ImageList
-        sx={{ width: "100%", maxWidth: 360, height: 450 }}
+        sx={{ width: "100%", maxWidth: 360, height: 350 }}
         variant="woven"
         cols={3}
         gap={8}

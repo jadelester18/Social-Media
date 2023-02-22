@@ -28,7 +28,7 @@ const Home = () => {
     <ThemeProvider theme={darkTheme}>
       <Box bgcolor={"background.default"} color={"text.primary"}>
         <Navbar />
-        <Stack direction="row" spacing={2} justifyContent="space-between">
+        <Stack direction="row" spacing={2} justifyContent="space-evenly">
           <LeftBar setThemeMode={setMode} mode={mode} />
           <Feeds />
           <RightBar />

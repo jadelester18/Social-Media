@@ -70,8 +70,12 @@ const LeftBar = ({ setThemeMode, mode }) => {
     switchPos = true;
   }
   return (
-    <Box flex={1} p={2} sx={{ display: { xs: "none", sm: "block" } }}>
-      <Box position="fixed" sx={{ width: "22%" }}>
+    <Box
+      flex={1}
+      p={2}
+      sx={{ display: { xs: "none", sm: "block", lg: "block" } }}
+    >
+      <Box>
         <Typography variant="body2">Notifications</Typography>
         <List
           sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}

@@ -5,8 +5,13 @@ import {
   Avatar,
   Badge,
   Box,
+  Divider,
   IconButton,
   InputBase,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
   Menu,
   MenuItem,
   styled,
@@ -66,6 +71,15 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
+const Logo = styled(Box)(({ theme }) => ({
+  display: "none",
+  alignItems: "center",
+  gap: "20px",
+  [theme.breakpoints.up("sm")]: {
+    display: "flex",
+  },
+}));
+
 const Icons = styled(Box)(({ theme }) => ({
   display: "none",
   alignItems: "center",
@@ -85,22 +99,35 @@ const UserBox = styled(Box)(({ theme }) => ({
 }));
 
 const Navbar = () => {
-  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [anchorElUser, setAnchorElUser] = React.useState(null);
+  const [anchorElNotification, setAnchorElNotification] = React.useState(null);
 
-  const handleMenu = (event) => {
-    setAnchorEl(event.currentTarget);
+  const handleMenuUser = (event) => {
+    setAnchorElUser(event.currentTarget);
+  };
+  const handleCloseUser = () => {
+    setAnchorElUser(null);
   };
 
-  const handleClose = () => {
-    setAnchorEl(null);
+  const handleMenuNotification = (event) => {
+    setAnchorElNotification(event.currentTarget);
+  };
+  const handleCloseNotification = () => {
+    setAnchorElNotification(null);
   };
 
   return (
-    <AppBar position="sticky">
+    <AppBar position="sticky" color="primary">
       <StyledToolbar>
-        <Typography variant="h6" sx={{ display: { xs: "none", sm: "block" } }}>
-          My Social App
-        </Typography>
+        <Logo>
+          {/* <AcUnitIcon sx={{ display: { xs: "none", sm: "block" } }} /> */}
+          <Typography
+            variant="h6"
+            sx={{ display: { xs: "none", sm: "block" } }}
+          >
+            My Social App
+          </Typography>
+        </Logo>
         <AcUnitIcon sx={{ display: { xs: "block", sm: "none" } }} />
         <Icons>
           <Search>
@@ -125,6 +152,7 @@ const Navbar = () => {
             size="large"
             aria-label="show 17 new notifications"
             color="inherit"
+            onClick={handleMenuNotification}
           >
             <Badge badgeContent={17} color="error">
               <NotificationsIcon />
@@ -136,7 +164,7 @@ const Navbar = () => {
             aria-label="account of current user"
             aria-haspopup="true"
             color="inherit"
-            onClick={handleMenu}
+            onClick={handleMenuUser}
           >
             <Avatar
               size="large"
@@ -157,13 +185,13 @@ const Navbar = () => {
           <Avatar
             size="large"
             src="https://media.licdn.com/dms/image/C4D03AQHUdFZK1jgvQQ/profile-displayphoto-shrink_200_200/0/1659529297027?e=1681948800&v=beta&t=jmWyYI3s6-LL0JnruVRv5HLGmrdY1-VFJdvA81O9nEg"
-            onClick={handleMenu}
+            onClick={handleMenuUser}
           />
         </UserBox>
       </StyledToolbar>
       <Menu
-        id="menu-appbar"
-        anchorEl={anchorEl}
+        id="user-menu"
+        anchorEl={anchorElUser}
         anchorOrigin={{
           vertical: "top",
           horizontal: "right",
@@ -173,12 +201,102 @@ const Navbar = () => {
           vertical: "top",
           horizontal: "right",
         }}
-        open={Boolean(anchorEl)}
-        onClose={handleClose}
+        open={Boolean(anchorElUser)}
+        onClose={handleCloseUser}
         sx={{ mt: "45px" }}
       >
         <MenuItem>Profile</MenuItem>
         <MenuItem>Logout</MenuItem>
+      </Menu>
+      <Menu
+        id="user-menu"
+        anchorEl={anchorElNotification}
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+        keepMounted
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+        open={Boolean(anchorElNotification)}
+        onClose={handleCloseNotification}
+        sx={{ mt: "45px" }}
+      >
+        <List
+          sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}
+        >
+          <ListItem alignItems="flex-start">
+            <Typography variant="body1">Notifications</Typography>
+          </ListItem>
+          <ListItem alignItems="flex-start">
+            <ListItemAvatar>
+              <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
+            </ListItemAvatar>
+            <ListItemText
+              primary="Brunch this weekend?"
+              secondary={
+                <React.Fragment>
+                  <Typography
+                    sx={{ display: "inline" }}
+                    component="span"
+                    variant="body2"
+                    color="text.primary"
+                  >
+                    Ali Connors
+                  </Typography>
+                  {" — I'll be in your neighborhood doing errands this…"}
+                </React.Fragment>
+              }
+            />
+          </ListItem>
+          <Divider variant="inset" component="li" />
+          <ListItem alignItems="flex-start">
+            <ListItemAvatar>
+              <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
+            </ListItemAvatar>
+            <ListItemText
+              primary="Brunch this weekend?"
+              secondary={
+                <React.Fragment>
+                  <Typography
+                    sx={{ display: "inline" }}
+                    component="span"
+                    variant="body2"
+                    color="text.primary"
+                  >
+                    Ali Connors
+                  </Typography>
+                  {" — I'll be in your neighborhood doing errands this…"}
+                </React.Fragment>
+              }
+            />
+          </ListItem>
+          <Divider variant="inset" component="li" />
+          <ListItem alignItems="flex-start">
+            <ListItemAvatar>
+              <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
+            </ListItemAvatar>
+            <ListItemText
+              primary="Brunch this weekend?"
+              secondary={
+                <React.Fragment>
+                  <Typography
+                    sx={{ display: "inline" }}
+                    component="span"
+                    variant="body2"
+                    color="text.primary"
+                  >
+                    Ali Connors
+                  </Typography>
+                  {" — I'll be in your neighborhood doing errands this…"}
+                </React.Fragment>
+              }
+            />
+          </ListItem>
+          <Divider variant="inset" component="li" />
+        </List>
       </Menu>
     </AppBar>
   );
