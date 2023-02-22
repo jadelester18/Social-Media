@@ -1,8 +1,5 @@
 import React, { useEffect, useState } from "react";
 import "./ProfileRightBar.css";
-import image5 from "../Images/image5.jpg";
-import image6 from "../Images/image6.jpg";
-
 import image1 from "../Images/image1.jpg";
 
 import addFriends from "../Images/add-user.png";

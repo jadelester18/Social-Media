@@ -2,8 +2,6 @@ import React from "react";
 import "./ProfileLeftBar.css";
 import image from "../Images/Profile.png";
 import image2 from "../Images/image2.jpg";
-// import { useState } from "react";
-// import axios from "axios";
 
 export default function ProfileLeftbar() {
   return (

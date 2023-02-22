@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 import "./ProfileMainPost.css";
 import Coverimage from "../Images/Profile.png";
-import ContentPost from "../ContentPostContainer/ContentPost";
 
 export default function ProfileMainPost() {
   return (
