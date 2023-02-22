@@ -1,0 +1,101 @@
+
+
+.App{
+font-family:sans-serif;
+font-size: xx-large;
+color: rgb(30, 221, 221);
+padding:50px;
+}
+.App-logo{
+width: 500px; 
+}
+.body{
+  margin: auto;
+  text-align: center;
+   padding: 40px;
+background-color: rgb(30, 221, 221, .75);
+width: 1000px;
+box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.75);
+border-radius: 19px;
+}
+h1{
+  font-family: Trebuchet MS;
+  font-size: 40px;
+}
+h2{
+  font-size:27px;
+}
+p{
+  font-size:21px;
+}
+.button {
+  border-radius: 10px;
+  border-color: rgb(12, 10, 82,) ;
+  color: rgb(233, 238, 239);
+  padding: 15px 32px;
+  text-align: center;
+  font-family: Verdana;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 20px;
+  margin: 4px 2px;
+  cursor: pointer;
+}
+.button2 {background-color: #1f6ad3;}
+.button2:hover {
+  color: rgb(15, 3, 26);
+}
+.footer1{
+text-align: center;
+line-height: 0.7;
+}
+.footer2{
+  text-align: center;
+  
+}
+
+.fa {
+  padding: 20px;
+  font-size: 30px;
+  width: 30px;
+  text-align: center;
+  text-decoration: none;
+  border-radius: 50%;
+  margin-right: 25px;
+  text-shadow:2px 2px 4px #000000;
+}
+.fa-google {
+  background: #737170;
+  color: white;
+}
+
+.fa:hover {
+    opacity: 0.5;
+}
+.fa-linkedin {
+  background: #737170;
+  color: white;
+}
+.fa-twitter {
+  background: #737170;
+  color: white;
+}
+.fa-rss {
+  background:  #737170;
+  color: white;
+}
+.msg{
+  margin-top: 70px;
+}
+.OTP{
+font-size: 90px;
+font-family: sans-serif;
+}
+.message{
+font-size:28px;	
+}
+.hello{
+	font-size:33px;
+	font-family:sans-serif;
+	font-weight: bold;
+}
