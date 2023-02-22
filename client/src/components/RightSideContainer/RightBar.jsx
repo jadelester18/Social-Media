@@ -19,7 +19,6 @@ import Follow from "./Follow";
 const RightBar = () => {
   return (
     <Box
-      position="sticky"
       flex={1}
       p={2}
       sx={{ display: { xs: "none", sm: "none", lg: "block" } }}

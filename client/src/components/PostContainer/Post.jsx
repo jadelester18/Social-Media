@@ -52,7 +52,7 @@ const Post = () => {
             </Box>
           )}
         </CardContent>
-        <CardActions sx={{ backgroundColor: "rgba(0, 0, 0, 0.38)" }}>
+        <CardActions>
           <Stack
             direction="row"
             alignItems="center"
