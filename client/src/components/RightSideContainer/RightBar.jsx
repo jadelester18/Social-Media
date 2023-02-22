@@ -21,7 +21,7 @@ const RightBar = () => {
       position="sticky"
       flex={1}
       p={2}
-      sx={{ display: { xs: "none", sm: "block" } }}
+      sx={{ display: { xs: "none", sm: "none", lg: "block" } }}
     >
       <Box position="fixed" sx={{ width: "22%" }}>
         <Typography variant="body2">Suggested for you</Typography>
