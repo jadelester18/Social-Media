@@ -14,6 +14,7 @@ import {
 } from "@mui/material";
 import React from "react";
 import PersonAddOutlinedIcon from "@mui/icons-material/PersonAddOutlined";
+import Follow from "./Follow";
 
 const RightBar = () => {
   return (
@@ -93,6 +94,7 @@ const RightBar = () => {
           </ListItem>
           <Divider variant="inset" component="li" />
         </List>
+        <Follow />
       </Box>
     </Box>
   );

@@ -7,6 +7,8 @@ import {
   List,
   ListItem,
   ListItemAvatar,
+  ListItemButton,
+  ListItemIcon,
   ListItemText,
   Switch,
   Typography,
@@ -14,6 +16,7 @@ import {
 import React from "react";
 import Explore from "./Explore";
 import { styled } from "@mui/material/styles";
+import MailIcon from "@mui/icons-material/Mail";
 
 const MaterialUISwitch = styled(Switch)(({ theme }) => ({
   width: 62,
@@ -76,76 +79,32 @@ const LeftBar = ({ setThemeMode, mode }) => {
       sx={{ display: { xs: "none", sm: "block", lg: "block" } }}
     >
       <Box>
-        <Typography variant="body2">Notifications</Typography>
+        {/* <Typography variant="body2">Notifications</Typography> */}
         <List
           sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}
         >
-          <ListItem alignItems="flex-start">
-            <ListItemAvatar>
-              <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
-            </ListItemAvatar>
-            <ListItemText
-              primary="Brunch this weekend?"
-              secondary={
-                <React.Fragment>
-                  <Typography
-                    sx={{ display: "inline" }}
-                    component="span"
-                    variant="body2"
-                    color="text.primary"
-                  >
-                    Ali Connors
-                  </Typography>
-                  {" — I'll be in your neighborhood doing errands this…"}
-                </React.Fragment>
-              }
-            />
+          <ListItem disablePadding>
+            <ListItemButton>
+              <ListItemAvatar>
+                <Avatar
+                  alt="Remy Sharp"
+                  src="https://media.licdn.com/dms/image/C4D03AQHUdFZK1jgvQQ/profile-displayphoto-shrink_200_200/0/1659529297027?e=1681948800&v=beta&t=jmWyYI3s6-LL0JnruVRv5HLGmrdY1-VFJdvA81O9nEg"
+                />
+              </ListItemAvatar>
+              <ListItemText primary="Rowell Wafu" />
+            </ListItemButton>
+          </ListItem>
+          <ListItem disablePadding>
+            <ListItemButton>
+              <ListItemIcon>
+                <MailIcon size="large" />
+              </ListItemIcon>
+              <ListItemText primary="Messages" />
+            </ListItemButton>
           </ListItem>
           <Divider variant="inset" component="li" />
-          <ListItem alignItems="flex-start">
-            <ListItemAvatar>
-              <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
-            </ListItemAvatar>
-            <ListItemText
-              primary="Brunch this weekend?"
-              secondary={
-                <React.Fragment>
-                  <Typography
-                    sx={{ display: "inline" }}
-                    component="span"
-                    variant="body2"
-                    color="text.primary"
-                  >
-                    Ali Connors
-                  </Typography>
-                  {" — I'll be in your neighborhood doing errands this…"}
-                </React.Fragment>
-              }
-            />
-          </ListItem>
-          <Divider variant="inset" component="li" />
-          <ListItem alignItems="flex-start">
-            <ListItemAvatar>
-              <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
-            </ListItemAvatar>
-            <ListItemText
-              primary="Brunch this weekend?"
-              secondary={
-                <React.Fragment>
-                  <Typography
-                    sx={{ display: "inline" }}
-                    component="span"
-                    variant="body2"
-                    color="text.primary"
-                  >
-                    Ali Connors
-                  </Typography>
-                  {" — I'll be in your neighborhood doing errands this…"}
-                </React.Fragment>
-              }
-            />
-          </ListItem>
         </List>
+
         <Explore />
         <FormGroup>
           <FormControlLabel
