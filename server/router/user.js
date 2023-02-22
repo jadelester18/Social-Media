@@ -10,53 +10,97 @@ const { verifyToken } = require("./verifytoken");
 const Post = require("../Models/Post");
 const { findById } = require("../Models/User");
 
+
 router.post(
-  "/register/user",
+  "/create/user",
+  body("firstname").isLength({ min: 2 }),
+  body("lastname").isLength({ min: 2 }),
   body("email").isEmail(),
-  // password must be at least 5 chars long
-  body("password").isLength({ min: 5 }),
-  body("username").isLength({ min: 5 }),
-  body("phonenumber").isLength({ min: 10 }),
+  body("password").isLength({ min: 6 }),
+  body("username").isLength({ min: 3 }),
   async (req, res) => {
     const error = validationResult(req);
     if (!error.isEmpty()) {
-      return res.status(400).json("Some error occured");
+      return res.status(400).json("some error occured");
     }
+    //   try {
 
-    try {
-      //Check if user is exist
-      let user = await User.findOne({ email: req.body.email });
+    let user = await User.findOne({ email: req.body.email });
+    if (user) {
+      return res.status(200).json("Please login with correct password");
+    }
+    const salt = await bcrypt.genSalt(10);
+    const secpass = await bcrypt.hash(req.body.password, salt);
 
-      if (user) {
-        return res.status(200).json("Please login with correct password.");
-      }
+    user = await User.create({
+      firstname: req.body.firstname,
+      lastname: req.body.lastname,
+      username: req.body.username,
+      email: req.body.email,
+      password: secpass,
+      profile: req.body.profile,
+    });
+    const accessToken = jwt.sign(
+      {
+        id: user._id,
+        username: user.username,
+      },
+      JWTSEC
+    );
+    const OTP = generateOTP();
+    const verificationToken = await VerificationToken.create({
+      user: user._id,
+      token: OTP,
+    });
+    verificationToken.save();
+    await user.save();
 
-      //For hashing password
-      const salt = await bcrypt.genSalt(10);
-      const secpass = await bcrypt.hash(req.body.password, salt);
+    const transport = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.EMAIL,
+        pass: process.env.PASSWORD,
+      },
+    });
 
-      //If user doesn't exist this command will work for signup
-      user = await User.create({
-        username: req.body.username,
-        email: req.body.email,
-        password: secpass,
-        profilepicture: req.body.profilepicture,
-        phonenumber: req.body.phonenumber,
-      });
-
-      const accessToken = jwt.sign(
-        {
-          id: user._id,
-          username: user.username,
+    transport.use(
+      "compile",
+      hbs({
+        viewEngine: {
+          extname: ".handlebars",
+          layoutsDir: "./assets/",
+          defaultLayout: "emailTemplate",
         },
-        JWTSEC
-      );
+        viewPath: "./assets/",
+      })
+    );
 
-      await user.save();
-      res.status(200).json({ user, accessToken });
-    } catch (error) {
-      return res.status(400).json("Internal error occurred.");
-    }
+    var mailConfig = {
+      from: process.env.EMAIL,
+      to: user.email,
+      subject: "Verify your email using OTP",
+      template: "emailTemplate",
+      context: {
+        name: user.email,
+        company: `${OTP}`,
+      },
+    };
+    transport.sendMail(mailConfig, (error, info) => {
+      if (error) {
+        console.log(error);
+      } else {
+        console.log("Email sent :" + info.response);
+      }
+    });
+    return res.status(200).json({
+      Status: "Pending",
+      msg: "Please check your email",
+      user: user._id,
+    });
+
+    // } catch (error) {
+    //           return res.status(400).json("Internal error occured")
+    // }
   }
 );
 
