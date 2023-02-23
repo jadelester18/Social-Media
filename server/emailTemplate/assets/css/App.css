@@ -1,68 +1,92 @@
-
-
-.App{
-font-family:sans-serif;
-font-size: xx-large;
-color: rgb(30, 221, 221);
-padding:50px;
+* {
+  box-sizing: border-box;
 }
-.App-logo{
-width: 500px; 
-}
-.body{
-  margin: auto;
-  text-align: center;
-   padding: 40px;
+
+.main {
+margin: 0px auto;
 background-color: rgb(30, 221, 221, .75);
-width: 1000px;
+
 box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.75);
 border-radius: 19px;
+  width: 40%;
+  padding: 0 20px;
+  overflow: hidden;
+  text-align:center;
 }
+
+  img {
+  margin-top: 50px;
+  }
 h1{
   font-family: Trebuchet MS;
-  font-size: 40px;
-}
+  font-size: 22px;}
 h2{
-  font-size:27px;
+ line-height: .8;
+  font-size: 50px;
+font-family: sans-serif;
 }
-p{
-  font-size:21px;
+h5{
+
+ padding-left:50px;
+}
+.message{
+font-size:17px;	
+font-family:Cambria;
+}
+.m{
+font-size:17px;	
+font-family:Cambria;
+margin-bottom: 23px;
+}
+.ms{
+font-size:15px;	
+font-family:Cambria;
+margin-bottom: 23px;
+}
+.me{
+font-size:14px;	
+font-family:Cambria;
+margin-bottom: 23px;
 }
 .button {
+	
   border-radius: 10px;
   border-color: rgb(12, 10, 82,) ;
   color: rgb(233, 238, 239);
-  padding: 15px 32px;
+  padding: 10px 20px;
   text-align: center;
   font-family: Verdana;
   text-decoration: none;
   display: inline-block;
-  font-size: 20px;
+  font-size: 15px;
   margin: 4px 2px;
+    font-style: normal !important; 
+  font-weight: normal !important; 
   cursor: pointer;
 }
 .button2 {background-color: #1f6ad3;}
 .button2:hover {
   color: rgb(15, 3, 26);
 }
-.footer1{
-text-align: center;
-line-height: 0.7;
-}
-.footer2{
-  text-align: center;
-  
-}
-
 .fa {
-  padding: 20px;
-  font-size: 30px;
-  width: 30px;
+ margin-top: 20px;
+   max-width: 100%;
+    height: auto;
+  padding: 16px;
+ 
+ 
   text-align: center;
   text-decoration: none;
   border-radius: 50%;
-  margin-right: 25px;
+
   text-shadow:2px 2px 4px #000000;
+
+  font-size: 2em; 
+  font-style: normal !important; 
+  font-weight: normal !important; 
+ 
+  overflow: visible; 
+
 }
 .fa-google {
   background: #737170;
@@ -85,7 +109,7 @@ line-height: 0.7;
   color: white;
 }
 .msg{
-  margin-top: 70px;
+  margin-top: 30px;
 }
 .OTP{
 font-size: 90px;
@@ -95,7 +119,24 @@ font-family: sans-serif;
 font-size:28px;	
 }
 .hello{
-	font-size:33px;
+	font-size:20px;
 	font-family:sans-serif;
 	font-weight: bold;
+}
+
+
+
+@media only screen and (max-width:800px) {
+  /* For tablets: */
+  .main  {
+    width: 80%;
+    padding: 0;
+  }
+ 
+}
+@media only screen and (max-width:500px) {
+  /* For mobile phones: */
+   .main  {
+    width: 100%;
+  }
 }
