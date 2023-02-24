@@ -12,7 +12,7 @@ import Login from "./pages/Login";
 function App() {
   return (
     <>
-      <BrowserRouter> 
+      <BrowserRouter>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/Profile" element={<Profile />} />
@@ -22,7 +22,7 @@ function App() {
           <Route path="/forgot/password" element={<Forgetpassword />} />
           <Route path="/reset/password" element={<Resetpassword />} />
           <Route path="/*" element={<PageNotFound />} />
-        </Routes> 
+        </Routes>
       </BrowserRouter>
     </>
   );
