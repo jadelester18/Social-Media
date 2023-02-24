@@ -27,7 +27,7 @@ const Post = () => {
 
   return (
     <Box flex={4} p={2} sx={{ width: { sm: "100%" } }}>
-      <Card>
+      <Card sx={{ boxShadow: 5 }}>
         <CardHeader
           avatar={
             <Avatar sx={{ bgcolor: "red" }} aria-label="recipe">

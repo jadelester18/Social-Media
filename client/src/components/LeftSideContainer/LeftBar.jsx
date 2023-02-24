@@ -11,7 +11,6 @@ import {
   ListItemIcon,
   ListItemText,
   Switch,
-  Typography,
 } from "@mui/material";
 import React from "react";
 import Explore from "./Explore";
@@ -66,6 +65,7 @@ const MaterialUISwitch = styled(Switch)(({ theme }) => ({
 }));
 
 const LeftBar = ({ setThemeMode, mode }) => {
+  //For saving dark theme to local storage
   var data = JSON.parse(localStorage.getItem("Theme"));
   var switchPos = false;
   if (data === "dark") {
@@ -84,7 +84,7 @@ const LeftBar = ({ setThemeMode, mode }) => {
           sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}
         >
           <ListItem disablePadding>
-            <ListItemButton>
+            <ListItemButton href="/profile">
               <ListItemAvatar>
                 <Avatar
                   alt="Remy Sharp"
