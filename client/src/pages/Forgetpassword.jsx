@@ -10,6 +10,7 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { Alert, Snackbar } from "@mui/material";
 
 function Copyright(props) {
   return (
@@ -36,17 +37,30 @@ export default function ForgetPassword() {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     console.log({
-      email: data.get("email"), 
+      email: data.get("email"),
     });
   };
+  const [state, setState] = React.useState({
+    open: false,
+    vertical: "top",
+    horizontal: "center",
+  });
+  const { vertical, horizontal, open } = state;
 
+  const handleClick = (newState) => () => {
+    setState({ open: true, ...newState });
+  };
+
+  const handleClose = () => {
+    setState({ ...state, open: false });
+  };
   return (
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">
         <CssBaseline />
         <Box
           sx={{
-            marginTop: 8,
+            marginTop: 18,
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
@@ -88,10 +102,28 @@ export default function ForgetPassword() {
               type="submit"
               fullWidth
               variant="contained"
+              onClick={handleClick({
+                vertical: "top",
+                horizontal: "center",
+              })}
               sx={{ mt: 3, mb: 2, bgcolor: "black" }}
             >
               Send
             </Button>
+            <Snackbar
+              anchorOrigin={{ vertical, horizontal }}
+              open={open}
+              onClose={handleClose}
+              key={vertical + horizontal}
+            >
+              <Alert
+                onClose={handleClose}
+                severity="success"
+                sx={{ width: "100%" }}
+              >
+                Email verification has been sent!
+              </Alert>
+            </Snackbar>
             <Grid container justifyContent="flex">
               <Grid item>
                 <Link href="/login" variant="body2">
