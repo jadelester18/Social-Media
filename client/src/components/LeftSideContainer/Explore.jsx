@@ -1,11 +1,15 @@
 import { Box, ImageList, ImageListItem, Typography } from "@mui/material";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 
 const Explore = () => {
-  //Get the data from database
-  const accesstoken =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzZjYxMjc0YjVhOGE2NjkwNjE4NTA4NSIsInVzZXJuYW1lIjoiamFkZWxlc3RlcjE4IiwiaWF0IjoxNjc3MjA1MTY2fQ.M_Tsoo3SfobIztA1L2w0JJ-nIfSab5lZyN58TGzsKrU";
+  //For Authentication
+  const userLoggedinDetails = useSelector((state) => state.user);
+  let userLogged = userLoggedinDetails.user;
+  // console.log(user);
+  let id = userLogged.other._id;
+  const accesstoken = userLogged.accessToken;
 
   const [post, setPost] = useState([]);
 
@@ -13,7 +17,7 @@ const Explore = () => {
     const getPost = async () => {
       try {
         const res = await axios.get(
-          "http://localhost:5000/api/user/followers/63f61274b5a8a66906185085",
+          `http://localhost:5000/api/user/followers/${id}`,
           {
             headers: {
               token: accesstoken,

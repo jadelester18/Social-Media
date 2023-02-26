@@ -17,6 +17,7 @@ import {
   Modal,
   Typography,
 } from "@mui/material";
+import { useSelector } from "react-redux";
 import ScrollToTop from "react-scroll-to-top";
 import { FixedSizeList, FixedSizeList as List } from "react-window";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
@@ -25,6 +26,7 @@ import Favorite from "@mui/icons-material/Favorite";
 import FavoriteBorder from "@mui/icons-material/FavoriteBorder";
 import QuestionAnswerOutlinedIcon from "@mui/icons-material/QuestionAnswerOutlined";
 import MarkUnreadChatAltOutlinedIcon from "@mui/icons-material/MarkUnreadChatAltOutlined";
+import { Link } from "react-router-dom";
 import axios from "axios";
 
 const label = { inputProps: { "aria-label": "Checkbox demo" } };
@@ -42,9 +44,12 @@ const styleModal = {
 };
 
 const MainPost = ({ post }) => {
-  const accesstoken =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzZjYxMjc0YjVhOGE2NjkwNjE4NTA4NSIsInVzZXJuYW1lIjoiamFkZWxlc3RlcjE4IiwiaWF0IjoxNjc3MjA1MTY2fQ.M_Tsoo3SfobIztA1L2w0JJ-nIfSab5lZyN58TGzsKrU";
-  const user = "63f61274b5a8a66906185085";
+  //For Authentication
+  const userLoggedinDetails = useSelector((state) => state.user);
+  let userLogged = userLoggedinDetails.user;
+  // console.log(user);
+  let id = userLogged.other._id;
+  const accesstoken = userLogged.accessToken;
 
   const [openChat, setOpenChat] = React.useState(false);
   const handleOpenChat = () =>
@@ -54,7 +59,7 @@ const MainPost = ({ post }) => {
   //For Setting Like
   const [countLike, setCountLike] = useState(post.like.length);
   const [Like, setLike] = useState([
-    post.like.includes(user) ? "Favorite" : "FavoriteBorder",
+    post.like.includes(id) ? "Favorite" : "FavoriteBorder",
   ]);
 
   const handleLike = async () => {
@@ -62,7 +67,6 @@ const MainPost = ({ post }) => {
       await fetch(`http://localhost:5000/api/post/${post._id}/like`, {
         method: "PATCH",
         headers: { "Content-Type": "application/Json", token: accesstoken },
-        body: JSON.stringify({ user }),
       });
       setLike("Favorite");
       setCountLike(countLike + 1);
@@ -70,7 +74,6 @@ const MainPost = ({ post }) => {
       await fetch(`http://localhost:5000/api/post/${post._id}/like`, {
         method: "PATCH",
         headers: { "Content-Type": "application/Json", token: accesstoken },
-        body: JSON.stringify({ user }),
       });
       setLike("FavoriteBorder");
       setCountLike(countLike - 1);
@@ -103,7 +106,12 @@ const MainPost = ({ post }) => {
     return (
       <ListItem disablePadding>
         <ListItemAvatar>
-          <Avatar alt="Remy Sharp" src={userDetails.profilepicture} />
+          <Avatar
+            alt={post.username}
+            src={post.profilepicture}
+            component={Link}
+            to={`/Profile/${userDetails._id}`}
+          />
         </ListItemAvatar>
         <ListItemText
           primary={post.comments.map((data) => data.username)}
@@ -140,6 +148,8 @@ const MainPost = ({ post }) => {
                   ? ""
                   : userDetails.profilepicture
               }
+              component={Link}
+              to={`/Profile/${userDetails._id}`}
             />
           }
           action={
@@ -147,7 +157,13 @@ const MainPost = ({ post }) => {
               <MoreVertIcon />
             </IconButton>
           }
-          title={userDetails.firstname + " " + userDetails.lastname}
+          title={
+            userDetails?.firstname?.charAt(0)?.toUpperCase() +
+            userDetails?.firstname?.slice(1) +
+            " " +
+            userDetails?.lastname?.charAt(0)?.toUpperCase() +
+            userDetails?.lastname?.slice(1)
+          }
           subheader={post.createdat.replace("-", " ").slice(0, -14)}
         />
         <CardMedia
@@ -182,7 +198,7 @@ const MainPost = ({ post }) => {
           />
           {countLike} Likes
           <IconButton aria-label="share" onClick={handleOpenChat}>
-            {post.comments.length == 0 ? (
+            {post.comments.length === 0 ? (
               <QuestionAnswerOutlinedIcon />
             ) : (
               <MarkUnreadChatAltOutlinedIcon color="secondary" />

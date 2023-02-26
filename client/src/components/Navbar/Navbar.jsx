@@ -19,9 +19,12 @@ import {
   Typography,
 } from "@mui/material";
 import AcUnitIcon from "@mui/icons-material/AcUnit";
+import { Link } from "react-router-dom";
 import MarkunreadIcon from "@mui/icons-material/Markunread";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import SearchIcon from "@mui/icons-material/Search";
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "../ReduxContainer/UserReducer";
 
 const StyledToolbar = styled(Toolbar)({
   display: "flex",
@@ -99,6 +102,12 @@ const UserBox = styled(Box)(({ theme }) => ({
 }));
 
 const Navbar = () => {
+  //For Authentication
+  const userLoggedinDetails = useSelector((state) => state.user);
+  let userLogged = userLoggedinDetails.user;
+  // console.log(user);
+  let id = userLogged.other._id;
+
   const [anchorElUser, setAnchorElUser] = React.useState(null);
   const [anchorElNotification, setAnchorElNotification] = React.useState(null);
 
@@ -116,19 +125,35 @@ const Navbar = () => {
     setAnchorElNotification(null);
   };
 
+  //For logout functionality
+  const dispatch = useDispatch();
+  const handleLogout = () => {
+    dispatch(logout());
+  };
+
   return (
-    <AppBar position="sticky" color="primary">
+    <AppBar position="sticky" color="white">
       <StyledToolbar>
         <Logo>
-          {/* <AcUnitIcon sx={{ display: { xs: "none", sm: "block" } }} /> */}
+          <Link to={`/`}>
+            <Avatar
+              src="https://png.pngtree.com/png-clipart/20221019/original/pngtree-twitter-social-media-round-icon-png-image_8704823.png"
+              sx={{ display: { xs: "none", sm: "block" } }}
+            />
+          </Link>
           <Typography
             variant="h6"
             sx={{ display: { xs: "none", sm: "block" } }}
           >
-            My Social App
+            LIFE TREND
           </Typography>
         </Logo>
-        <AcUnitIcon sx={{ display: { xs: "block", sm: "none" } }} />
+        <Link to={`/`}>
+          <Avatar
+            src="https://png.pngtree.com/png-clipart/20221019/original/pngtree-twitter-social-media-round-icon-png-image_8704823.png"
+            sx={{ display: { xs: "block", sm: "none" } }}
+          />
+        </Link>
         <Icons>
           <Search>
             <SearchIconWrapper>
@@ -166,10 +191,7 @@ const Navbar = () => {
             color="inherit"
             onClick={handleMenuUser}
           >
-            <Avatar
-              size="large"
-              src="https://media.licdn.com/dms/image/C4D03AQHUdFZK1jgvQQ/profile-displayphoto-shrink_200_200/0/1659529297027?e=1681948800&v=beta&t=jmWyYI3s6-LL0JnruVRv5HLGmrdY1-VFJdvA81O9nEg"
-            />
+            <Avatar size="large" src={userLogged.other.profilepicture} />
           </IconButton>
         </Icons>
         <UserBox>
@@ -184,7 +206,7 @@ const Navbar = () => {
           </Search>
           <Avatar
             size="large"
-            src="https://media.licdn.com/dms/image/C4D03AQHUdFZK1jgvQQ/profile-displayphoto-shrink_200_200/0/1659529297027?e=1681948800&v=beta&t=jmWyYI3s6-LL0JnruVRv5HLGmrdY1-VFJdvA81O9nEg"
+            src={userLogged.other.profilepicture}
             onClick={handleMenuUser}
           />
         </UserBox>
@@ -205,8 +227,10 @@ const Navbar = () => {
         onClose={handleCloseUser}
         sx={{ mt: "45px" }}
       >
-        <MenuItem>Profile</MenuItem>
-        <MenuItem>Logout</MenuItem>
+        <MenuItem component={Link} to={`/profile/${id}`}>
+          Profile
+        </MenuItem>
+        <MenuItem onClick={handleLogout}>Logout</MenuItem>
       </Menu>
       <Menu
         id="user-menu"

@@ -14,8 +14,16 @@ import React, { useEffect, useState } from "react";
 import SendIcon from "@mui/icons-material/Send";
 import VideoCallIcon from "@mui/icons-material/VideoCall";
 import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
+import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 
 const Post = () => {
+  //For Authentication
+  const userLoggedinDetails = useSelector((state) => state.user);
+  let userLogged = userLoggedinDetails.user;
+  // console.log(user);
+  let id = userLogged.other._id;
+
   const [selectedImage, setSelectedImage] = useState(null);
   const [imageUrl, setImageUrl] = useState(null);
 
@@ -30,11 +38,22 @@ const Post = () => {
       <Card sx={{ boxShadow: 5 }}>
         <CardHeader
           avatar={
-            <Avatar sx={{ bgcolor: "red" }} aria-label="recipe">
-              J
-            </Avatar>
+            <Avatar
+              alt={userLogged.other.username}
+              src={userLogged.other.profilepicture}
+              sx={{ bgcolor: "red" }}
+              aria-label="recipe"
+              component={Link}
+              to={`/Profile/${id}`}
+            />
           }
-          title="Jade Ballester"
+          title={
+            userLogged.other.firstname.charAt(0).toUpperCase() +
+            userLogged.other.firstname.slice(1) +
+            " " +
+            userLogged.other.lastname.charAt(0).toUpperCase() +
+            userLogged.other.lastname.slice(1)
+          }
           // subheader="September 14, 2016"
         />
         <CardContent>
