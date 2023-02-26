@@ -34,6 +34,7 @@ const UserSchema = new mongoose.Schema({
   profilepicture: {
     type: String,
   },
+  joineddate: { type: Date, default: Date.now },
 });
 
 module.exports = mongo.model("User", UserSchema)

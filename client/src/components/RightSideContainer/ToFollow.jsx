@@ -11,11 +11,16 @@ import {
 import PersonAddOutlinedIcon from "@mui/icons-material/PersonAddOutlined";
 import PersonRemoveOutlinedIcon from "@mui/icons-material/PersonRemoveOutlined";
 import React, { useState } from "react";
+import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 
 const ToFollow = ({ users }) => {
-  const accesstoken =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzZjYxMjc0YjVhOGE2NjkwNjE4NTA4NSIsInVzZXJuYW1lIjoiamFkZWxlc3RlcjE4IiwiaWF0IjoxNjc3MjA1MTY2fQ.M_Tsoo3SfobIztA1L2w0JJ-nIfSab5lZyN58TGzsKrU";
-  const user = "63f61274b5a8a66906185085";
+  //For Authentication
+  const userLoggedinDetails = useSelector((state) => state.user);
+  let userLogged = userLoggedinDetails.user;
+  // console.log(user);
+  let id = userLogged.other._id;
+  let accesstoken = userLogged.accessToken;
 
   const [follow, setFollow] = useState(<PersonAddOutlinedIcon />);
 
@@ -23,7 +28,7 @@ const ToFollow = ({ users }) => {
     await fetch(`http://localhost:5000/api/user/follow/${e}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/Json", token: accesstoken },
-      body: JSON.stringify({ user }),
+      body: JSON.stringify({ user: `${id}` }),
     });
     setFollow(<PersonRemoveOutlinedIcon />);
   };
@@ -47,6 +52,8 @@ const ToFollow = ({ users }) => {
             sizes="large"
             alt={users.username}
             src={users.profilepicture}
+            component={Link}
+            to={`/Profile/${users._id}`}
           />
         </ListItemAvatar>
         <ListItemText

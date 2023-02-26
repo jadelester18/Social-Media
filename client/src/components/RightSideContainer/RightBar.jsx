@@ -3,10 +3,20 @@ import React, { useEffect, useState } from "react";
 import Followers from "./Followers";
 import axios from "axios";
 import ToFollow from "./ToFollow";
+import { useSelector } from "react-redux";
+import { useLocation } from "react-router-dom";
 
 const RightBar = () => {
-  const accesstoken =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzZjYxMjc0YjVhOGE2NjkwNjE4NTA4NSIsInVzZXJuYW1lIjoiamFkZWxlc3RlcjE4IiwiaWF0IjoxNjc3MjA1MTY2fQ.M_Tsoo3SfobIztA1L2w0JJ-nIfSab5lZyN58TGzsKrU";
+  //For Authentication
+  const userLoggedinDetails = useSelector((state) => state.user);
+  let userLogged = userLoggedinDetails.user;
+
+  //Show Profile Data of Specific User
+  let location = useLocation();
+  let id = location.pathname.split("/")[2];
+
+  let idNewFollowers = userLogged?.other?._id;
+  let idForSuggestToFollow = userLogged?.other?._id;
 
   //For Get List Of All Avaible User To Follow
   const [user, setUser] = useState([]);
@@ -14,14 +24,12 @@ const RightBar = () => {
     const getUserPosted = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:5000/api/user/all/availuser`,
-          {
-            headers: {
-              token: accesstoken,
-            },
-          }
+          `http://localhost:5000/api/user/all/availuser/${idForSuggestToFollow}`
         );
-        setUser(res.data);
+        const removeLoggedin = res.data.filter(
+          (users) => users._id !== idForSuggestToFollow
+        );
+        setUser(removeLoggedin);
       } catch (error) {
         console.log("Showing available user error.");
       }
@@ -35,12 +43,7 @@ const RightBar = () => {
     const getnewFollowers = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:5000/api/user/all/newfollowers`,
-          {
-            headers: {
-              token: accesstoken,
-            },
-          }
+          `http://localhost:5000/api/user/followerslist/${idNewFollowers}`
         );
         setnewFollowerUser(res.data);
       } catch (error) {

@@ -16,6 +16,9 @@ import React from "react";
 import Explore from "./Explore";
 import { styled } from "@mui/material/styles";
 import MailIcon from "@mui/icons-material/Mail";
+import HouseOutlinedIcon from "@mui/icons-material/HouseOutlined";
+import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 
 const MaterialUISwitch = styled(Switch)(({ theme }) => ({
   width: 62,
@@ -65,6 +68,12 @@ const MaterialUISwitch = styled(Switch)(({ theme }) => ({
 }));
 
 const LeftBar = ({ setThemeMode, mode }) => {
+  //For Authentication
+  const userLoggedinDetails = useSelector((state) => state.user);
+  let userLogged = userLoggedinDetails.user;
+  // console.log(user);
+  let id = userLogged.other._id;
+
   //For saving dark theme to local storage
   var data = JSON.parse(localStorage.getItem("Theme"));
   var switchPos = false;
@@ -83,18 +92,34 @@ const LeftBar = ({ setThemeMode, mode }) => {
         <List
           sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}
         >
-          <ListItem disablePadding>
-            <ListItemButton href="/profile">
+          <ListItem disablePadding key={userLogged.id}>
+            <ListItemButton component={Link} to={`/profile/${id}`}>
               <ListItemAvatar>
                 <Avatar
-                  alt="Remy Sharp"
-                  src="https://media.licdn.com/dms/image/C4D03AQHUdFZK1jgvQQ/profile-displayphoto-shrink_200_200/0/1659529297027?e=1681948800&v=beta&t=jmWyYI3s6-LL0JnruVRv5HLGmrdY1-VFJdvA81O9nEg"
+                  alt={userLogged.other.username}
+                  src={userLogged.other.profilepicture}
                 />
               </ListItemAvatar>
-              <ListItemText primary="Rowell Wafu" />
+              <ListItemText
+                primary={
+                  userLogged.other.firstname.charAt(0).toUpperCase() +
+                  userLogged.other.firstname.slice(1) +
+                  " " +
+                  userLogged.other.lastname.charAt(0).toUpperCase() +
+                  userLogged.other.lastname.slice(1)
+                }
+              />
             </ListItemButton>
           </ListItem>
-          <ListItem disablePadding>
+          <ListItem disablePadding key={userLogged.id}>
+            <ListItemButton component={Link} to={`/`}>
+              <ListItemIcon>
+                <HouseOutlinedIcon size="large" />
+              </ListItemIcon>
+              <ListItemText primary="Home" />
+            </ListItemButton>
+          </ListItem>
+          <ListItem disablePadding key={userLogged.id}>
             <ListItemButton>
               <ListItemIcon>
                 <MailIcon size="large" />

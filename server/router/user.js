@@ -111,26 +111,28 @@ router.post(
 //Trying to Follow Specific User
 router.patch("/follow/:id", verifyToken, async (req, res) => {
   if (req.params.id !== req.body.user) {
-    const userToBeFollow = await User.findById(req.params.id);
-    const userInSession = await User.findById(req.body.user);
+    const user = await User.findById(req.params.id);
+    const otheruser = await User.findById(req.body.user);
 
-    if (!userToBeFollow.followers.includes(req.body.user)) {
-      await userToBeFollow.updateOne({ $push: { followers: req.body.user } });
-      await userInSession.updateOne({ $push: { following: req.params.id } });
-      return res.status(200).json("User has followed.");
+    if (!user.followers.includes(req.body.user)) {
+      await user.updateOne({ $push: { followers: req.body.user } });
+      await otheruser.updateOne({ $push: { following: req.params.id } });
+      return res.status(200).json("User has followed");
     } else {
-      return res.status(400).json("You already followed this user.");
+      await user.updateOne({ $pull: { followers: req.body.user } });
+      await otheruser.updateOne({ $pull: { following: req.params.id } });
+      return res.status(200).json("User has Unfollowed");
     }
   } else {
-    return res.status(400).json("You can't follow yourself!");
+    return res.status(400).json("You can't follow yourself");
   }
 });
 
-//Show all available user to follow
-router.get("/all/availuser", verifyToken, async (req, res) => {
+//Show all available user to follow by user logged in
+router.get("/all/availuser/:id", async (req, res) => {
   try {
     const allUser = await User.find();
-    const user = await User.findById(req.user.id);
+    const user = await User.findById(req.params.id);
     const followingUser = await Promise.all(
       user.following.map((user) => {
         return user;
@@ -154,36 +156,6 @@ router.get("/all/availuser", verifyToken, async (req, res) => {
           password,
           ...others
         } = user._doc;
-        return others;
-      })
-    );
-    res.status(200).json(filteruser);
-  } catch (error) {
-    return res.status(400).json("No available user to follow.");
-  }
-});
-
-//Show all New Followers
-router.get("/all/newfollowers", verifyToken, async (req, res) => {
-  try {
-    const allUser = await User.find();
-    const user = await User.findById(req.user.id);
-    const followerUser = await Promise.all(
-      user.followers.map((user) => {
-        return user;
-      })
-    );
-
-    let userFollowers = allUser.filter((val) => {
-      return followerUser.find((user) => {
-        return val._id.toString() === user;
-      });
-    });
-
-    let filteruser = await Promise.all(
-      userFollowers.map((user) => {
-        const { email, phonenumber, following, password, ...others } =
-          user._doc;
         return others;
       })
     );
@@ -246,24 +218,62 @@ router.delete("/delete/:id", verifyToken, async (req, res) => {
 });
 
 //Get the user who posted
-router.get("/post/user/details/:id", verifyToken, async (req, res) => {
+router.get("/post/user/details/:id", async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
     if (!user) {
       return res.status(400).json("User not found.");
     }
-    const {
-      username,
-      email,
-      password,
-      phonenumber,
-      followers,
-      following,
-      ...others
-    } = user._doc;
+    const { email, password, ...others } = user._doc;
     res.status(200).json(others);
   } catch (error) {
     return res.status(500).json("Internal error occurred.");
+  }
+});
+
+/// Get all Following List of that user Profile
+router.get("/following/:id", async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    const followinguser = await Promise.all(
+      user.following.map((item) => {
+        return User.findById(item);
+      })
+    );
+
+    let followingList = [];
+    followinguser.map((person) => {
+      const { email, password, phonenumber, following, followers, ...others } =
+        person._doc;
+      followingList.push(others);
+    });
+
+    res.status(200).json(followingList.sort(() => Math.random() - 0.5));
+  } catch (error) {
+    return res.status(500).json("Internal server error");
+  }
+});
+
+/// Get all Followers List of that user Profile
+router.get("/followerslist/:id", async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    const followersuser = await Promise.all(
+      user.followers.map((item) => {
+        return User.findById(item);
+      })
+    );
+
+    let followersList = [];
+    followersuser.map((person) => {
+      const { email, password, phonenumber, Following, ...others } =
+        person._doc;
+      followersList.push(others);
+    });
+
+    res.status(200).json(followersList);
+  } catch (error) {
+    return res.status(500).json("Internal server error");
   }
 });
 
