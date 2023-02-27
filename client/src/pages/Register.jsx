@@ -10,40 +10,85 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { IconButton, InputAdornment } from "@mui/material";
+import { IconButton, Input, InputAdornment } from "@mui/material";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { Link } from "react-router-dom";
-function Copyright(props) {
-  return (
-    <Typography
-      variant="body2"
-      color="text.secondary"
-      align="center"
-      {...props}
-    >
-      {"Copyright © "}
-      <Link color="inherit" href="https://mui.com/">
-        Your Website
-      </Link>{" "}
-      {new Date().getFullYear()}
-      {"."}
-    </Typography>
-  );
-}
+import { useSelector, useDispatch } from "react-redux";
+import { signup } from "../components/ReduxContainer/ApiCall";
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import app from "../firebase";
+import {
+  getStorage,
+  ref,
+  uploadBytesResumable,
+  getDownloadURL,
+} from "firebase/storage";
 
 const theme = createTheme();
 
 export default function Register() {
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get("email"),
-      password: data.get("password"),
-    });
-  };
+  const dispatch = useDispatch();
+  const { isFetching, error } = useSelector((state) => state.user);
+  const user = useSelector((state) => state.user);
+  const [email, setEmail] = useState("");
+  const [phonenumber, setphonenumber] = useState("");
+  const [username, setusername] = useState("");
+  const [password, setpassword] = useState("");
+  const [firstname, setFirstName] = useState("");
+  const [lastname, setLastName] = useState("");
+  const [file, setfile] = useState(null);
+  const userDetails = user.user;
+  const navigator = useNavigate();
+  const handleClick = (e) => {
+    e.preventDefault();
+    const fileName = new Date().getTime() + file?.name;
+    const storage = getStorage(app);
+    const StorageRef = ref(storage, fileName);
 
+    const uploadTask = uploadBytesResumable(StorageRef, file);
+    uploadTask.on(
+      "state_changed",
+      (snapshot) => {
+        // Observe state change events such as progress, pause, and resume
+        // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+        const progress =
+          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        console.log("Upload is " + progress + "% done");
+        switch (snapshot.state) {
+          case "paused":
+            console.log("Upload is paused");
+            break;
+          case "running":
+            console.log("Upload is running");
+            break;
+        }
+      },
+      (error) => {
+        // Handle unsuccessful uploads
+      },
+      () => {
+        // Handle successful uploads on complete
+        // For instance, get the download URL: https://firebasestorage.googleapis.com/...
+        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+          signup(dispatch, {
+            firstname,
+            lastname,
+            username,
+            email,
+            password,
+            phonenumber,
+            profile: downloadURL,
+          });
+        });
+      }
+    );
+  };
+  console.log(userDetails?.Status);
+  if (userDetails?.Status === "Pending") {
+    navigator("/verify/email");
+  }
   const [showPassword, setShowPassword] = React.useState(false);
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
@@ -51,7 +96,6 @@ export default function Register() {
   const handleMouseDownPassword = (event) => {
     event.preventDefault();
   };
-
   return (
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">
@@ -73,10 +117,16 @@ export default function Register() {
           <Box
             component="form"
             noValidate
-            onSubmit={handleSubmit}
+            onSubmit={handleClick}
             sx={{ mt: 3 }}
           >
             <Grid container spacing={2}>
+              <Grid item xs={12} sm={6}>
+                <Input
+                  type="file"
+                  onChange={(e) => setfile(e.target.files[0])}
+                ></Input>
+              </Grid>
               <Grid item xs={12} sm={6}>
                 <TextField
                   autoComplete="given-name"
@@ -85,9 +135,11 @@ export default function Register() {
                   fullWidth
                   id="firstName"
                   label="First Name"
+                  onChange={(e) => setFirstName(e.target.value)}
                   autoFocus
                 />
               </Grid>
+
               <Grid item xs={12} sm={6}>
                 <TextField
                   required
@@ -95,6 +147,7 @@ export default function Register() {
                   id="lastName"
                   label="Last Name"
                   name="lastName"
+                  onChange={(e) => setLastName(e.target.value)}
                   autoComplete="family-name"
                 />
               </Grid>
@@ -106,6 +159,7 @@ export default function Register() {
                   label="Username"
                   name="username"
                   autoComplete="username"
+                  onChange={(e) => setusername(e.target.value)}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -116,6 +170,19 @@ export default function Register() {
                   label="Email Address"
                   name="email"
                   autoComplete="email"
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  autoComplete="given-name"
+                  name="phone"
+                  required
+                  fullWidth
+                  id="phone"
+                  label="number"
+                  onChange={(e) => setphonenumber(e.target.value)}
+                  autoFocus
                 />
               </Grid>
               <Grid item xs={12}>
@@ -127,6 +194,7 @@ export default function Register() {
                   type={showPassword ? "text" : "password"}
                   id="standard-adornment-password"
                   autoComplete="new-password"
+                  onChange={(e) => setpassword(e.target.value)}
                   InputProps={{
                     endAdornment: (
                       <InputAdornment position="end">
