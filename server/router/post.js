@@ -104,7 +104,6 @@ router.patch("/comment/post", verifyToken, async (req, res) => {
       username: req.user.username,
       comment,
       profilepicture,
-      _id,
     };
     const post = await Post.findById(postid);
     post.comments.push(comments);

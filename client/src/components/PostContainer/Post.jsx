@@ -16,22 +16,148 @@ import VideoCallIcon from "@mui/icons-material/VideoCall";
 import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import app from "../../firebase";
+import {
+  getStorage,
+  ref,
+  uploadBytesResumable,
+  getDownloadURL,
+} from "firebase/storage";
 
 const Post = () => {
   //For Authentication
   const userLoggedinDetails = useSelector((state) => state.user);
   let userLogged = userLoggedinDetails.user;
   // console.log(user);
+  let accesstoken = userLogged.accessToken;
   let id = userLogged.other._id;
 
+  //For Showing Preview of Image and For uploading
   const [selectedImage, setSelectedImage] = useState(null);
+  const [selectedVideo, setSelectedVideo] = useState(null);
+  const [title, setTile] = useState("");
   const [imageUrl, setImageUrl] = useState(null);
+  // console.log(selectedImage.name);
 
   useEffect(() => {
     if (selectedImage) {
       setImageUrl(URL.createObjectURL(selectedImage));
     }
-  }, [selectedImage]);
+    if (selectedVideo) {
+      setImageUrl(URL.createObjectURL(selectedVideo));
+    }
+  }, [selectedImage, selectedVideo]);
+
+  //For Posting
+  const handlePost = (e) => {
+    e.preventDefault();
+    if (selectedImage !== null) {
+      const fileName = new Date().getTime() + selectedImage?.name;
+      const storage = getStorage(app);
+      const StorageRef = ref(storage, fileName);
+
+      const uploadTask = uploadBytesResumable(StorageRef, selectedImage);
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          // Observe state change events such as progress, pause, and resume
+          // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+          const progress =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          console.log("Upload is " + progress + "% done");
+          switch (snapshot.state) {
+            case "paused":
+              console.log("Upload is paused");
+              break;
+            case "running":
+              console.log("Upload is running");
+              break;
+          }
+        },
+        (error) => {
+          // Handle unsuccessful uploads
+        },
+        () => {
+          // Handle successful uploads on complete
+          // For instance, get the download URL: https://firebasestorage.googleapis.com/...
+          getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+            fetch(`http://localhost:5000/api/post/user/post`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/JSON",
+                token: accesstoken,
+              },
+              body: JSON.stringify({
+                title: title,
+                image: downloadURL,
+                video: "",
+              }),
+            }).then((data) => {
+              alert("Your Post was upload successfully");
+              window.location.reload(true);
+            });
+          });
+        }
+      );
+    } else if (selectedVideo !== null) {
+      const fileName = new Date().getTime() + selectedVideo?.name;
+      const storage = getStorage(app);
+      const StorageRef = ref(storage, fileName);
+
+      const uploadTask = uploadBytesResumable(StorageRef, selectedVideo);
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          // Observe state change events such as progress, pause, and resume
+          // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+          const progress =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          console.log("Upload is " + progress + "% done");
+          switch (snapshot.state) {
+            case "paused":
+              console.log("Upload is paused");
+              break;
+            case "running":
+              console.log("Upload is running");
+              break;
+          }
+        },
+        (error) => {
+          // Handle unsuccessful uploads
+        },
+        () => {
+          // Handle successful uploads on complete
+          // For instance, get the download URL: https://firebasestorage.googleapis.com/...
+          getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+            fetch(`http://localhost:5000/api/post/user/post`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/JSON",
+                token: accesstoken,
+              },
+              body: JSON.stringify({
+                title: title,
+                video: downloadURL,
+                image: "",
+              }),
+            }).then((data) => {
+              alert("Your Post was upload successfully");
+              window.location.reload(true);
+            });
+          });
+        }
+      );
+    } else {
+      fetch(`http://localhost:5000/api/post/user/post`, {
+        method: "POST",
+        headers: { "Content-Type": "application/JSON", token: accesstoken },
+        body: JSON.stringify({ title: title, video: "", image: "" }),
+      }).then((data) => {
+        alert("Your Post was upload successfully");
+        window.location.reload(true);
+      });
+    }
+  };
 
   return (
     <Box flex={4} p={2} sx={{ width: { sm: "100%" } }}>
@@ -48,12 +174,11 @@ const Post = () => {
             />
           }
           title={
-            userLogged.other.firstname + " " + userLogged.other.lastname
-            // userLogged.other.firstname.charAt(0).toUpperCase() +
-            // userLogged.other.firstname.slice(1) +
-            // " " +
-            // userLogged.other.lastname.charAt(0).toUpperCase() +
-            // userLogged.other.lastname.slice(1)
+            userLogged.other.firstname.charAt(0).toUpperCase() +
+            userLogged.other.firstname.slice(1) +
+            " " +
+            userLogged.other.lastname.charAt(0).toUpperCase() +
+            userLogged.other.lastname.slice(1)
           }
           // subheader="September 14, 2016"
         />
@@ -64,12 +189,21 @@ const Post = () => {
             placeholder="What's on your mind?"
             variant="standard"
             sx={{ width: "100%" }}
+            onChange={(e) => setTile(e.target.value)}
           />
           {imageUrl && selectedImage && (
-            <Box mt={2} textAlign="center">
-              {/* <div>Image Preview:</div> */}
-              <img src={imageUrl} alt={selectedImage.name} height="100px" />
-            </Box>
+            <Box
+              mt={2}
+              component="img"
+              sx={{
+                height: 233,
+                width: 350,
+                maxHeight: { xs: 233, md: 167 },
+                maxWidth: { xs: 350, md: 350 },
+              }}
+              alt={selectedImage.name}
+              src={imageUrl}
+            />
           )}
         </CardContent>
         <CardActions>
@@ -93,7 +227,12 @@ const Post = () => {
             </Tooltip>
             <Tooltip title="Upload Video">
               <IconButton aria-label="upload picture" component="label">
-                <input hidden accept="video/*" type="file" />
+                <input
+                  hidden
+                  accept="video/*"
+                  type="file"
+                  onChange={(e) => setSelectedVideo(e.target.files[0])}
+                />
                 <VideoCallIcon />
               </IconButton>
             </Tooltip>
@@ -102,6 +241,7 @@ const Post = () => {
                 variant="contained"
                 sx={{ color: "default.color" }}
                 size="small"
+                onClick={handlePost}
               >
                 <SendIcon />
               </IconButton>
