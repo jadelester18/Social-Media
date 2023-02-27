@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import {
   Avatar,
   Box,
+  Button,
   Card,
   CardActions,
   CardContent,
@@ -11,15 +12,16 @@ import {
   Divider,
   IconButton,
   InputBase,
+  List,
   ListItem,
   ListItemAvatar,
   ListItemText,
   Modal,
+  Stack,
   Typography,
 } from "@mui/material";
 import { useSelector } from "react-redux";
 import ScrollToTop from "react-scroll-to-top";
-import { FixedSizeList, FixedSizeList as List } from "react-window";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import ShareIcon from "@mui/icons-material/Share";
 import Favorite from "@mui/icons-material/Favorite";
@@ -36,7 +38,7 @@ const styleModal = {
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: 400,
+  width: { xs: 280, sm: 400 },
   bgcolor: "background.paper",
   boxShadow: 24,
   borderRadius: 10,
@@ -52,8 +54,7 @@ const MainPost = ({ post }) => {
   const accesstoken = userLogged.accessToken;
 
   const [openChat, setOpenChat] = React.useState(false);
-  const handleOpenChat = () =>
-    setOpenChat(post.comments.length === 0 ? false : true);
+  const handleOpenChat = () => setOpenChat(true);
   const handleCloseChat = () => setOpenChat(false);
 
   //For Setting Like
@@ -102,39 +103,29 @@ const MainPost = ({ post }) => {
     getUserPosted();
   }, []);
 
-  function showAllComment() {
-    return (
-      <ListItem disablePadding>
-        <ListItemAvatar>
-          <Avatar
-            alt={post.username}
-            src={post.profilepicture}
-            component={Link}
-            to={`/Profile/${userDetails._id}`}
-          />
-        </ListItemAvatar>
-        <ListItemText
-          primary={post.comments.map((data) => data.username)}
-          secondary={
-            <React.Fragment>
-              <Typography
-                sx={{ display: "inline" }}
-                component="span"
-                variant="body2"
-                color="text.primary"
-              >
-                {/* {post.comments.comment === ""
-                  ? post.comments.coment
-                  : "No comment available."} */}
-                {post.comments.map((data) => data.comment)}
-              </Typography>
-              {/* {" — I'll be in your neighborhood doing errands this…"} */}
-            </React.Fragment>
-          }
-        />
-      </ListItem>
-    );
-  }
+  //Add Comment
+  const [Comments, setComments] = useState(post.comments);
+  const [CommentWriting, setCommentWriting] = useState("");
+  const [show, setShow] = useState(false);
+
+  const addCommentToPost = async () => {
+    const comment = {
+      postid: `${post._id}`,
+      username: `${userLogged.other.username}`,
+      comment: `${CommentWriting}`,
+      profilepicture: `${userLogged.other?.profilepicture}`,
+    };
+    await fetch(`http://localhost:5000/api/post/comment/post`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/Json", token: accesstoken },
+      body: JSON.stringify(comment),
+    });
+    setComments(Comments.concat(comment));
+  };
+
+  const handleComment = () => {
+    addCommentToPost();
+  };
 
   return (
     <Box flex={4} p={2} sx={{ width: { sm: "100%" } }}>
@@ -204,7 +195,7 @@ const MainPost = ({ post }) => {
               <MarkUnreadChatAltOutlinedIcon color="secondary" />
             )}
           </IconButton>
-          {post.comments.length} Comments
+          {Comments.length} Comments
           <Typography variant="body2" color="text.secondary"></Typography>
           <IconButton aria-label="share" sx={{ marginLeft: "auto" }}>
             <ShareIcon />
@@ -223,27 +214,80 @@ const MainPost = ({ post }) => {
             sx={{
               width: "100%",
               height: 400,
-              maxWidth: 360,
+              maxWidth: 500,
               bgcolor: "background.paper",
+              display: "flex",
+              flexDirection: "column",
+              overflowY: "scroll",
+              "&::-webkit-scrollbar": {
+                width: "0em",
+              },
+              // "&::-webkit-scrollbar-track": {
+              //   background: "#f1f1f1",
+              // },
+              "&::-webkit-scrollbar-thumb": {
+                backgroundColor: "#888",
+              },
             }}
           >
-            <FixedSizeList
-              height={400}
-              itemSize={46}
-              itemCount={post.comments.length}
-              sx={{ width: "100%" }}
+            <List
+              sx={{
+                width: "100%",
+                maxWidth: 360,
+                bgcolor: "background.paper",
+              }}
             >
-              {showAllComment}
-            </FixedSizeList>
+              {Comments.map((item) => (
+                <ListItem alignItems="flex-start" key={item._id}>
+                  <ListItemAvatar>
+                    <Avatar
+                      alt={item.username}
+                      src={item.profilepicture}
+                      component={Link}
+                      to={`/Profile/${item.user}`}
+                    />
+                  </ListItemAvatar>
+                  <ListItemText
+                    sx={{
+                      whiteSpace: "pre-wrap",
+                      overflowWrap: "break-word",
+                    }}
+                    primary={item.username}
+                    secondary={
+                      <React.Fragment>
+                        <Typography
+                          sx={{ display: "inline" }}
+                          component="span"
+                          variant="body2"
+                          color="text.primary"
+                        ></Typography>
+                        {item.comment}
+                        {/* {" — I'll be in your neighborhood doing errands this…"} */}
+                      </React.Fragment>
+                    }
+                  />
+                </ListItem>
+              )).reverse()}
+            </List>
           </Box>
           <Divider />
-          <InputBase
-            placeholder="Write a comment..."
-            variant="filled"
-            size="small"
-            fullWidth
-            position="sticky"
-          />
+          <Stack direction="row" spacing={2} justifyContent="space-between">
+            <InputBase
+              placeholder="Write a comment..."
+              variant="filled"
+              size="small"
+              fullWidth
+              position="sticky"
+              onChange={(e) => setCommentWriting(e.target.value)}
+            />
+            <Button
+              variant="body2"
+              onClick={handleComment}
+              disabled={!CommentWriting}
+            >
+              Post
+            </Button>
+          </Stack>
         </Box>
       </Modal>
       <ScrollToTop smooth top="10" />

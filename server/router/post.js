@@ -98,11 +98,13 @@ router.patch("/:id/dislike", verifyToken, async (req, res) => {
 //For comment
 router.patch("/comment/post", verifyToken, async (req, res) => {
   try {
-    const { comment, postid } = req.body;
+    const { comment, postid, profilepicture } = req.body;
     const comments = {
       user: req.user.id,
       username: req.user.username,
       comment,
+      profilepicture,
+      _id,
     };
     const post = await Post.findById(postid);
     post.comments.push(comments);
