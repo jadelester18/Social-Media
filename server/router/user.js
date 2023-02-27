@@ -25,11 +25,11 @@ router.post(
     }
 
     try {
-      //Check if user is exist
-      let user = await User.findOne({ email: req.body.email });
+      //Check if email is exist
+      let registration_email = await User.findOne({ email: req.body.email });
 
-      if (user) {
-        return res.status(200).json("Please login with correct password.");
+      if (registration_email) {
+        return res.status(200).json("Email already used");
       }
 
       //For hashing password
@@ -276,6 +276,5 @@ router.get("/followerslist/:id", async (req, res) => {
     return res.status(500).json("Internal server error");
   }
 });
-
 
 module.exports = router;

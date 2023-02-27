@@ -79,7 +79,7 @@ export default function Register() {
             email,
             password,
             phonenumber,
-            profile: downloadURL,
+            profilepicture: downloadURL,
           });
         });
       }
