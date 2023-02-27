@@ -5,8 +5,13 @@ import {
   Avatar,
   Badge,
   Box,
+  Divider,
   IconButton,
   InputBase,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
   Menu,
   MenuItem,
   styled,
@@ -14,9 +19,12 @@ import {
   Typography,
 } from "@mui/material";
 import AcUnitIcon from "@mui/icons-material/AcUnit";
+import { Link } from "react-router-dom";
 import MarkunreadIcon from "@mui/icons-material/Markunread";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import SearchIcon from "@mui/icons-material/Search";
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "../ReduxContainer/UserReducer";
 
 const StyledToolbar = styled(Toolbar)({
   display: "flex",
@@ -66,6 +74,15 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
+const Logo = styled(Box)(({ theme }) => ({
+  display: "none",
+  alignItems: "center",
+  gap: "20px",
+  [theme.breakpoints.up("sm")]: {
+    display: "flex",
+  },
+}));
+
 const Icons = styled(Box)(({ theme }) => ({
   display: "none",
   alignItems: "center",
@@ -85,23 +102,58 @@ const UserBox = styled(Box)(({ theme }) => ({
 }));
 
 const Navbar = () => {
-  const [anchorEl, setAnchorEl] = React.useState(null);
+  //For Authentication
+  const userLoggedinDetails = useSelector((state) => state.user);
+  let userLogged = userLoggedinDetails.user;
+  // console.log(user);
+  let id = userLogged.other._id;
 
-  const handleMenu = (event) => {
-    setAnchorEl(event.currentTarget);
+  const [anchorElUser, setAnchorElUser] = React.useState(null);
+  const [anchorElNotification, setAnchorElNotification] = React.useState(null);
+
+  const handleMenuUser = (event) => {
+    setAnchorElUser(event.currentTarget);
+  };
+  const handleCloseUser = () => {
+    setAnchorElUser(null);
   };
 
-  const handleClose = () => {
-    setAnchorEl(null);
+  const handleMenuNotification = (event) => {
+    setAnchorElNotification(event.currentTarget);
+  };
+  const handleCloseNotification = () => {
+    setAnchorElNotification(null);
+  };
+
+  //For logout functionality
+  const dispatch = useDispatch();
+  const handleLogout = () => {
+    dispatch(logout());
   };
 
   return (
-    <AppBar position="sticky">
+    <AppBar position="sticky" color="white">
       <StyledToolbar>
-        <Typography variant="h6" sx={{ display: { xs: "none", sm: "block" } }}>
-          My Social App
-        </Typography>
-        <AcUnitIcon sx={{ display: { xs: "block", sm: "none" } }} />
+        <Logo>
+          <Link to={`/`}>
+            <Avatar
+              src="https://png.pngtree.com/png-clipart/20221019/original/pngtree-twitter-social-media-round-icon-png-image_8704823.png"
+              sx={{ display: { xs: "none", sm: "block" } }}
+            />
+          </Link>
+          <Typography
+            variant="h6"
+            sx={{ display: { xs: "none", sm: "block" } }}
+          >
+            LIFE TREND
+          </Typography>
+        </Logo>
+        <Link to={`/`}>
+          <Avatar
+            src="https://png.pngtree.com/png-clipart/20221019/original/pngtree-twitter-social-media-round-icon-png-image_8704823.png"
+            sx={{ display: { xs: "block", sm: "none" } }}
+          />
+        </Link>
         <Icons>
           <Search>
             <SearchIconWrapper>
@@ -125,6 +177,7 @@ const Navbar = () => {
             size="large"
             aria-label="show 17 new notifications"
             color="inherit"
+            onClick={handleMenuNotification}
           >
             <Badge badgeContent={17} color="error">
               <NotificationsIcon />
@@ -136,12 +189,9 @@ const Navbar = () => {
             aria-label="account of current user"
             aria-haspopup="true"
             color="inherit"
-            onClick={handleMenu}
+            onClick={handleMenuUser}
           >
-            <Avatar
-              size="large"
-              src="https://media.licdn.com/dms/image/C4D03AQHUdFZK1jgvQQ/profile-displayphoto-shrink_200_200/0/1659529297027?e=1681948800&v=beta&t=jmWyYI3s6-LL0JnruVRv5HLGmrdY1-VFJdvA81O9nEg"
-            />
+            <Avatar size="large" src={userLogged.other.profilepicture} />
           </IconButton>
         </Icons>
         <UserBox>
@@ -156,14 +206,14 @@ const Navbar = () => {
           </Search>
           <Avatar
             size="large"
-            src="https://media.licdn.com/dms/image/C4D03AQHUdFZK1jgvQQ/profile-displayphoto-shrink_200_200/0/1659529297027?e=1681948800&v=beta&t=jmWyYI3s6-LL0JnruVRv5HLGmrdY1-VFJdvA81O9nEg"
-            onClick={handleMenu}
+            src={userLogged.other.profilepicture}
+            onClick={handleMenuUser}
           />
         </UserBox>
       </StyledToolbar>
       <Menu
-        id="menu-appbar"
-        anchorEl={anchorEl}
+        id="user-menu"
+        anchorEl={anchorElUser}
         anchorOrigin={{
           vertical: "top",
           horizontal: "right",
@@ -173,12 +223,104 @@ const Navbar = () => {
           vertical: "top",
           horizontal: "right",
         }}
-        open={Boolean(anchorEl)}
-        onClose={handleClose}
+        open={Boolean(anchorElUser)}
+        onClose={handleCloseUser}
         sx={{ mt: "45px" }}
       >
-        <MenuItem>Profile</MenuItem>
-        <MenuItem>Logout</MenuItem>
+        <MenuItem component={Link} to={`/profile/${id}`}>
+          Profile
+        </MenuItem>
+        <MenuItem onClick={handleLogout}>Logout</MenuItem>
+      </Menu>
+      <Menu
+        id="user-menu"
+        anchorEl={anchorElNotification}
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+        keepMounted
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+        open={Boolean(anchorElNotification)}
+        onClose={handleCloseNotification}
+        sx={{ mt: "45px" }}
+      >
+        <List
+          sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}
+        >
+          <ListItem alignItems="flex-start">
+            <Typography variant="body1">Notifications</Typography>
+          </ListItem>
+          <ListItem alignItems="flex-start">
+            <ListItemAvatar>
+              <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
+            </ListItemAvatar>
+            <ListItemText
+              primary="Brunch this weekend?"
+              secondary={
+                <React.Fragment>
+                  <Typography
+                    sx={{ display: "inline" }}
+                    component="span"
+                    variant="body2"
+                    color="text.primary"
+                  >
+                    Ali Connors
+                  </Typography>
+                  {" — I'll be in your neighborhood doing errands this…"}
+                </React.Fragment>
+              }
+            />
+          </ListItem>
+          <Divider variant="inset" component="li" />
+          <ListItem alignItems="flex-start">
+            <ListItemAvatar>
+              <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
+            </ListItemAvatar>
+            <ListItemText
+              primary="Brunch this weekend?"
+              secondary={
+                <React.Fragment>
+                  <Typography
+                    sx={{ display: "inline" }}
+                    component="span"
+                    variant="body2"
+                    color="text.primary"
+                  >
+                    Ali Connors
+                  </Typography>
+                  {" — I'll be in your neighborhood doing errands this…"}
+                </React.Fragment>
+              }
+            />
+          </ListItem>
+          <Divider variant="inset" component="li" />
+          <ListItem alignItems="flex-start">
+            <ListItemAvatar>
+              <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
+            </ListItemAvatar>
+            <ListItemText
+              primary="Brunch this weekend?"
+              secondary={
+                <React.Fragment>
+                  <Typography
+                    sx={{ display: "inline" }}
+                    component="span"
+                    variant="body2"
+                    color="text.primary"
+                  >
+                    Ali Connors
+                  </Typography>
+                  {" — I'll be in your neighborhood doing errands this…"}
+                </React.Fragment>
+              }
+            />
+          </ListItem>
+          <Divider variant="inset" component="li" />
+        </List>
       </Menu>
     </AppBar>
   );

@@ -1,6 +1,14 @@
 const { default: mongoose } = require("mongoose")
 const mongo = require("mongoose")
 const UserSchema = new mongoose.Schema({
+  firstname: {
+    type: String,
+    required: true,
+  },
+  lastname: {
+    type: String,
+    required: true,
+  },
   username: {
     type: String,
     required: true,
@@ -26,6 +34,12 @@ const UserSchema = new mongoose.Schema({
   profilepicture: {
     type: String,
   },
+  verifed: {
+    type: Boolean,
+    required: true,
+    default: false,
+  },
+  joineddate: { type: Date, default: Date.now },
 });
 
 module.exports = mongo.model("User", UserSchema)

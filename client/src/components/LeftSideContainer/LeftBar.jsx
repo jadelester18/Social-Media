@@ -7,15 +7,18 @@ import {
   List,
   ListItem,
   ListItemAvatar,
+  ListItemButton,
+  ListItemIcon,
   ListItemText,
   Switch,
-  Typography,
 } from "@mui/material";
 import React from "react";
 import Explore from "./Explore";
-import LightModeIcon from "@mui/icons-material/LightMode";
-import DarkModeIcon from "@mui/icons-material/DarkMode";
 import { styled } from "@mui/material/styles";
+import MailIcon from "@mui/icons-material/Mail";
+import HouseOutlinedIcon from "@mui/icons-material/HouseOutlined";
+import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 
 const MaterialUISwitch = styled(Switch)(({ theme }) => ({
   width: 62,
@@ -65,85 +68,76 @@ const MaterialUISwitch = styled(Switch)(({ theme }) => ({
 }));
 
 const LeftBar = ({ setThemeMode, mode }) => {
+  //For Authentication
+  const userLoggedinDetails = useSelector((state) => state.user);
+  let userLogged = userLoggedinDetails.user;
+  // console.log(user);
+  let id = userLogged.other._id;
+
+  //For saving dark theme to local storage
+  var data = JSON.parse(localStorage.getItem("Theme"));
+  var switchPos = false;
+  if (data === "dark") {
+    // console.log(data);
+    switchPos = true;
+  }
   return (
-    <Box flex={1} p={2} sx={{ display: { xs: "none", sm: "block" } }}>
-      <Box position="fixed" sx={{ width: "22%" }}>
-        <Typography variant="body2">Notifications</Typography>
+    <Box
+      flex={1}
+      p={2}
+      sx={{ display: { xs: "none", sm: "block", lg: "block" } }}
+    >
+      <Box>
+        {/* <Typography variant="body2">Notifications</Typography> */}
         <List
           sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}
         >
-          <ListItem alignItems="flex-start">
-            <ListItemAvatar>
-              <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
-            </ListItemAvatar>
-            <ListItemText
-              primary="Brunch this weekend?"
-              secondary={
-                <React.Fragment>
-                  <Typography
-                    sx={{ display: "inline" }}
-                    component="span"
-                    variant="body2"
-                    color="text.primary"
-                  >
-                    Ali Connors
-                  </Typography>
-                  {" — I'll be in your neighborhood doing errands this…"}
-                </React.Fragment>
-              }
-            />
+          <ListItem disablePadding key={userLogged.id}>
+            <ListItemButton component={Link} to={`/profile/${id}`}>
+              <ListItemAvatar>
+                <Avatar
+                  alt={userLogged.other.username}
+                  src={userLogged.other.profilepicture}
+                />
+              </ListItemAvatar>
+              <ListItemText
+                primary={
+                  userLogged.other.firstname.charAt(0).toUpperCase() +
+                  userLogged.other.firstname.slice(1) +
+                  " " +
+                  userLogged.other.lastname.charAt(0).toUpperCase() +
+                  userLogged.other.lastname.slice(1)
+                }
+              />
+            </ListItemButton>
+          </ListItem>
+          <ListItem disablePadding key={userLogged.id}>
+            <ListItemButton component={Link} to={`/`}>
+              <ListItemIcon>
+                <HouseOutlinedIcon size="large" />
+              </ListItemIcon>
+              <ListItemText primary="Home" />
+            </ListItemButton>
+          </ListItem>
+          <ListItem disablePadding key={userLogged.id}>
+            <ListItemButton>
+              <ListItemIcon>
+                <MailIcon size="large" />
+              </ListItemIcon>
+              <ListItemText primary="Messages" />
+            </ListItemButton>
           </ListItem>
           <Divider variant="inset" component="li" />
-          <ListItem alignItems="flex-start">
-            <ListItemAvatar>
-              <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
-            </ListItemAvatar>
-            <ListItemText
-              primary="Brunch this weekend?"
-              secondary={
-                <React.Fragment>
-                  <Typography
-                    sx={{ display: "inline" }}
-                    component="span"
-                    variant="body2"
-                    color="text.primary"
-                  >
-                    Ali Connors
-                  </Typography>
-                  {" — I'll be in your neighborhood doing errands this…"}
-                </React.Fragment>
-              }
-            />
-          </ListItem>
-          <Divider variant="inset" component="li" />
-          <ListItem alignItems="flex-start">
-            <ListItemAvatar>
-              <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
-            </ListItemAvatar>
-            <ListItemText
-              primary="Brunch this weekend?"
-              secondary={
-                <React.Fragment>
-                  <Typography
-                    sx={{ display: "inline" }}
-                    component="span"
-                    variant="body2"
-                    color="text.primary"
-                  >
-                    Ali Connors
-                  </Typography>
-                  {" — I'll be in your neighborhood doing errands this…"}
-                </React.Fragment>
-              }
-            />
-          </ListItem>
         </List>
+
         <Explore />
         <FormGroup>
           <FormControlLabel
-            control={<MaterialUISwitch sx={{ m: 1 }} defaultChecked />}
+            control={<MaterialUISwitch sx={{ m: 1 }} checked={switchPos} />}
             label="Theme switch"
-            onChange={(e) => setThemeMode(mode === "light" ? "dark" : "light")}
+            onChange={(e) => {
+              setThemeMode(mode === "light" ? "dark" : "light");
+            }}
           />
         </FormGroup>
       </Box>
