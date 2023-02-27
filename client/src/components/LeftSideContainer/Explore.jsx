@@ -63,12 +63,16 @@ const Explore = () => {
       >
         {post.map((item) => (
           <ImageListItem key={item._id}>
-            <img
-              src={`${item.image}?w=161&fit=crop&auto=format`}
-              srcSet={`${item.image}?w=161&fit=crop&auto=format&dpr=2 2x`}
-              alt={item.image}
-              loading="lazy"
-            />
+            {item.image === " " ? (
+              ""
+            ) : (
+              <img
+                src={`${item.image}?w=161&fit=crop&auto=format`}
+                srcSet={`${item.image}?w=161&fit=crop&auto=format&dpr=2 2x`}
+                alt={item.image}
+                loading="lazy"
+              />
+            )}
           </ImageListItem>
         ))}
       </ImageList>
