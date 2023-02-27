@@ -25,7 +25,7 @@ const FollowingList = ({ users }) => {
         src={users.profilepicture}
       />
 
-      <Box sx={{ fontSize: "1rem", fontWeight: 3 }}>{users.username}</Box>
+      <Box sx={{ fontSize: "1rem", fontWeight: 3 }}>{"@" + users.username}</Box>
     </Item>
   );
 };

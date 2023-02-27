@@ -34,6 +34,11 @@ const UserSchema = new mongoose.Schema({
   profilepicture: {
     type: String,
   },
+  verifed: {
+    type: Boolean,
+    required: true,
+    default: false,
+  },
   joineddate: { type: Date, default: Date.now },
 });
 

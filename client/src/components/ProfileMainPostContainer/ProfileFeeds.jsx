@@ -35,9 +35,9 @@ const ProfileFeeds = () => {
   return (
     <Box flex={2} p={2}>
       <ProfilePost />
-      {post.map((item) => (
-        <ProfileMainPost post={item} key={item._id} />
-      ))}
+      {post
+        .map((item) => <ProfileMainPost post={item} key={item._id} />)
+        .reverse()}
     </Box>
   );
 };
