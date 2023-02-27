@@ -107,7 +107,7 @@ const Post = () => {
                 token: accesstoken,
               },
               body: JSON.stringify({
-                title: title,
+                title: title === "" ? " " : title,
                 image: downloadURL,
                 video: " ",
               }),
@@ -170,7 +170,7 @@ const Post = () => {
                 token: accesstoken,
               },
               body: JSON.stringify({
-                title: title,
+                title: title === '' ? ' ' : title,
                 video: downloadURL,
                 image: " ",
               }),

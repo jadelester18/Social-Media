@@ -108,11 +108,15 @@ const ProfileRightBar = () => {
               cols={item.cols || 1}
               rows={item.rows || 1}
             >
-              <img
-                {...srcset(item.image, 121, item.rows, item.cols)}
-                alt={item.title}
-                loading="lazy"
-              />
+              {item.image === " " ? (
+                ""
+              ) : (
+                <img
+                  {...srcset(item.image, 121, item.rows, item.cols)}
+                  alt={item.title}
+                  loading="lazy"
+                />
+              )}
             </ImageListItem>
           ))}
         </ImageList>
