@@ -64,6 +64,7 @@ export default function Register() {
             console.log("Upload is running");
             break;
         }
+         
       },
       (error) => {
         // Handle unsuccessful uploads
@@ -83,7 +84,13 @@ export default function Register() {
           });
         });
       }
+      
     );
+    if (JSON.parse(localStorage.getItem("persist:root")).user === "true") {
+      alert("email already used");
+      localStorage.removeItem("persist:root");
+      window.location.reload(true);
+    }
   };
   console.log(userDetails?.Status);
   if (userDetails?.Status === "Pending") {

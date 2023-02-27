@@ -29,8 +29,8 @@ router.post(
       let registration_email = await User.findOne({ email: req.body.email });
 
       if (registration_email) {
-        return res.status(200).json("Email already used");
-      }
+        return res.status(200).json(true);
+      } 
 
       //For hashing password
       const salt = await bcrypt.genSalt(10);
