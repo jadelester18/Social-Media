@@ -156,19 +156,20 @@ const MainPost = ({ post }) => {
           }
           subheader={post.createdat.replace("-", " ").slice(0, -14)}
         />
-        {post.image !== "" ? (
+        {post.image !== " " ? (
           <CardMedia
             component="img"
             height="20%"
             image={post.image}
             alt={post.title}
           />
-        ) : post.video !== "" ? (
+        ) : post.video !== " " ? (
           <CardMedia
-            component="img"
-            height="20%"
+            component="video"
             image={post.video}
             alt={post.title}
+            controls
+            // autoPlay
           />
         ) : (
           ""
