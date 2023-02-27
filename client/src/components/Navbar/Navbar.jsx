@@ -230,7 +230,9 @@ const Navbar = () => {
         <MenuItem component={Link} to={`/profile/${id}`}>
           Profile
         </MenuItem>
-        <MenuItem onClick={handleLogout}>Logout</MenuItem>
+        <MenuItem onClick={handleLogout} component={Link} to={`/login`}>
+          Logout
+        </MenuItem>
       </Menu>
       <Menu
         id="user-menu"

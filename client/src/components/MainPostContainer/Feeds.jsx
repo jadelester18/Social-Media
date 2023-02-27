@@ -37,11 +37,7 @@ const Feeds = () => {
   return (
     <Box flex={2} p={2}>
       <Post />
-      {post.map((item) =>
-        item.map((postDetails) => (
-          <MainPost post={postDetails} key={postDetails._id} />
-        ))
-      )}
+      {post.map((item) => <MainPost post={item} key={item._id} />).reverse()}
     </Box>
   );
 };

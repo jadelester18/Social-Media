@@ -78,7 +78,7 @@ const ProfileData = () => {
   ]);
 
   const handleFollowUser = async () => {
-    if (followOrUnfollow === "Follow") {
+    if (followOrUnfollow == "Follow") {
       await fetch(`http://localhost:5000/api/user/follow/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/JSON", token: accesstoken },

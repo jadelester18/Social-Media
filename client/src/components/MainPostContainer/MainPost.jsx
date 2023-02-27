@@ -106,7 +106,6 @@ const MainPost = ({ post }) => {
   //Add Comment
   const [Comments, setComments] = useState(post.comments);
   const [CommentWriting, setCommentWriting] = useState("");
-  const [show, setShow] = useState(false);
 
   const addCommentToPost = async () => {
     const comment = {
@@ -157,12 +156,24 @@ const MainPost = ({ post }) => {
           }
           subheader={post.createdat.replace("-", " ").slice(0, -14)}
         />
-        <CardMedia
-          component="img"
-          height="20%"
-          image={post.image}
-          alt={post.title}
-        />
+        {post.image !== "" ? (
+          <CardMedia
+            component="img"
+            height="20%"
+            image={post.image}
+            alt={post.title}
+          />
+        ) : post.video !== "" ? (
+          <CardMedia
+            component="img"
+            height="20%"
+            image={post.video}
+            alt={post.title}
+          />
+        ) : (
+          ""
+        )}
+
         <CardContent>
           <Typography variant="body2" color="text.secondary">
             {post.title}

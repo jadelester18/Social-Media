@@ -174,7 +174,9 @@ router.get("/followers/:id", verifyToken, async (req, res) => {
         return Post.find({ user: post });
       })
     );
-    res.status(200).json(followersPost);
+    const userLoggedPost = await Post.find({ user: user._id });
+
+    res.status(200).json(userLoggedPost.concat(...followersPost));
   } catch (error) {
     return res.status(500).json("Internal error occurred.");
   }
