@@ -6,60 +6,107 @@ const jwt = require("jsonwebtoken"); //for token
 const JWTSEC =
   "f943796f0a956ffde6e21dad239122a0d89be4ce5ad5a35105e5589a312bb718eeb2cdea0d5701ba61ceca514556ca04266bb731a9e474ba5b749e981415e4db"; //require('crypto').randomBytes(128).toString('hex')
 
-const { verifyToken } = require("./verifytoken");
 const Post = require("../Models/Post");
+
 const { findById } = require("../Models/User");
+const VerificationToken = require("../Models/VerificationToken");
+const { verifyToken } = require("./verifytoken");
+
+const { generateOTP } = require("./otpgenerator");
+const ResetToken = require("../Models/ResetToken");
+
+const nodemailer = require("nodemailer");
+const hbs = require("nodemailer-express-handlebars");
 
 router.post(
   "/register/user",
   body("firstname").isLength({ min: 2 }),
   body("lastname").isLength({ min: 2 }),
-  body("username").isLength({ min: 5 }),
+  body("username").isLength({ min: 3 }),
   body("email").isEmail(),
-  body("password").isLength({ min: 5 }),
-  body("phonenumber").isLength({ min: 10 }),
+  body("password").isLength({ min: 1 }),
   async (req, res) => {
     const error = validationResult(req);
     if (!error.isEmpty()) {
-      return res.status(400).json("Some error occured");
+      return res.status(400).json("some error occured");
     }
+    //   try {
 
-    try {
-      //Check if user is exist
-      let user = await User.findOne({ email: req.body.email });
+    let user = await User.findOne({ email: req.body.email });
+    if (user) {
+      return res.status(200).json("Email already been used.");
+    }
+    const salt = await bcrypt.genSalt(10);
+    const secpass = await bcrypt.hash(req.body.password, salt);
 
-      if (user) {
-        return res.status(200).json("Please login with correct password.");
-      }
+    user = await User.create({
+      firstname: req.body.firstname,
+      lastname: req.body.lastname,
+      username: req.body.username,
+      email: req.body.email,
+      password: secpass,
+    });
+    const accessToken = jwt.sign(
+      {
+        id: user._id,
+        username: user.username,
+      },
+      JWTSEC
+    );
+    const OTP = generateOTP();
+    const verificationToken = await VerificationToken.create({
+      user: user._id,
+      token: OTP,
+    });
+    verificationToken.save();
+    await user.save();
 
-      //For hashing password
-      const salt = await bcrypt.genSalt(10);
-      const secpass = await bcrypt.hash(req.body.password, salt);
+    const transport = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.EMAIL,
+        pass: process.env.PASSWORD,
+      },
+    });
 
-      //If user doesn't exist this command will work for signup
-      user = await User.create({
-        firstname: req.body.firstname,
-        lastname: req.body.lastname,
-        username: req.body.username,
-        email: req.body.email,
-        password: secpass,
-        profilepicture: req.body.profilepicture,
-        phonenumber: req.body.phonenumber,
-      });
-
-      const accessToken = jwt.sign(
-        {
-          id: user._id,
-          username: user.username,
+    transport.use(
+      "compile",
+      hbs({
+        viewEngine: {
+          extname: ".handlebars",
+          layoutsDir: "./emailTemplate/",
+          defaultLayout: "Onetimepass",
         },
-        JWTSEC
-      );
+        viewPath: "./emailTemplate/",
+      })
+    );
 
-      await user.save();
-      res.status(200).json({ user, accessToken });
-    } catch (error) {
-      return res.status(400).json("Internal error occurred.");
-    }
+    var mailConfig = {
+      from: process.env.EMAIL,
+      to: user.email,
+      subject: "Verify your email using OTP",
+      template: "Onetimepass",
+      context: {
+        name: user.email,
+        company: `${OTP}`,
+      },
+    };
+    transport.sendMail(mailConfig, (error, info) => {
+      if (error) {
+        console.log(error);
+      } else {
+        console.log("Email sent :" + info.response);
+      }
+    });
+    return res.status(200).json({
+      Status: "Pending",
+      msg: "Please check your email",
+      user: user._id,
+    });
+
+    // } catch (error) {
+    //           return res.status(400).json("Internal error occured")
+    // }
   }
 );
 
