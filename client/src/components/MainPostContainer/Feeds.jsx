@@ -37,11 +37,14 @@ const Feeds = () => {
   return (
     <Box flex={2} p={2}>
       <Post />
-      {post
-        .sort((a, b) => a.createdat - b.createdat)
-        .map((item) => (
-          <MainPost post={item} key={item._id} />
-        ))}
+      {post &&
+        post
+          .sort((a, b) => (a.createdat > b.createdat ? -1 : 1))
+          .map((item) => (
+            <Box key={item.createdat}>
+              <MainPost post={item} />
+            </Box>
+          ))}
     </Box>
   );
 };

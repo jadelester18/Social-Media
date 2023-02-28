@@ -35,9 +35,14 @@ const ProfileFeeds = () => {
   return (
     <Box flex={2} p={2}>
       <ProfilePost />
-      {post
-        .map((item) => <ProfileMainPost post={item} key={item._id} />)
-        .reverse()}
+      {post &&
+        post
+          .sort((a, b) => (a.createdat > b.createdat ? -1 : 1))
+          .map((item) => (
+            <Box key={item.createdat}>
+              <ProfileMainPost post={item} key={item._id} />
+            </Box>
+          ))}
     </Box>
   );
 };

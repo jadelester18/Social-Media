@@ -61,20 +61,21 @@ const Explore = () => {
         cols={3}
         gap={8}
       >
-        {post.map((item) => (
-          <ImageListItem key={item._id}>
-            {item.image === " " ? (
-              ""
-            ) : (
+        {post.map((item) =>
+          item.image === "" ? (
+            ""
+          ) : (
+            <ImageListItem key={item._id}>
               <img
+                onError={(event) => (event.target.style.display = "none")}
                 src={`${item.image}?w=161&fit=crop&auto=format`}
                 srcSet={`${item.image}?w=161&fit=crop&auto=format&dpr=2 2x`}
                 alt={item.image}
                 loading="lazy"
               />
-            )}
-          </ImageListItem>
-        ))}
+            </ImageListItem>
+          )
+        )}
       </ImageList>
     </Box>
   );
