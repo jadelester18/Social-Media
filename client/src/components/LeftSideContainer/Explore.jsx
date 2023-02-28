@@ -1,77 +1,81 @@
 import { Box, ImageList, ImageListItem, Typography } from "@mui/material";
-import React from "react";
-
-const itemData = [
-  {
-    img: "https://images.unsplash.com/photo-1549388604-817d15aa0110",
-    title: "Bed",
-  },
-  {
-    img: "https://images.unsplash.com/photo-1563298723-dcfebaa392e3",
-    title: "Kitchen",
-  },
-  {
-    img: "https://images.unsplash.com/photo-1523413651479-597eb2da0ad6",
-    title: "Sink",
-  },
-  {
-    img: "https://images.unsplash.com/photo-1525097487452-6278ff080c31",
-    title: "Books",
-  },
-  {
-    img: "https://images.unsplash.com/photo-1574180045827-681f8a1a9622",
-    title: "Chairs",
-  },
-  {
-    img: "https://images.unsplash.com/photo-1597262975002-c5c3b14bbd62",
-    title: "Candle",
-  },
-  {
-    img: "https://images.unsplash.com/photo-1530731141654-5993c3016c77",
-    title: "Laptop",
-  },
-  {
-    img: "https://images.unsplash.com/photo-1481277542470-605612bd2d61",
-    title: "Doors",
-  },
-  {
-    img: "https://images.unsplash.com/photo-1517487881594-2787fef5ebf7",
-    title: "Coffee",
-  },
-  {
-    img: "https://images.unsplash.com/photo-1516455207990-7a41ce80f7ee",
-    title: "Storage",
-  },
-  {
-    img: "https://images.unsplash.com/photo-1519710164239-da123dc03ef4",
-    title: "Coffee table",
-  },
-  {
-    img: "https://images.unsplash.com/photo-1588436706487-9d55d73a39e3",
-    title: "Blinds",
-  },
-];
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 
 const Explore = () => {
+  //For Authentication
+  const userLoggedinDetails = useSelector((state) => state.user);
+  let userLogged = userLoggedinDetails.user;
+  // console.log(user);
+  let id = userLogged.other._id;
+  const accesstoken = userLogged.accessToken;
+
+  const [post, setPost] = useState([]);
+
+  useEffect(() => {
+    const getPost = async () => {
+      try {
+        const res = await axios.get(
+          `http://localhost:5000/api/user/followers/${id}`,
+          {
+            headers: {
+              token: accesstoken,
+            },
+          }
+        );
+        setPost(res.data);
+      } catch (error) {}
+    };
+    getPost();
+  }, []);
+
   return (
     <Box>
-      <Typography variant="body2">Explore</Typography>
+      <Typography
+        level="body2"
+        textTransform="uppercase"
+        fontWeight="xl"
+        mb={1}
+        sx={{ letterSpacing: "0.1rem" }}
+        fontSize=".8rem"
+      >
+        Explore
+      </Typography>
       <ImageList
-        sx={{ width: "100%", maxWidth: 360, height: 350 }}
+        sx={{
+          width: "100%",
+          maxWidth: 360,
+          height: 350,
+          "&::-webkit-scrollbar": {
+            width: "0.4em",
+          },
+          "&::-webkit-scrollbar-track": {
+            background: "#f1f1f1",
+          },
+          "&::-webkit-scrollbar-thumb": {
+            backgroundColor: "#888",
+          },
+        }}
         variant="woven"
         cols={3}
         gap={8}
       >
-        {itemData.map((item) => (
-          <ImageListItem key={item.img}>
-            <img
-              src={`${item.img}?w=161&fit=crop&auto=format`}
-              srcSet={`${item.img}?w=161&fit=crop&auto=format&dpr=2 2x`}
-              alt={item.title}
-              loading="lazy"
-            />
-          </ImageListItem>
-        ))}
+        {post.map((item) =>
+          item.image === "" ? (
+            ""
+          ) : (
+            <ImageListItem key={item._id}>
+              <img
+                onError={(event) => (event.target.style.display = "none")}
+                src={`${item.image}?w=161&fit=crop&auto=format`}
+                srcSet={`${item.image}?w=161&fit=crop&auto=format&dpr=2 2x`}
+                alt={item.image}
+                loading="lazy"
+              />
+            </ImageListItem>
+          )
+        )}
       </ImageList>
     </Box>
   );
