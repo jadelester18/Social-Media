@@ -36,8 +36,8 @@ const Profile = () => {
           direction="row"
           justifyContent="space-between"
           sx={{
-            marginLeft: { xs: "0%", sm: "10%" },
-            marginRight: { xs: "0%", sm: "10%" },
+            marginLeft: { xs: "0%", sm: "10%", md: "10%" },
+            marginRight: { xs: "0%", sm: "0%", md: "10%" },
             spacing: { xs: 0, sm: 0, md: 2 },
           }}
         >
