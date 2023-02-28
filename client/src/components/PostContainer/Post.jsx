@@ -56,11 +56,7 @@ const Post = () => {
       const storage = getStorage(app);
       const storageRef = ref(storage, fileName);
 
-      const uploadTask = uploadBytesResumable(
-        storageRef,
-        selectedImage,
-        
-      );
+      const uploadTask = uploadBytesResumable(storageRef, selectedImage);
       // Listen for state changes, errors, and completion of the upload.
       uploadTask.on(
         "state_changed",
@@ -107,9 +103,9 @@ const Post = () => {
                 token: accesstoken,
               },
               body: JSON.stringify({
-                title: title === "" ? " " : title,
+                title: title === "" ? "" : title,
                 image: downloadURL,
-                video: " ",
+                video: "",
               }),
             }).then((data) => {
               alert("Your Post was upload successfully");
@@ -170,9 +166,9 @@ const Post = () => {
                 token: accesstoken,
               },
               body: JSON.stringify({
-                title: title === '' ? ' ' : title,
+                title: title === "" ? "" : title,
                 video: downloadURL,
-                image: " ",
+                image: "",
               }),
             }).then((data) => {
               alert("Your Post was upload successfully");
@@ -190,8 +186,8 @@ const Post = () => {
         },
         body: JSON.stringify({
           title: title,
-          video: ' ',
-          image: ' '
+          video: "",
+          image: "",
         }),
       }).then((data) => {
         alert("Your Post was upload successfully");
@@ -243,6 +239,21 @@ const Post = () => {
                 maxWidth: { xs: 350, md: 350 },
               }}
               alt={selectedImage.name}
+              src={imageUrl}
+            />
+          )}
+          {imageUrl && selectedVideo && (
+            <Box
+              mt={2}
+              component="video"
+              controls
+              sx={{
+                height: 233,
+                width: "100%",
+                maxHeight: { xs: 233, md: 167 },
+                maxWidth: { xs: 350, md: 350 },
+              }}
+              alt={selectedVideo.name}
               src={imageUrl}
             />
           )}

@@ -156,14 +156,14 @@ const ProfileMainPost = ({ post }) => {
           }
           subheader={userDetails?.joineddate?.replace("-", " ").slice(0, -14)}
         />
-        {post.image !== " " ? (
+        {post.image !== "" ? (
           <CardMedia
             component="img"
             height="20%"
             image={post.image}
             alt={post.title}
           />
-        ) : post.video !== " " ? (
+        ) : post.video !== "" ? (
           <CardMedia
             component="video"
             image={post.video}

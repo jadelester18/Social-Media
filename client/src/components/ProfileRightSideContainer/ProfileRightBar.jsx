@@ -74,7 +74,7 @@ const ProfileRightBar = () => {
   return (
     <Box
       flex={1.5}
-      // p={2}
+      p={2}
       sx={{ display: { xs: "none", sm: "none", lg: "block" } }}
     >
       <Box
@@ -102,23 +102,23 @@ const ProfileRightBar = () => {
           cols={4}
           rowHeight={121}
         >
-          {post.map((item) => (
-            <ImageListItem
-              key={item._id}
-              cols={item.cols || 1}
-              rows={item.rows || 1}
-            >
-              {item.image === " " ? (
-                ""
-              ) : (
+          {post.map((item) =>
+            item.image === "" ? (
+              ""
+            ) : (
+              <ImageListItem
+                key={item._id}
+                cols={item.cols || 1}
+                rows={item.rows || 1}
+              >
                 <img
                   {...srcset(item.image, 121, item.rows, item.cols)}
                   alt={item.title}
                   loading="lazy"
                 />
-              )}
-            </ImageListItem>
-          ))}
+              </ImageListItem>
+            )
+          )}
         </ImageList>
         <Box sx={{ marginTop: 3 }}>
           <Typography
