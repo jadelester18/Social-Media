@@ -9,10 +9,10 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { IconButton, Link, InputAdornment } from "@mui/material";
+import { IconButton, InputAdornment } from "@mui/material";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
-
+import { Link } from "react-router-dom";
 //For Login Auth Redux
 import { useSelector, useDispatch } from "react-redux";
 
@@ -21,18 +21,17 @@ import { login } from "../components/ReduxContainer/ApiCall";
 const theme = createTheme();
 
 export default function Login() {
-
   //For Login Auth
   const dispatch = useDispatch();
-  const {isFetching, error} = useSelector((state) => state.user)
+  const { isFetching, error } = useSelector((state) => state.user);
 
   const [email, setemail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleLoginSubmit  = (e) => {
+  const handleLoginSubmit = (e) => {
     e.preventDefault();
-    login(dispatch,{email, password})
-  }
+    login(dispatch, { email, password });
+  };
 
   const handleClick = (e) => {
     e.preventDefault();
@@ -115,12 +114,12 @@ export default function Login() {
             </Button>
             <Grid container>
               <Grid item xs>
-                <Link href={"/forgot/password"} variant="body2">
+                <Link to={"/forgot/password"} variant="body2">
                   Forgot password?
                 </Link>
               </Grid>
               <Grid item>
-                <Link href={"/signup"} variant="body2">
+                <Link to={"/signup"} variant="body2">
                   Don't have an account? Sign Up
                 </Link>
               </Grid>
