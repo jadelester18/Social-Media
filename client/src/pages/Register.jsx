@@ -13,6 +13,8 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { IconButton, InputAdornment } from "@mui/material";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
+<<<<<<< HEAD
+=======
 import { Link } from "react-router-dom";
 function Copyright(props) {
   return (
@@ -31,6 +33,7 @@ function Copyright(props) {
     </Typography>
   );
 }
+>>>>>>> a48d33b094490ed9fe01136e17b3952140eb8a00
 
 const theme = createTheme();
 
