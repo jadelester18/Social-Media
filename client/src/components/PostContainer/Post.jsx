@@ -23,6 +23,7 @@ import {
   uploadBytesResumable,
   getDownloadURL,
 } from "firebase/storage";
+import LinearProgress from "@mui/material/LinearProgress";
 
 const Post = () => {
   //For Authentication
@@ -31,6 +32,36 @@ const Post = () => {
   // console.log(user);
   let accesstoken = userLogged.accessToken;
   let id = userLogged.other._id;
+
+  //For Progress Bar Upload Post
+  const [progress, setProgress] = React.useState(0);
+  const [buffer, setBuffer] = React.useState(10);
+  const [uploadPercent, setUploadPercent] = useState(0);
+
+  const progressRef = React.useRef(() => {});
+  React.useEffect(() => {
+    progressRef.current = () => {
+      if (progress > 100) {
+        setProgress(0);
+        setBuffer(10);
+      } else {
+        const diff = uploadPercent;
+        const diff2 = uploadPercent;
+        setProgress(progress + diff);
+        setBuffer(progress + diff + diff2);
+      }
+    };
+  });
+
+  React.useEffect(() => {
+    const timer = setInterval(() => {
+      progressRef.current();
+    }, 500);
+
+    return () => {
+      clearInterval(timer);
+    };
+  }, []);
 
   //For Showing Preview of Image and For uploading
   const [selectedImage, setSelectedImage] = useState(null);
@@ -64,7 +95,8 @@ const Post = () => {
           // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
           const progress =
             (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          console.log("Upload is " + progress + "% done");
+          setUploadPercent(progress);
+          // console.log("Upload is " + progress + "% done");
           switch (snapshot.state) {
             case "paused":
               console.log("Upload is paused");
@@ -108,7 +140,7 @@ const Post = () => {
                 video: "",
               }),
             }).then((data) => {
-              alert("Your Post was upload successfully");
+              // alert("Your Post was upload successfully");
               window.location.reload(true);
             });
           });
@@ -127,7 +159,8 @@ const Post = () => {
           // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
           const progress =
             (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          console.log("Upload is " + progress + "% done");
+          setUploadPercent(progress);
+          // console.log("Upload is " + progress + "% done");
           switch (snapshot.state) {
             case "paused":
               console.log("Upload is paused");
@@ -171,7 +204,7 @@ const Post = () => {
                 image: "",
               }),
             }).then((data) => {
-              alert("Your Post was upload successfully");
+              // alert("Your Post was upload successfully");
               window.location.reload(true);
             });
           });
@@ -190,7 +223,7 @@ const Post = () => {
           image: "",
         }),
       }).then((data) => {
-        alert("Your Post was upload successfully");
+        // alert("Your Post was upload successfully");
         window.location.reload(true);
       });
     }
@@ -198,6 +231,7 @@ const Post = () => {
 
   return (
     <Box flex={4} p={2} sx={{ width: { sm: "100%" } }}>
+      <LinearProgress variant="buffer" value={progress} valueBuffer={buffer} />
       <Card sx={{ boxShadow: 5 }}>
         <CardHeader
           avatar={
