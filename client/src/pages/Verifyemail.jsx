@@ -1,10 +1,34 @@
-import React from 'react';
+import {
+  Alert,
+  Button,
+  Card,
+  CardMedia,
+  Container,
+  Stack,
+  TextField,
+  Typography,
+} from '@mui/material';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { VerifyEmail } from '../components/ReduxContainer/ApiCall';
+
+export default function Verifyemail() {
+  const [open, setOpen] = useState(false);
+  const dispatch = useDispatch();
+  const [OTP, setOTP] = useState('');
+  const user = useSelector((state) => state.user);
+  console.log(user);
+  const userDetails = user.user;
+  const id = userDetails?.user;
+  console.log(id);
+  console.log(userDetails);
 
   const handleOTP = (e) => {
     e.preventDefault();
     VerifyEmail(dispatch, { OTP: OTP, user: id });
   };
- 
+
   return (
     <Container
       sx={{
@@ -37,6 +61,7 @@ import React from 'react';
           <Typography variant="h6">
             The OTP has been sent to your email!
           </Typography>
+
           <form>
             <TextField
               type="number"
