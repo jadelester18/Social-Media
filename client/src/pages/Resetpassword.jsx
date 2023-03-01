@@ -1,21 +1,4 @@
-import {
-  Button,
-  Card,
-  CardMedia,
-  Container,
-  TextField,
-  Typography,
-} from '@mui/material';
-import { Stack } from '@mui/system';
-import React, { useState } from 'react';
-import { useLocation } from 'react-router-dom';
-
-export default function Resetpassword() {
-  const location = useLocation();
-  const code = location.search.split('?')[1];
-  console.log(code);
-  const [password, setpassword] = useState('');
-  console.log(password);
+import React from 'react';
 
   const handleClick = async (e) => {
     e.preventDefault();
