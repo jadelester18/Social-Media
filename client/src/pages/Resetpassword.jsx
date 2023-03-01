@@ -21,7 +21,7 @@ export default function Resetpassword() {
       <Card
         sx={{
           margin: '150px auto',
-          width: '450px',
+          width: '400px',
           padding: '30px',
           boxShadow: '5',
         }}
@@ -29,8 +29,8 @@ export default function Resetpassword() {
         <CardMedia
           component="img"
           height="auto"
-          image="https://img.freepik.com/premium-vector/landing-page-illustration-design-people-forgot-her-password_108061-334.jpg?w=1380"
-          title="OTP image"
+          image="https://img.freepik.com/free-vector/reset-password-concept-illustration_114360-7886.jpg?w=826&t=st=1677641289~exp=1677641889~hmac=8ad57ad3e9cac5241f08dfec31aa5bdf719e9b900b73c835eac72fef5336e923"
+          title="reset password"
           sx={{ marginBottom: '30px' }}
         />
         <Stack
