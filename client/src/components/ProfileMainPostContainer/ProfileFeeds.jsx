@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
 import ProfilePost from "../ProfilePostContainer/ProfileData";
+import Spinner from "../Spinner/Spinner";
 import ProfileMainPost from "./ProfileMainPost";
 
 const ProfileFeeds = () => {
@@ -13,6 +14,9 @@ const ProfileFeeds = () => {
   // console.log(user);
   // let id = userLogged.other._id;
   const accesstoken = userLogged.accessToken;
+
+  //For Screen Loader
+  const [loading, setLoading] = useState(false);
 
   //Show Profile Data of Specific User
   let location = useLocation();
@@ -27,6 +31,7 @@ const ProfileFeeds = () => {
           `http://localhost:5000/api/post/get/post/${id}`
         );
         setPost(res.data);
+        setLoading(true);
       } catch (error) {}
     };
     getPost();
@@ -35,9 +40,18 @@ const ProfileFeeds = () => {
   return (
     <Box flex={2} p={2}>
       <ProfilePost />
-      {post
-        .map((item) => <ProfileMainPost post={item} key={item._id} />)
-        .reverse()}
+      {loading ? (
+        post &&
+        post
+          .sort((a, b) => (a.createdat > b.createdat ? -1 : 1))
+          .map((item) => (
+            <Box key={item.createdat}>
+              <ProfileMainPost post={item} key={item._id} />
+            </Box>
+          ))
+      ) : (
+        <Spinner />
+      )}
     </Box>
   );
 };

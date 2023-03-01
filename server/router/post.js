@@ -12,10 +12,10 @@ router.post("/user/post", verifyToken, async (req, res) => {
       video,
       user: req.user.id,
     });
-    const post = await newpost.save(); //this is for saving the post
-    res.status(200).json(newpost);
+    const post = await newpost.save();
+    res.status(200).json(post);
   } catch (error) {
-    return res.status(500).json("Internal error occurred.");
+    return res.status(500).json("Internal error occured");
   }
 });
 
@@ -104,7 +104,6 @@ router.patch("/comment/post", verifyToken, async (req, res) => {
       username: req.user.username,
       comment,
       profilepicture,
-      _id,
     };
     const post = await Post.findById(postid);
     post.comments.push(comments);

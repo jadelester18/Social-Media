@@ -3,7 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",
     "@fontsource/roboto": "^4.5.8",
     "@mui/icons-material": "^5.11.9",
@@ -21,6 +20,7 @@
     "react-router-dom": "^6.8.1",
     "react-scripts": "5.0.1",
     "react-scroll-to-top": "^3.0.0",
+    "react-spinners": "^0.13.8",
     "react-window": "^1.8.8",
     "redux-persist": "^6.0.0",
     "styled-components": "^5.3.6",

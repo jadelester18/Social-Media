@@ -3,6 +3,7 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
+import Spinner from "../Spinner/Spinner";
 import FollowingList from "./FollowingList";
 
 function srcset(image, size, rows = 1, cols = 1) {
@@ -24,6 +25,9 @@ const ProfileRightBar = () => {
   let location = useLocation();
   let id = location.pathname.split("/")[2];
 
+  //For Screen Loader
+  const [loading, setLoading] = useState(false);
+
   //Get the user post
   const [userDetails, setUserDetails] = useState([]);
 
@@ -34,6 +38,7 @@ const ProfileRightBar = () => {
           `http://localhost:5000/api/user/post/user/details/${id}`
         );
         setUserDetails(res.data);
+        setLoading(true);
       } catch (error) {
         console.log("Post details has issue.");
       }
@@ -50,6 +55,7 @@ const ProfileRightBar = () => {
           `http://localhost:5000/api/post/get/post/${id}`
         );
         setPost(res.data);
+        setLoading(true);
       } catch (error) {}
     };
     getPost();
@@ -73,8 +79,8 @@ const ProfileRightBar = () => {
 
   return (
     <Box
-      flex={1.5}
-      // p={2}
+      flex={1}
+      p={2}
       sx={{ display: { xs: "none", sm: "none", lg: "block" } }}
     >
       <Box
@@ -102,19 +108,27 @@ const ProfileRightBar = () => {
           cols={4}
           rowHeight={121}
         >
-          {post.map((item) => (
-            <ImageListItem
-              key={item._id}
-              cols={item.cols || 1}
-              rows={item.rows || 1}
-            >
-              <img
-                {...srcset(item.image, 121, item.rows, item.cols)}
-                alt={item.title}
-                loading="lazy"
-              />
-            </ImageListItem>
-          ))}
+          {loading ? (
+            post.map((item) =>
+              item.image === "" ? (
+                ""
+              ) : (
+                <ImageListItem
+                  key={item._id}
+                  cols={item.cols || 1}
+                  rows={item.rows || 1}
+                >
+                  <img
+                    {...srcset(item.image, 121, item.rows, item.cols)}
+                    alt={item.title}
+                    loading="lazy"
+                  />
+                </ImageListItem>
+              )
+            )
+          ) : (
+            <Spinner />
+          )}
         </ImageList>
         <Box sx={{ marginTop: 3 }}>
           <Typography
@@ -145,7 +159,8 @@ const ProfileRightBar = () => {
             }}
           >
             <Grid container spacing={1}>
-              {following &&
+              {loading ? (
+                following &&
                 following.slice(0, 6).map((item) => (
                   <Grid
                     item
@@ -157,7 +172,10 @@ const ProfileRightBar = () => {
                   >
                     <FollowingList users={item} />
                   </Grid>
-                ))}
+                ))
+              ) : (
+                <Spinner />
+              )}
             </Grid>
           </Box>
         </Box>

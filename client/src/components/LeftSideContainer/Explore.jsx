@@ -2,6 +2,7 @@ import { Box, ImageList, ImageListItem, Typography } from "@mui/material";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import Spinner from "../Spinner/Spinner";
 
 const Explore = () => {
   //For Authentication
@@ -10,6 +11,9 @@ const Explore = () => {
   // console.log(user);
   let id = userLogged.other._id;
   const accesstoken = userLogged.accessToken;
+
+  //For Screen Loader
+  const [loading, setLoading] = useState(false);
 
   const [post, setPost] = useState([]);
 
@@ -25,6 +29,7 @@ const Explore = () => {
           }
         );
         setPost(res.data);
+        setLoading(true);
       } catch (error) {}
     };
     getPost();
@@ -61,17 +66,24 @@ const Explore = () => {
         cols={3}
         gap={8}
       >
-        {post.map((item) =>
-          item.map((image) => (
-            <ImageListItem key={image.image}>
-              <img
-                src={`${image.image}?w=161&fit=crop&auto=format`}
-                srcSet={`${image.image}?w=161&fit=crop&auto=format&dpr=2 2x`}
-                alt={image.image}
-                loading="lazy"
-              />
-            </ImageListItem>
-          ))
+        {loading ? (
+          post.map((item) =>
+            item.image === "" ? (
+              ""
+            ) : (
+              <ImageListItem key={item._id}>
+                <img
+                  onError={(event) => (event.target.style.display = "none")}
+                  src={`${item.image}?w=161&fit=crop&auto=format`}
+                  srcSet={`${item.image}?w=161&fit=crop&auto=format&dpr=2 2x`}
+                  alt={item.image}
+                  loading="lazy"
+                />
+              </ImageListItem>
+            )
+          )
+        ) : (
+          <Spinner />
         )}
       </ImageList>
     </Box>
