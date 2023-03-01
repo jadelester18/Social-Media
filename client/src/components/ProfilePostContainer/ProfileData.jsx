@@ -24,6 +24,7 @@ import EventAvailableOutlinedIcon from "@mui/icons-material/EventAvailableOutlin
 import VpnKeyOutlinedIcon from "@mui/icons-material/VpnKeyOutlined";
 import Diversity3OutlinedIcon from "@mui/icons-material/Diversity3Outlined";
 import BookOutlinedIcon from "@mui/icons-material/BookOutlined";
+import ShareLocationOutlinedIcon from "@mui/icons-material/ShareLocationOutlined";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
@@ -276,14 +277,19 @@ const ProfileData = () => {
         />
         <CardContent>
           <Typography variant="body2" color="text.secondary">
-            {userData?.bio === "" ? "Add Your Bio..." : userData.bio}
+            {userData?.bio === undefined ? "Add Your Bio..." : userData.bio}
           </Typography>
           <CardContent>
             <Stack direction="row" spacing={1}>
               <LocalPhoneOutlinedIcon /> {"+63 " + userData?.phonenumber}
               <EventAvailableOutlinedIcon /> Joined{" "}
-              {/* {userData?.joineddate.replace("-", " ").slice(0, -14)} */}
               {userData?.joineddate?.replace("-", " ").slice(0, -14)}
+            </Stack>
+            <Stack direction="row" spacing={1}>
+              <ShareLocationOutlinedIcon />{" "}
+              {userData?.location === undefined
+                ? "Add location"
+                : "+63 " + userData?.location}
             </Stack>
           </CardContent>
           <CardContent>
