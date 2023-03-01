@@ -50,8 +50,8 @@ export default function ForgetPassword() {
             sx={{ marginBottom: '30px' }}
           />
           {/* <Avatar sx={{ m: 1, bgcolor: 'black' }}>
-            <LockOutlinedIcon />
-          </Avatar> */}
+          <LockOutlinedIcon />
+        </Avatar> */}
           <Typography component="h1" variant="h5">
             Enter your email
           </Typography>
@@ -75,11 +75,11 @@ export default function ForgetPassword() {
               </Grid>
 
               {/* <Grid item xs={12}>
-                <FormControlLabel
-                  control={<Checkbox value="allowExtraEmails" color="primary" />}
-                  label="I want to receive inspiration, marketing promotions and updates via email."
-                />
-              </Grid> */}
+              <FormControlLabel
+                control={<Checkbox value="allowExtraEmails" color="primary" />}
+                label="I want to receive inspiration, marketing promotions and updates via email."
+              />
+            </Grid> */}
             </Grid>
             <Button
               type="submit"
