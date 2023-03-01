@@ -3,6 +3,7 @@ import {
   Card,
   CardMedia,
   Container,
+  Stack,
   TextField,
   Typography,
 } from '@mui/material';
@@ -33,29 +34,40 @@ export default function Verifyemail() {
           title="OTP image"
           sx={{ marginBottom: '30px' }}
         />
-        <Typography variant="h6">
-          The OTP has been sent to your email!
-        </Typography>
-        <form>
-          <TextField
-            type="number"
-            placeholder="Enter Your OTP"
-            size="small"
-            fullWidth
-            sx={{ paddingTop: '20px' }}
-            // onChange={(e) => setOTP(e.target.value)}
-          />
-          <Button
-            sx={{ margin: '10px auto' }}
-            fullWidth
-            // onClick={handleOTP}
-          >
-            Confirm OTP
-          </Button>
-          <Link to={'/register'} style={{ textDecoration: 'none' }}>
-            <Typography>Check your email for the</Typography>
-          </Link>
-        </form>
+        <Stack
+          spacing={2}
+          direction="column"
+          justifyContent="center"
+          alignItems="center"
+        >
+          <Typography variant="h6">
+            The OTP has been sent to your email!
+          </Typography>
+          <form>
+            <TextField
+              type="number"
+              placeholder="Enter Your OTP"
+              size="small"
+              fullWidth
+              sx={{ paddingTop: '20px' }}
+              // onChange={(e) => setOTP(e.target.value)}
+            />
+            <Button
+              sx={{ margin: '20px auto' }}
+              variant="contained"
+              fullWidth
+              // onClick={handleOTP}
+            >
+              Confirm OTP
+            </Button>
+            <Link
+              to={'/register'}
+              style={{ textDecoration: 'none', color: 'black' }}
+            >
+              <Typography>Check your email for the OTP</Typography>
+            </Link>
+          </form>
+        </Stack>
       </Card>
     </Container>
   );
