@@ -162,13 +162,13 @@ const ProfileRightBar = () => {
               {loading ? (
                 following &&
                 following.slice(0, 6).map((item) => (
-                  <a href={`/Profile/${item._id}`}>
+                  <a href={`/Profile/${item._id}`} key={item._id}>
                     <Grid
                       item
                       xs={4}
                       // component={Link}
                       // to={`/Profile/${item._id}`}
-                      key={item._id}
+                      // key={item._id}
                       sx={{ textDecoration: "none" }}
                     >
                       <FollowingList users={item} />
