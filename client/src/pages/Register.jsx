@@ -71,10 +71,12 @@ export default function Register() {
 
     // const uploadTask = uploadBytesResumable(StorageRef, file);
     if (email && username && firstname && lastname && password && phonenumber) {
-      if (JSON.parse(localStorage.getItem("usedEmail") === "true")) {
-        // alert("email already used");
-        setOpen3(true);
-        // window.location.reload(true);
+      try {
+        if (userDetails === true) {
+          setOpen3(true);
+        }
+      } catch {
+        console.log("no user");
       }
       if (email === username) {
         signup(dispatch, {
@@ -93,15 +95,15 @@ export default function Register() {
     }
   };
 
-  console.log("USER: " + JSON.stringify(userDetails?.user));
-  console.log("Verified: " + userDetails?.user.verifed);
-  if (userDetails?.user.verified === false) {
-    navigator("/verify/email");
+  try {
+    console.log("USER: " + JSON.stringify(userDetails?.user));
+    console.log("Verified: " + userDetails?.user.verified);
+    if (userDetails?.user.verified === false) {
+      navigator("/verify/email");
+    }
+  } catch {
+    console.log("no data");
   }
-
-  // if(JSON.parse(localStorage.getItem("persist:root".user))){
-
-  // }
 
   const [showPassword, setShowPassword] = React.useState(false);
 
