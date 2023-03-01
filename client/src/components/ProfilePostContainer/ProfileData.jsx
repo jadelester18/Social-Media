@@ -21,9 +21,19 @@ import BadgeOutlinedIcon from "@mui/icons-material/BadgeOutlined";
 import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
 import LocalPhoneOutlinedIcon from "@mui/icons-material/LocalPhoneOutlined";
 import EventAvailableOutlinedIcon from "@mui/icons-material/EventAvailableOutlined";
+import VpnKeyOutlinedIcon from "@mui/icons-material/VpnKeyOutlined";
+import Diversity3OutlinedIcon from "@mui/icons-material/Diversity3Outlined";
+import BookOutlinedIcon from "@mui/icons-material/BookOutlined";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
+import app from "../../firebase";
+import {
+  getStorage,
+  ref,
+  uploadBytesResumable,
+  getDownloadURL,
+} from "firebase/storage";
 
 const style = {
   position: "absolute",
@@ -95,14 +105,118 @@ const ProfileData = () => {
     }
   };
 
+  //For Posting
+  const [Firstname, setFirstname] = useState("");
+  const [Lastname, setLastname] = useState("");
+  const [Username, setUsername] = useState("");
+  const [Bio, setBio] = useState("");
+  const [Password, setPassword] = useState("");
+  const [PhoneNumber, setPhoneNumber] = useState("");
+  const [Location, setLocation] = useState("");
+
+  const [selectedProfile, setSelectedProfile] = useState(null);
+  const [selectedBackground, setSelectedBackground] = useState(null);
+
+  const handleEditProfile = async (e) => {
+    e.preventDefault();
+    if (selectedProfile !== null || selectedBackground !== null) {
+      const fileName1 = selectedProfile
+        ? new Date().getTime() + selectedProfile.name
+        : null;
+      const fileName2 = selectedBackground
+        ? new Date().getTime() + selectedBackground.name
+        : null;
+      const storage = getStorage(app);
+      let downloadURLs = {};
+
+      if (fileName1) {
+        const storageRef1 = ref(storage, fileName1);
+        const uploadTask1 = uploadBytesResumable(storageRef1, selectedProfile);
+        uploadTask1.on(
+          "state_changed",
+          (snapshot) => {
+            const progress =
+              (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            console.log("Profile Upload is " + progress + "% done");
+          },
+          (error) => {
+            console.log(error);
+          },
+          async () => {
+            const downloadURL = await getDownloadURL(uploadTask1.snapshot.ref);
+            downloadURLs = { ...downloadURLs, profilepicture: downloadURL };
+            if (!fileName2) {
+              updateProfile(downloadURLs);
+            }
+          }
+        );
+      }
+
+      if (fileName2) {
+        const storageRef2 = ref(storage, fileName2);
+        const uploadTask2 = uploadBytesResumable(
+          storageRef2,
+          selectedBackground
+        );
+        uploadTask2.on(
+          "state_changed",
+          (snapshot) => {
+            const progress =
+              (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            console.log("Background Upload is " + progress + "% done");
+          },
+          (error) => {
+            console.log(error);
+          },
+          async () => {
+            const downloadURL = await getDownloadURL(uploadTask2.snapshot.ref);
+            downloadURLs = { ...downloadURLs, backgroundpicture: downloadURL };
+            if (!fileName1) {
+              updateProfile(downloadURLs);
+            }
+          }
+        );
+      }
+    } else {
+      updateProfile({});
+    }
+  };
+
+  const updateProfile = (downloadURLs) => {
+    fetch(`http://localhost:5000/api/user/update/profile/${id}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/JSON",
+        token: accesstoken,
+      },
+      body: JSON.stringify({
+        firstname: Firstname === "" ? "" : Firstname,
+        lastname: Lastname === "" ? "" : Lastname,
+        username: Username === "" ? "" : Username,
+        bio: Bio === "" ? "" : Bio,
+        password: Password === "" ? "" : Password,
+        phoneNumber: PhoneNumber === "" ? "" : PhoneNumber,
+        location: Location === "" ? "" : Location,
+        ...downloadURLs,
+      }),
+    })
+      .then((data) => {
+        console.log("Profile Updated Successfully");
+        window.location.reload(true);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
   return (
     <Box flex={4} p={2} sx={{ width: { sm: "100%" } }}>
       <Card sx={{ boxShadow: 5 }}>
         <CardMedia
           component="img"
           height="194"
-          image="https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTB8fGZvcmVzdHxlbnwwfHwwfHw%3D&w=1000&q=80"
-          alt="Paella dish"
+          image={userData?.backgroundpicture}
+          alt={userData?.username}
         />
         <CardHeader
           avatar={
@@ -162,9 +276,7 @@ const ProfileData = () => {
         />
         <CardContent>
           <Typography variant="body2" color="text.secondary">
-            This impressive paella is a perfect party dish and a fun meal to
-            cook together with your guests. Add 1 cup of frozen peas along with
-            the mussels, if you like.
+            {userData?.bio === "" ? "Add Your Bio..." : userData.bio}
           </Typography>
           <CardContent>
             <Stack direction="row" spacing={1}>
@@ -207,6 +319,7 @@ const ProfileData = () => {
               <Button
                 variant="contained"
                 sx={{ float: "right", borderRadius: 10 }}
+                onClick={handleEditProfile}
               >
                 Save
               </Button>
@@ -220,6 +333,8 @@ const ProfileData = () => {
                 </InputLabel>
                 <OutlinedInput
                   id="outlined-adornment-amount"
+                  onChange={(e) => setFirstname(e.target.value)}
+                  defaultValue={userData?.firstname}
                   startAdornment={
                     <InputAdornment position="start">
                       <BadgeOutlinedIcon />
@@ -234,6 +349,8 @@ const ProfileData = () => {
                 </InputLabel>
                 <OutlinedInput
                   id="outlined-adornment-amount"
+                  onChange={(e) => setLastname(e.target.value)}
+                  defaultValue={userData?.lastname}
                   startAdornment={
                     <InputAdornment position="start">
                       <BadgeOutlinedIcon />
@@ -244,13 +361,45 @@ const ProfileData = () => {
               </FormControl>
               <FormControl fullWidth sx={{ mt: 1 }}>
                 <InputLabel htmlFor="outlined-adornment-amount">
-                  Location
+                  Username
                 </InputLabel>
                 <OutlinedInput
                   id="outlined-adornment-amount"
+                  onChange={(e) => setUsername(e.target.value)}
+                  defaultValue={userData?.username}
                   startAdornment={
                     <InputAdornment position="start">
-                      <LocationOnOutlinedIcon />
+                      <Diversity3OutlinedIcon />
+                    </InputAdornment>
+                  }
+                  label="Amount"
+                />
+              </FormControl>
+              <FormControl fullWidth sx={{ mt: 1 }}>
+                <InputLabel htmlFor="outlined-adornment-amount">Bio</InputLabel>
+                <OutlinedInput
+                  id="outlined-adornment-amount"
+                  onChange={(e) => setBio(e.target.value)}
+                  defaultValue={userData?.bio}
+                  multiline
+                  startAdornment={
+                    <InputAdornment position="start">
+                      <BookOutlinedIcon />
+                    </InputAdornment>
+                  }
+                  label="Amount"
+                />
+              </FormControl>
+              <FormControl fullWidth sx={{ mt: 1 }}>
+                <InputLabel htmlFor="outlined-adornment-amount">
+                  Password
+                </InputLabel>
+                <OutlinedInput
+                  id="outlined-adornment-amount"
+                  onChange={(e) => setPassword(e.target.value)}
+                  startAdornment={
+                    <InputAdornment position="start">
+                      <VpnKeyOutlinedIcon />
                     </InputAdornment>
                   }
                   label="Amount"
@@ -262,9 +411,27 @@ const ProfileData = () => {
                 </InputLabel>
                 <OutlinedInput
                   id="outlined-adornment-amount"
+                  onChange={(e) => setPhoneNumber(e.target.value)}
+                  defaultValue={userData?.phonenumber}
                   startAdornment={
                     <InputAdornment position="start">
                       <TtyOutlinedIcon />
+                    </InputAdornment>
+                  }
+                  label="Amount"
+                />
+              </FormControl>
+              <FormControl fullWidth sx={{ mt: 1 }}>
+                <InputLabel htmlFor="outlined-adornment-amount">
+                  Location
+                </InputLabel>
+                <OutlinedInput
+                  id="outlined-adornment-amount"
+                  onChange={(e) => setLocation(e.target.value)}
+                  defaultValue={userData?.location}
+                  startAdornment={
+                    <InputAdornment position="start">
+                      <LocationOnOutlinedIcon />
                     </InputAdornment>
                   }
                   label="Amount"
@@ -276,8 +443,30 @@ const ProfileData = () => {
                   component="label"
                   startIcon={<PhotoCamera />}
                 >
-                  Upload
-                  <input hidden accept="image/*" multiple type="file" />
+                  Change Profile
+                  <input
+                    hidden
+                    accept="image/*"
+                    onChange={(e) => setSelectedProfile(e.target.files[0])}
+                    multiple
+                    type="file"
+                  />
+                </Button>
+              </FormControl>
+              <FormControl fullWidth sx={{ mt: 1 }}>
+                <Button
+                  variant="outlined"
+                  component="label"
+                  startIcon={<PhotoCamera />}
+                >
+                  Change Background
+                  <input
+                    hidden
+                    accept="image/*"
+                    onChange={(e) => setSelectedBackground(e.target.files[0])}
+                    multiple
+                    type="file"
+                  />
                 </Button>
               </FormControl>
             </div>

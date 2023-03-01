@@ -17,6 +17,9 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  bio: {
+    type: String,
+  },
   password: {
     type: String,
     required: true,
@@ -31,10 +34,16 @@ const UserSchema = new mongoose.Schema({
     type: Number,
     // required: true,
   },
+  location: {
+    type: String,
+  },
   profilepicture: {
     type: String,
   },
-  verifed: {
+  backgroundpicture: {
+    type: String,
+  },
+  verified: {
     type: Boolean,
     required: true,
     default: false,
