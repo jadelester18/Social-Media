@@ -8,11 +8,9 @@ const PostSchema = new mongoose.Schema({
   },
   title: {
     type: String,
-    required: true,
   },
   image: {
     type: String,
-    required: true,
   },
   video: {
     type: String,
@@ -33,12 +31,16 @@ const PostSchema = new mongoose.Schema({
         type: String,
         required: true,
       },
+      profilepicture: {
+        type: String,
+      },
       comment: {
         type: String,
         required: true,
       },
     },
   ],
+  createdat: { type: Date, default: Date.now },
 });
 
 module.exports = mongo.model("Post", PostSchema);

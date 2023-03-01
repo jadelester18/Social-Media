@@ -10,97 +10,56 @@ const { verifyToken } = require("./verifytoken");
 const Post = require("../Models/Post");
 const { findById } = require("../Models/User");
 
-
 router.post(
-  "/create/user",
+  "/register/user",
   body("firstname").isLength({ min: 2 }),
   body("lastname").isLength({ min: 2 }),
+  body("username").isLength({ min: 5 }),
   body("email").isEmail(),
-  body("password").isLength({ min: 6 }),
-  body("username").isLength({ min: 3 }),
+  body("password").isLength({ min: 5 }),
+  body("phonenumber").isLength({ min: 10 }),
   async (req, res) => {
     const error = validationResult(req);
     if (!error.isEmpty()) {
-      return res.status(400).json("some error occured");
+      return res.status(400).json("Some error occured");
     }
-    //   try {
 
-    let user = await User.findOne({ email: req.body.email });
-    if (user) {
-      return res.status(200).json("Please login with correct password");
-    }
-    const salt = await bcrypt.genSalt(10);
-    const secpass = await bcrypt.hash(req.body.password, salt);
+    try {
+      //Check if email is exist
+      let registration_email = await User.findOne({ email: req.body.email });
 
-    user = await User.create({
-      firstname: req.body.firstname,
-      lastname: req.body.lastname,
-      username: req.body.username,
-      email: req.body.email,
-      password: secpass,
-      profile: req.body.profile,
-    });
-    const accessToken = jwt.sign(
-      {
-        id: user._id,
-        username: user.username,
-      },
-      JWTSEC
-    );
-    const OTP = generateOTP();
-    const verificationToken = await VerificationToken.create({
-      user: user._id,
-      token: OTP,
-    });
-    verificationToken.save();
-    await user.save();
-
-    const transport = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: process.env.EMAIL,
-        pass: process.env.PASSWORD,
-      },
-    });
-
-    transport.use(
-      "compile",
-      hbs({
-        viewEngine: {
-          extname: ".handlebars",
-          layoutsDir: "./assets/",
-          defaultLayout: "emailTemplate",
-        },
-        viewPath: "./assets/",
-      })
-    );
-
-    var mailConfig = {
-      from: process.env.EMAIL,
-      to: user.email,
-      subject: "Verify your email using OTP",
-      template: "emailTemplate",
-      context: {
-        name: user.email,
-        company: `${OTP}`,
-      },
-    };
-    transport.sendMail(mailConfig, (error, info) => {
-      if (error) {
-        console.log(error);
-      } else {
-        console.log("Email sent :" + info.response);
+      if (registration_email) {
+        return res.status(200).json(true);
       }
-    });
-    return res.status(200).json({
-      Status: "Pending",
-      msg: "Please check your email",
-      user: user._id,
-    });
 
-    // } catch (error) {
-    //           return res.status(400).json("Internal error occured")
-    // }
+      //For hashing password
+      const salt = await bcrypt.genSalt(10);
+      const secpass = await bcrypt.hash(req.body.password, salt);
+
+      //If user doesn't exist this command will work for signup
+      user = await User.create({
+        firstname: req.body.firstname,
+        lastname: req.body.lastname,
+        username: req.body.username,
+        email: req.body.email,
+        password: secpass,
+        profilepicture: req.body.profilepicture,
+        phonenumber: req.body.phonenumber,
+      });
+
+      const accessToken = jwt.sign(
+        {
+          id: user._id,
+          username: user.username,
+        },
+        JWTSEC
+      );
+
+      await user.save();
+      res.status(200).json({ user, accessToken });
+    } catch (error) {
+      return res.status(400).json("Internal error occurred.");
+    }
   }
 );
 
@@ -149,20 +108,60 @@ router.post(
   }
 );
 
+//Trying to Follow Specific User
 router.patch("/follow/:id", verifyToken, async (req, res) => {
   if (req.params.id !== req.body.user) {
-    const userToBeFollow = await User.findById(req.params.id);
-    const userInSession = await User.findById(req.body.user);
+    const user = await User.findById(req.params.id);
+    const otheruser = await User.findById(req.body.user);
 
-    if (!userToBeFollow.followers.includes(req.body.user)) {
-      await userToBeFollow.updateOne({ $push: { followers: req.body.user } });
-      await userInSession.updateOne({ $push: { following: req.params.id } });
-      return res.status(200).json("User has followed.");
+    if (!user.followers.includes(req.body.user)) {
+      await user.updateOne({ $push: { followers: req.body.user } });
+      await otheruser.updateOne({ $push: { following: req.params.id } });
+      return res.status(200).json("User has followed");
     } else {
-      return res.status(400).json("You already followed this user.");
+      await user.updateOne({ $pull: { followers: req.body.user } });
+      await otheruser.updateOne({ $pull: { following: req.params.id } });
+      return res.status(200).json("User has Unfollowed");
     }
   } else {
-    return res.status(400).json("You can't follow yourself!");
+    return res.status(400).json("You can't follow yourself");
+  }
+});
+
+//Show all available user to follow by user logged in
+router.get("/all/availuser/:id", async (req, res) => {
+  try {
+    const allUser = await User.find();
+    const user = await User.findById(req.params.id);
+    const followingUser = await Promise.all(
+      user.following.map((user) => {
+        return user;
+      })
+    );
+
+    let userToFollow = allUser.filter((val) => {
+      return !followingUser.find((user) => {
+        return val._id.toString() === user;
+      });
+    });
+
+    let filteruser = await Promise.all(
+      userToFollow.map((user) => {
+        const {
+          email,
+          username,
+          phonenumber,
+          followers,
+          following,
+          password,
+          ...others
+        } = user._doc;
+        return others;
+      })
+    );
+    res.status(200).json(filteruser);
+  } catch (error) {
+    return res.status(400).json("No available user to follow.");
   }
 });
 
@@ -218,5 +217,64 @@ router.delete("/delete/:id", verifyToken, async (req, res) => {
   }
 });
 
+//Get the user who posted
+router.get("/post/user/details/:id", async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) {
+      return res.status(400).json("User not found.");
+    }
+    const { email, password, ...others } = user._doc;
+    res.status(200).json(others);
+  } catch (error) {
+    return res.status(500).json("Internal error occurred.");
+  }
+});
+
+/// Get all Following List of that user Profile
+router.get("/following/:id", async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    const followinguser = await Promise.all(
+      user.following.map((item) => {
+        return User.findById(item);
+      })
+    );
+
+    let followingList = [];
+    followinguser.map((person) => {
+      const { email, password, phonenumber, following, followers, ...others } =
+        person._doc;
+      followingList.push(others);
+    });
+
+    res.status(200).json(followingList.sort(() => Math.random() - 0.5));
+  } catch (error) {
+    return res.status(500).json("Internal server error");
+  }
+});
+
+/// Get all Followers List of that user Profile
+router.get("/followerslist/:id", async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    const followersuser = await Promise.all(
+      user.followers.map((item) => {
+        return User.findById(item);
+      })
+    );
+
+    let followersList = [];
+    followersuser.map((person) => {
+      const { email, password, phonenumber, Following, ...others } =
+        person._doc;
+      followersList.push(others);
+    });
+
+    res.status(200).json(followersList);
+  } catch (error) {
+    return res.status(500).json("Internal server error");
+  }
+});
 
 module.exports = router;
