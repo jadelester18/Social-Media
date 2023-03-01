@@ -25,11 +25,11 @@ router.post(
     }
 
     try {
-      //Check if user is exist
-      let user = await User.findOne({ email: req.body.email });
+      //Check if email is exist
+      let registration_email = await User.findOne({ email: req.body.email });
 
-      if (user) {
-        return res.status(200).json("Please login with correct password.");
+      if (registration_email) {
+        return res.status(200).json(true);
       }
 
       //For hashing password
@@ -174,9 +174,7 @@ router.get("/followers/:id", verifyToken, async (req, res) => {
         return Post.find({ user: post });
       })
     );
-    const userLoggedPost = await Post.find({ user: user._id });
-
-    res.status(200).json(userLoggedPost.concat(...followersPost));
+    res.status(200).json(followersPost);
   } catch (error) {
     return res.status(500).json("Internal error occurred.");
   }
@@ -278,6 +276,5 @@ router.get("/followerslist/:id", async (req, res) => {
     return res.status(500).json("Internal server error");
   }
 });
-
 
 module.exports = router;

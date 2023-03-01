@@ -5,6 +5,7 @@ import axios from "axios";
 import ToFollow from "./ToFollow";
 import { useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
+import Spinner from "../Spinner/Spinner";
 
 const RightBar = () => {
   //For Authentication
@@ -18,6 +19,9 @@ const RightBar = () => {
   let idNewFollowers = userLogged?.other?._id;
   let idForSuggestToFollow = userLogged?.other?._id;
 
+  //For Screen Loader
+  const [loading, setLoading] = useState(false);
+
   //For Get List Of All Avaible User To Follow
   const [user, setUser] = useState([]);
   useEffect(() => {
@@ -30,6 +34,7 @@ const RightBar = () => {
           (users) => users._id !== idForSuggestToFollow
         );
         setUser(removeLoggedin);
+        setLoading(true);
       } catch (error) {
         console.log("Showing available user error.");
       }
@@ -46,6 +51,7 @@ const RightBar = () => {
           `http://localhost:5000/api/user/followerslist/${idNewFollowers}`
         );
         setnewFollowerUser(res.data);
+        setLoading(true);
       } catch (error) {
         console.log("Get new followers list error.");
       }
@@ -92,9 +98,11 @@ const RightBar = () => {
             },
           }}
         >
-          {user.map((item) => (
-            <ToFollow users={item} key={item._id} />
-          ))}
+          {loading ? (
+            user.map((item) => <ToFollow users={item} key={item._id} />)
+          ) : (
+            <Spinner />
+          )}
         </Box>
         <Box sx={{ marginTop: 5 }}>
           <Typography
@@ -124,9 +132,13 @@ const RightBar = () => {
               },
             }}
           >
-            {newFollowerUser.map((item) => (
-              <Followers followers={item} key={item._id} />
-            ))}
+            {loading ? (
+              newFollowerUser.map((item) => (
+                <Followers followers={item} key={item._id} />
+              ))
+            ) : (
+              <Spinner />
+            )}
           </Box>
         </Box>
       </Box>

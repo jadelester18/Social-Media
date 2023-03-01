@@ -1,16 +1,10 @@
-import {
-  Button,
-  Card,
-  CardMedia,
-  Container,
-  Stack,
-  TextField,
-  Typography,
-} from '@mui/material';
 import React from 'react';
-import { Link } from 'react-router-dom';
 
-export default function Verifyemail() {
+  const handleOTP = (e) => {
+    e.preventDefault();
+    VerifyEmail(dispatch, { OTP: OTP, user: id });
+  };
+
   return (
     <Container
       sx={{
@@ -50,13 +44,13 @@ export default function Verifyemail() {
               size="small"
               fullWidth
               sx={{ paddingTop: '20px' }}
-              // onChange={(e) => setOTP(e.target.value)}
+              onChange={(e) => setOTP(e.target.value)}
             />
             <Button
               sx={{ margin: '20px auto' }}
               variant="contained"
               fullWidth
-              // onClick={handleOTP}
+              onClick={handleOTP}
             >
               Confirm OTP
             </Button>

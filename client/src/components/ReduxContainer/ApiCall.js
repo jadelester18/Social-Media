@@ -28,9 +28,10 @@ export const signup = async (dispatch, user) => {
   dispatch(loginStart());
   try {
     const res = await axios.post(
-      "http://localhost:5000/api/user/create/user",
+      "http://localhost:5000/api/user/register/user",
       user
-    );
+    ); 
+    localStorage.setItem("usedEmail", res.data);
     dispatch(loginSuccess(res.data));
   } catch (error) {
     dispatch(loginFailure());

@@ -1,15 +1,16 @@
-import {
-  Button,
-  Card,
-  CardMedia,
-  Container,
-  TextField,
-  Typography,
-} from '@mui/material';
-import { Stack } from '@mui/system';
-import React, { useState } from 'react';
+import React from 'react';
 
-export default function Resetpassword() {
+  const handleClick = async (e) => {
+    e.preventDefault();
+    await fetch(`http://localhost:5000/api/user/reset/password?${code}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/JSON' },
+      body: JSON.stringify({ password: password }),
+    }).then((data) => {
+      alert('Your password rest successfully');
+    });
+  };
+
   return (
     <Container
       sx={{
@@ -21,7 +22,7 @@ export default function Resetpassword() {
       <Card
         sx={{
           margin: '150px auto',
-          width: '400px',
+          width: '450px',
           padding: '30px',
           boxShadow: '5',
         }}
@@ -29,8 +30,8 @@ export default function Resetpassword() {
         <CardMedia
           component="img"
           height="auto"
-          image="https://img.freepik.com/free-vector/reset-password-concept-illustration_114360-7886.jpg?w=826&t=st=1677641289~exp=1677641889~hmac=8ad57ad3e9cac5241f08dfec31aa5bdf719e9b900b73c835eac72fef5336e923"
-          title="reset password"
+          image="https://img.freepik.com/premium-vector/landing-page-illustration-design-people-forgot-her-password_108061-334.jpg?w=1380"
+          title="OTP image"
           sx={{ marginBottom: '30px' }}
         />
         <Stack
@@ -46,14 +47,13 @@ export default function Resetpassword() {
               placeholder="**********"
               size="small"
               fullWidth
-
-              // onChange={(e) => setpassword(e.target.value)}
+              onChange={(e) => setpassword(e.target.value)}
             />
             <Button
               sx={{ marginTop: '20px' }}
               variant="contained"
               fullWidth
-              // onClick={handleClick}
+              onClick={handleClick}
             >
               Set Password
             </Button>

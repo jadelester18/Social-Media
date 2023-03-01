@@ -4,6 +4,7 @@ import Post from "../PostContainer/Post";
 import MainPost from "./MainPost";
 import axios from "axios";
 import { useSelector } from "react-redux";
+import Spinner from "../Spinner/Spinner";
 
 const Feeds = () => {
   //For Authentication
@@ -13,6 +14,10 @@ const Feeds = () => {
   let id = userLogged.other._id;
   const accesstoken = userLogged.accessToken;
 
+  //For Screen Loader
+  const [loading, setLoading] = useState(false);
+
+  //Showing Post
   const [post, setPost] = useState([]);
 
   useEffect(() => {
@@ -27,6 +32,7 @@ const Feeds = () => {
           }
         );
         setPost(res.data);
+        setLoading(true);
       } catch (error) {}
     };
     getPost();
@@ -37,14 +43,18 @@ const Feeds = () => {
   return (
     <Box flex={2} p={2}>
       <Post />
-      {post &&
+      {loading ? (
+        post &&
         post
           .sort((a, b) => (a.createdat > b.createdat ? -1 : 1))
           .map((item) => (
             <Box key={item.createdat}>
               <MainPost post={item} />
             </Box>
-          ))}
+          ))
+      ) : (
+        <Spinner />
+      )}
     </Box>
   );
 };
