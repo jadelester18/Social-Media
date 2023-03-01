@@ -168,7 +168,11 @@ const ProfileRightBar = () => {
                       xs={4}
                       // component={Link}
                       // to={`/Profile/${item._id}`}
+<<<<<<< HEAD
 
+=======
+                      // key={item._id}
+>>>>>>> 129bc82ae6f2f276daec4d6ac6b2dc06fe2da936
                       sx={{ textDecoration: "none" }}
                     >
                       <FollowingList users={item} />

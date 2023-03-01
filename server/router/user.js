@@ -6,18 +6,26 @@ const jwt = require("jsonwebtoken"); //for token
 const JWTSEC =
   "f943796f0a956ffde6e21dad239122a0d89be4ce5ad5a35105e5589a312bb718eeb2cdea0d5701ba61ceca514556ca04266bb731a9e474ba5b749e981415e4db"; //require('crypto').randomBytes(128).toString('hex')
 
-const { verifyToken } = require("./verifytoken");
 const Post = require("../Models/Post");
+
 const { findById } = require("../Models/User");
+const VerificationToken = require("../Models/VerificationToken");
+const { verifyToken } = require("./verifytoken");
+
+const { generateOTP } = require("./otpgenerator");
+const ResetToken = require("../Models/ResetToken");
+
+const nodemailer = require("nodemailer");
+const hbs = require("nodemailer-express-handlebars");
 
 router.post(
   "/register/user",
-  body("firstname").isLength({ min: 2 }),
-  body("lastname").isLength({ min: 2 }),
-  body("username").isLength({ min: 5 }),
+  body("firstname").isLength({ min: 1 }),
+  body("lastname").isLength({ min: 1 }),
+  body("username").isLength({ min: 1 }),
   body("email").isEmail(),
-  body("password").isLength({ min: 5 }),
-  body("phonenumber").isLength({ min: 10 }),
+  body("password").isLength({ min: 1 }),
+  body("phonenumber").isLength({ min: 1 }),
   async (req, res) => {
     const error = validationResult(req);
     if (!error.isEmpty()) {
@@ -25,10 +33,10 @@ router.post(
     }
 
     try {
-      //Check if email is exist
-      let registration_email = await User.findOne({ email: req.body.email });
+      //Check if user is exist
+      let user = await User.findOne({ email: req.body.email });
 
-      if (registration_email) {
+      if (user) {
         return res.status(200).json(true);
       }
 
@@ -43,9 +51,6 @@ router.post(
         username: req.body.username,
         email: req.body.email,
         password: secpass,
-
-        profilepicture: req.body.profilepicture,
-
         phonenumber: req.body.phonenumber,
       });
 
@@ -176,7 +181,9 @@ router.get("/followers/:id", verifyToken, async (req, res) => {
         return Post.find({ user: post });
       })
     );
-    res.status(200).json(followersPost);
+    const userLoggedPost = await Post.find({ user: user._id });
+
+    res.status(200).json(userLoggedPost.concat(...followersPost));
   } catch (error) {
     return res.status(500).json("Internal error occurred.");
   }
@@ -331,5 +338,6 @@ router.get("/followerslist/:id", async (req, res) => {
     return res.status(500).json("Internal server error");
   }
 });
+
 
 module.exports = router;
