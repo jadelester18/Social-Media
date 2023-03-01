@@ -1,16 +1,16 @@
 import React from "react";
 import { useState } from "react";
-import { PropagateLoader } from "react-spinners";
+import { InfinitySpin } from "react-loader-spinner";
 
-const Spinner = () => {
+const Loader = () => {
   //For Screen Loader
   const [loading, setLoading] = useState(true);
 
   return (
     <div style={{ textAlign: "center" }}>
-      <PropagateLoader color={"black"} loading={loading} size={20} />
+      <InfinitySpin color={"black"} loading={loading} size={20} />
     </div>
   );
 };
 
-export default Spinner;
+export default Loader;

@@ -43,7 +43,9 @@ router.post(
         username: req.body.username,
         email: req.body.email,
         password: secpass,
+
         profilepicture: req.body.profilepicture,
+
         phonenumber: req.body.phonenumber,
       });
 
@@ -202,6 +204,59 @@ router.patch("/update/:id", verifyToken, async (req, res) => {
     return res.status(500).json("Internal error occurred.");
   }
 });
+
+//Update Profile
+router.patch("/update/profile/:id", verifyToken, async (req, res) => {
+  try {
+    if (req.params.id === req.user.id) {
+      const updateFields = {};
+
+      if (req.body.firstname) {
+        updateFields.firstname = req.body.firstname;
+      }
+      if (req.body.lastname) {
+        updateFields.lastname = req.body.lastname;
+      }
+      if (req.body.username) {
+        updateFields.username = req.body.username;
+      }
+      if (req.body.bio) {
+        updateFields.bio = req.body.bio;
+      }
+      if (req.body.password) {
+        const salt = await bcrypt.genSalt(10);
+        const secpass = await bcrypt.hash(req.body.password, salt);
+        updateFields.password = secpass;
+      }
+      if (req.body.phonenumber) {
+        updateFields.phonenumber = req.body.phonenumber;
+      }
+      if (req.body.location) {
+        updateFields.location = req.body.location;
+      }
+      if (req.body.profilepicture) {
+        updateFields.profilepicture = req.body.profilepicture;
+      }
+      if (req.body.backgroundpicture) {
+        updateFields.backgroundpicture = req.body.backgroundpicture;
+      }
+
+      const updateProfile = await User.findByIdAndUpdate(req.params.id, {
+        $set: updateFields,
+      });
+
+      await updateProfile.save();
+      res.status(200).json(updateProfile);
+    } else {
+      return res
+        .status(400)
+        .json("You're not allowed to updated this user profile.");
+    }
+  } catch (error) {
+    return res.status(500).json("Internal error occurred.");
+  }
+});
+
 
 //Delete Personal Account
 router.delete("/delete/:id", verifyToken, async (req, res) => {

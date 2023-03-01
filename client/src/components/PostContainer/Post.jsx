@@ -29,7 +29,6 @@ const Post = () => {
   //For Authentication
   const userLoggedinDetails = useSelector((state) => state.user);
   let userLogged = userLoggedinDetails.user;
-  // console.log(user);
   let accesstoken = userLogged.accessToken;
   let id = userLogged.other._id;
 
