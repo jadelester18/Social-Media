@@ -49,6 +49,7 @@ export default function Register() {
   const navigator = useNavigate();
   const [open, setOpen] = React.useState(false);
   const [open2, setOpen2] = React.useState(false);
+  const [open3, setOpen3] = React.useState(false);
 
   const handleClose = (event, reason) => {
     if (reason === "clickaway") {
@@ -57,6 +58,7 @@ export default function Register() {
 
     setOpen(false);
     setOpen2(false);
+    setOpen3(false);
   };
   const handleClick = (e) => {
     e.preventDefault();
@@ -67,6 +69,12 @@ export default function Register() {
 
     // const uploadTask = uploadBytesResumable(StorageRef, file);
     if (email && username && firstname && lastname && password && phonenumber) {
+      if (JSON.parse(localStorage.getItem("usedEmail") === "true")) {
+        // alert("email already used");
+        setOpen3(true); 
+        localStorage.removeItem("usedEmail");
+        // window.location.reload(true);
+      }
       if (email === username) {
         signup(dispatch, {
           firstname,
@@ -76,6 +84,7 @@ export default function Register() {
           password,
           phonenumber,
         });
+        window.location.replace('/verify/email')
       } else {
         setOpen(true);
       }
@@ -83,14 +92,11 @@ export default function Register() {
       setOpen2(true);
     }
   };
+   
+
   console.log(userDetails?.Status);
   if (userDetails?.Status === "Pending") {
     navigator("/verify/email");
-  }
-  if (JSON.parse(localStorage.getItem("usedEmail") === "true")) {
-    alert("email already used");
-    localStorage.removeItem("usedEmail");
-    // window.location.reload(true);
   }
 
   // if(JSON.parse(localStorage.getItem("persist:root".user))){
@@ -121,6 +127,15 @@ export default function Register() {
           <Typography component="h1" variant="h5">
             Sign up
           </Typography>
+          <Snackbar open={open3} autoHideDuration={2000} onClose={handleClose}>
+            <Alert
+              onClose={handleClose}
+              severity="error"
+              sx={{ width: "100%" }}
+            >
+              Email Already exist!
+            </Alert>
+          </Snackbar>
           <Snackbar open={open} autoHideDuration={2000} onClose={handleClose}>
             <Alert
               onClose={handleClose}
