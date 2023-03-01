@@ -62,8 +62,59 @@ router.post(
         JWTSEC
       );
 
+      const OTP = generateOTP();
+      const verificationToken = await VerificationToken.create({
+        user: user._id,
+        token: OTP,
+      });
+      verificationToken.save();
       await user.save();
-      res.status(200).json({ user, accessToken });
+
+      const transport = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          user: process.env.EMAIL,
+          pass: process.env.PASSWORD,
+        },
+      });
+
+      transport.use(
+        "compile",
+        hbs({
+          viewEngine: {
+            extname: ".handlebars",
+            layoutsDir: "./emailTemplate/",
+            defaultLayout: "Onetimepass",
+          },
+          viewPath: "./emailTemplate/",
+        })
+      );
+
+      var mailConfig = {
+        from: process.env.EMAIL,
+        to: user.email,
+        subject: "Verify your email using OTP",
+        template: "Onetimepass",
+        context: {
+          name: user.email,
+          company: `${OTP}`,
+        },
+      };
+      transport.sendMail(mailConfig, (error, info) => {
+        if (error) {
+          console.log(error);
+        } else {
+          console.log("Email sent :" + info.response);
+        }
+      });
+      return res.status(200).json({
+        Status: "Pending",
+        msg: "Please check your email",
+        user: user._id,
+      });
+
+      // await user.save();
+      // res.status(200).json({ user, accessToken });
     } catch (error) {
       return res.status(400).json("Internal error occurred.");
     }
