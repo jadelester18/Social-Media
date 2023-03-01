@@ -21,11 +21,18 @@ const FollowingList = ({ users }) => {
           maxWidth: { xs: 350, md: 250 },
           borderRadius: "10%",
         }}
-        alt={users.username}
+        alt={users.profilepicture}
         src={users.profilepicture}
       />
 
-      <Box sx={{ fontSize: "1rem", fontWeight: 3 }}>{"@" + users.username}</Box>
+      <Box
+        sx={{
+          whiteSpace: "pre-wrap",
+          overflowWrap: "break-word",
+        }}
+      >
+        {users.username}
+      </Box>
     </Item>
   );
 };
