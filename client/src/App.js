@@ -1,4 +1,4 @@
-import './App.css';
+import "./App.css";
 import {
   BrowserRouter,
   Route,
@@ -48,16 +48,69 @@ function App() {
           </Grid>
         ) : (
           <Routes>
-            <Route path="/" element={<Home />} />
+            <Route
+              path="/"
+              element={
+                user?.other?.verified === true ? (
+                  <Home />
+                ) : (
+                  <Navigate to={"/login"} replace={true} />
+                )
+              }
+            />
             <Route path={`/Profile/:id`} element={<Profile />} />
             <Route
               path="/login"
-              element={user !== null ? <Navigate to={"/"} /> : <Login />}
+              element={
+                user?.other?.verified === true ? (
+                  <Navigate to={"/"} replace={true} />
+                ) : (
+                  <Login />
+                )
+              }
             />
-            <Route path="/signup" element={<Register />} />
-            <Route path="/verify/email" element={<Verifyemail />} />
-            <Route path="/forgot/password" element={<Forgetpassword />} />
-            <Route path="/reset/password" element={<Resetpassword />} />
+            <Route
+              path="/signup"
+              element={
+                user?.other?.verified === true ? (
+                  <Navigate to={"/"} replace={true} />
+                ) : (
+                  <Login />
+                )
+              }
+            />
+            <Route
+              path="/verify/email"
+              element={
+                user?.Status === "Pending" ? (
+                  <Verifyemail />
+                ) : user?.other?.verified === true ? (
+                  <Navigate to={"/"} replace={true} />
+                ) : (
+                  <Login />
+                )
+              }
+            ></Route>
+            <Route
+              path="/forgot/password"
+              element={
+                user?.other?.verified === true ? (
+                  <Navigate to={"/"} replace={true} />
+                ) : (
+                  <Login />
+                )
+              }
+            />
+            <Route
+              path="/reset/password"
+              element={
+                user?.other?.verified === true ? (
+                  <Navigate to={"/"} replace={true} />
+                ) : (
+                  <Login />
+                )
+              }
+            />
             <Route path="/*" element={<PageNotFound />} />
           </Routes>
         )}

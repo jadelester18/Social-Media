@@ -25,6 +25,7 @@ import NotificationsIcon from "@mui/icons-material/Notifications";
 import SearchIcon from "@mui/icons-material/Search";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../ReduxContainer/UserReducer";
+import LOGO from "../Images/LOGO.png";
 
 const StyledToolbar = styled(Toolbar)({
   display: "flex",
@@ -137,10 +138,11 @@ const Navbar = () => {
         <Logo>
           <Link to={`/`}>
             <Avatar
-              src="https://png.pngtree.com/png-clipart/20221019/original/pngtree-twitter-social-media-round-icon-png-image_8704823.png"
+              src={`${LOGO}`}
               sx={{ display: { xs: "none", sm: "block" } }}
             />
           </Link>
+
           <Typography
             variant="h6"
             sx={{ display: { xs: "none", sm: "block" } }}
@@ -150,7 +152,7 @@ const Navbar = () => {
         </Logo>
         <Link to={`/`}>
           <Avatar
-            src="https://png.pngtree.com/png-clipart/20221019/original/pngtree-twitter-social-media-round-icon-png-image_8704823.png"
+            src={`${LOGO}`}
             sx={{ display: { xs: "block", sm: "none" } }}
           />
         </Link>

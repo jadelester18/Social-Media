@@ -97,8 +97,8 @@ export default function Register() {
 
   try {
     console.log("USER: " + JSON.stringify(userDetails?.user));
-    console.log("Verified: " + userDetails?.user.verified);
-    if (userDetails?.user.verified === false) {
+    console.log("Status: " + userDetails?.Status);
+    if (userDetails?.Status === "Pending") {
       navigator("/verify/email");
     }
   } catch {
@@ -218,6 +218,7 @@ export default function Register() {
               </Grid>
               <Grid item xs={12} sm={6}>
                 <TextField
+                  type="number"
                   autoComplete="given-name"
                   name="phone"
                   required

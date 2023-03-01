@@ -263,6 +263,50 @@ router.patch("/update/:id", verifyToken, async (req, res) => {
   }
 });
 
+//verify email
+router.post("/verify/email", async (req, res) => {
+  const { user, OTP } = req.body;
+  const mainuser = await User.findById(user);
+  if (!mainuser) return res.status(400).json("User not found");
+  if (mainuser.verified === true) {
+    return res.status(400).json("User already verified");
+  }
+  const token = await VerificationToken.findOne({ user: mainuser._id });
+  if (!token) {
+    return res.status(400).json("Sorry token not found");
+  }
+  const isMatch = await bcrypt.compareSync(OTP, token.token);
+  if (!isMatch) {
+    return res.status(400).json("Token is not valid");
+  }
+
+  mainuser.verified = true;
+  await VerificationToken.findByIdAndDelete(token._id);
+  await mainuser.save();
+  const accessToken = jwt.sign(
+    {
+      id: mainuser._id,
+      username: mainuser.username,
+    },
+    JWTSEC
+  );
+  const { password, ...other } = mainuser._doc;
+  const transport = nodemailer.createTransport({
+    host: "smtp.mailtrap.io",
+    port: 2525,
+    auth: {
+      user: process.env.USER,
+      pass: process.env.PASS,
+    },
+  });
+  transport.sendMail({
+    from: "sociaMedia@gmail.com",
+    to: mainuser.email,
+    subject: "Successfully verify your email",
+    html: `Now you can login in social app`,
+  });
+  return res.status(200).json({ other, accessToken });
+});
 //Update Profile
 router.patch("/update/profile/:id", verifyToken, async (req, res) => {
   try {
@@ -314,7 +358,6 @@ router.patch("/update/profile/:id", verifyToken, async (req, res) => {
     return res.status(500).json("Internal error occurred.");
   }
 });
-
 
 //Delete Personal Account
 router.delete("/delete/:id", verifyToken, async (req, res) => {
@@ -389,6 +432,5 @@ router.get("/followerslist/:id", async (req, res) => {
     return res.status(500).json("Internal server error");
   }
 });
-
 
 module.exports = router;
