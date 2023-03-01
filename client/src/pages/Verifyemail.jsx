@@ -4,7 +4,7 @@ import React from 'react';
     e.preventDefault();
     VerifyEmail(dispatch, { OTP: OTP, user: id });
   };
-
+ 
   return (
     <Container
       sx={{
