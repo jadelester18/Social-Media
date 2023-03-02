@@ -40,7 +40,7 @@ const RightBar = () => {
       }
     };
     getUserPosted();
-  }, []);
+  }, [idForSuggestToFollow]);
 
   //For Get List Of New Followers
   const [newFollowerUser, setnewFollowerUser] = useState([]);
@@ -57,7 +57,7 @@ const RightBar = () => {
       }
     };
     getnewFollowers();
-  }, []);
+  }, [idNewFollowers]);
 
   return (
     <Box

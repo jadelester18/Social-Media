@@ -243,7 +243,7 @@ const Post = () => {
       }
     };
     getnewFollowers();
-  }, []);
+  }, [id]);
 
   return (
     <Box flex={4} p={2} sx={{ width: { sm: "100%" } }}>
