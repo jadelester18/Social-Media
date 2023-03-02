@@ -33,7 +33,7 @@ const Explore = () => {
       } catch (error) {}
     };
     getPost();
-  }, []);
+  }, [accesstoken, id]);
 
   return (
     <Box>

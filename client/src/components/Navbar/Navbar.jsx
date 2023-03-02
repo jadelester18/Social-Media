@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   alpha,
   AppBar,
@@ -25,6 +25,8 @@ import NotificationsIcon from "@mui/icons-material/Notifications";
 import SearchIcon from "@mui/icons-material/Search";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../ReduxContainer/UserReducer";
+import LOGO from "../Images/LOGO.png";
+import axios from "axios";
 
 const StyledToolbar = styled(Toolbar)({
   display: "flex",
@@ -131,16 +133,33 @@ const Navbar = () => {
     dispatch(logout());
   };
 
+  //For Get Data of User Profile
+  const [userData, setUserData] = useState([]);
+  useEffect(() => {
+    const getnewFollowers = async () => {
+      try {
+        const res = await axios.get(
+          `http://localhost:5000/api/user/post/user/details/${id}`
+        );
+        setUserData(res.data);
+      } catch (error) {
+        console.log("Get new followers list error.");
+      }
+    };
+    getnewFollowers();
+  }, [id]);
+
   return (
     <AppBar position="sticky" color="white">
       <StyledToolbar>
         <Logo>
           <Link to={`/`}>
             <Avatar
-              src="https://png.pngtree.com/png-clipart/20221019/original/pngtree-twitter-social-media-round-icon-png-image_8704823.png"
+              src={`${LOGO}`}
               sx={{ display: { xs: "none", sm: "block" } }}
             />
           </Link>
+
           <Typography
             variant="h6"
             sx={{ display: { xs: "none", sm: "block" } }}
@@ -150,7 +169,7 @@ const Navbar = () => {
         </Logo>
         <Link to={`/`}>
           <Avatar
-            src="https://png.pngtree.com/png-clipart/20221019/original/pngtree-twitter-social-media-round-icon-png-image_8704823.png"
+            src={`${LOGO}`}
             sx={{ display: { xs: "block", sm: "none" } }}
           />
         </Link>
@@ -191,7 +210,7 @@ const Navbar = () => {
             color="inherit"
             onClick={handleMenuUser}
           >
-            <Avatar size="large" src={userLogged.other.profilepicture} />
+            <Avatar size="large" src={userData.profilepicture} />
           </IconButton>
         </Icons>
         <UserBox>

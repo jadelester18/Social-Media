@@ -164,7 +164,7 @@ const ProfileRightBar = () => {
                 following.slice(0, 6).map((item) => (
                   <Grid
                     item
-                    xs={4}
+                    xs={5}
                     component={Link}
                     to={`/Profile/${item._id}`}
                     key={item._id}

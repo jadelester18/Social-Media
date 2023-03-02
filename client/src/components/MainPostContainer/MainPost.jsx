@@ -101,7 +101,7 @@ const MainPost = ({ post }) => {
       }
     };
     getUserPosted();
-  }, []);
+  }, [post.user, accesstoken]);
 
   //Add Comment
   const [Comments, setComments] = useState(post.comments);

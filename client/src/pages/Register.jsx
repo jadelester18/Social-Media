@@ -20,11 +20,11 @@ import {
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { Link } from "react-router-dom";
- 
+
 import { useSelector, useDispatch } from "react-redux";
 import { signup } from "../components/ReduxContainer/ApiCall";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import app from "../firebase";
 import {
   getStorage,
@@ -32,7 +32,6 @@ import {
   uploadBytesResumable,
   getDownloadURL,
 } from "firebase/storage";
- 
 
 const theme = createTheme();
 
@@ -62,6 +61,7 @@ export default function Register() {
     setOpen2(false);
     setOpen3(false);
   };
+
   const handleClick = (e) => {
     e.preventDefault();
 
@@ -71,11 +71,12 @@ export default function Register() {
 
     // const uploadTask = uploadBytesResumable(StorageRef, file);
     if (email && username && firstname && lastname && password && phonenumber) {
-      if (JSON.parse(localStorage.getItem("usedEmail") === "true")) {
-        // alert("email already used");
-        setOpen3(true); 
-        localStorage.removeItem("usedEmail");
-        // window.location.reload(true);
+      try {
+        if (userDetails === true) {
+          setOpen3(true);
+        }
+      } catch {
+        console.log("no user");
       }
       if (email === username) {
         signup(dispatch, {
@@ -86,7 +87,6 @@ export default function Register() {
           password,
           phonenumber,
         });
-        window.location.replace('/verify/email')
       } else {
         setOpen(true);
       }
@@ -94,16 +94,16 @@ export default function Register() {
       setOpen2(true);
     }
   };
-   
 
-  console.log(userDetails?.Status);
-  if (userDetails?.Status === "Pending") {
-    navigator("/verify/email");
+  try {
+    console.log("USER: " + JSON.stringify(userDetails?.user));
+    console.log("Status: " + userDetails?.Status);
+    if (userDetails?.Status === "Pending") {
+      navigator("/verify/email");
+    }
+  } catch {
+    console.log("no data");
   }
-
-  // if(JSON.parse(localStorage.getItem("persist:root".user))){
-
-  // }
 
   const [showPassword, setShowPassword] = React.useState(false);
 
@@ -115,6 +115,7 @@ export default function Register() {
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">
         <CssBaseline />
+
         <Box
           sx={{
             marginTop: 8,
@@ -217,6 +218,7 @@ export default function Register() {
               </Grid>
               <Grid item xs={12} sm={6}>
                 <TextField
+                  type="number"
                   autoComplete="given-name"
                   name="phone"
                   required

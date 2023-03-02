@@ -12,13 +12,14 @@ import {
   ListItemText,
   Switch,
 } from "@mui/material";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Explore from "./Explore";
 import { styled } from "@mui/material/styles";
 import MailIcon from "@mui/icons-material/Mail";
 import HouseOutlinedIcon from "@mui/icons-material/HouseOutlined";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import axios from "axios";
 
 const MaterialUISwitch = styled(Switch)(({ theme }) => ({
   width: 62,
@@ -81,6 +82,23 @@ const LeftBar = ({ setThemeMode, mode }) => {
     // console.log(data);
     switchPos = true;
   }
+
+  //For Get Data of User Profile
+  const [userData, setUserData] = useState([]);
+  useEffect(() => {
+    const getnewFollowers = async () => {
+      try {
+        const res = await axios.get(
+          `http://localhost:5000/api/user/post/user/details/${id}`
+        );
+        setUserData(res.data);
+      } catch (error) {
+        console.log("Get new followers list error.");
+      }
+    };
+    getnewFollowers();
+  }, []);
+
   return (
     <Box
       flex={1}
@@ -97,7 +115,7 @@ const LeftBar = ({ setThemeMode, mode }) => {
               <ListItemAvatar>
                 <Avatar
                   alt={userLogged.other.username}
-                  src={userLogged.other.profilepicture}
+                  src={userData?.profilepicture}
                 />
               </ListItemAvatar>
               <ListItemText
