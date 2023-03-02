@@ -149,72 +149,81 @@ const ProfileData = () => {
   const [selectedProfile, setSelectedProfile] = useState(null);
   const [selectedBackground, setSelectedBackground] = useState(null);
 
-  const handleEditProfile = async (e) => {
-    e.preventDefault();
-    if (selectedProfile !== null || selectedBackground !== null) {
-      const fileName1 = selectedProfile
-        ? new Date().getTime() + selectedProfile.name
-        : null;
-      const fileName2 = selectedBackground
-        ? new Date().getTime() + selectedBackground.name
-        : null;
-      const storage = getStorage(app);
-      let downloadURLs = {};
+const handleEditProfile = async (e) => {
+  e.preventDefault();
+  if (selectedProfile !== null || selectedBackground !== null) {
+    const fileName1 = selectedProfile
+      ? new Date().getTime() + selectedProfile.name
+      : null;
+    const fileName2 = selectedBackground
+      ? new Date().getTime() + selectedBackground.name
+      : null;
+    const storage = getStorage(app);
 
-      if (fileName1) {
-        const storageRef1 = ref(storage, fileName1);
-        const uploadTask1 = uploadBytesResumable(storageRef1, selectedProfile);
-        uploadTask1.on(
-          "state_changed",
-          (snapshot) => {
-            const progress =
-              (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-            console.log("Profile Upload is " + progress + "% done");
-            setUploadPercent(progress);
-          },
-          (error) => {
-            console.log(error);
-          },
-          async () => {
-            const downloadURL = await getDownloadURL(uploadTask1.snapshot.ref);
-            downloadURLs = { ...downloadURLs, profilepicture: downloadURL };
-            if (!fileName2) {
-              updateProfile(downloadURLs);
-            }
-          }
-        );
-      }
+    let downloadURLs = {};
 
-      if (fileName2) {
-        const storageRef2 = ref(storage, fileName2);
-        const uploadTask2 = uploadBytesResumable(
-          storageRef2,
-          selectedBackground
-        );
-        uploadTask2.on(
-          "state_changed",
-          (snapshot) => {
-            const progress =
-              (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-            console.log("Background Upload is " + progress + "% done");
-            setUploadPercent(progress);
-          },
-          (error) => {
-            console.log(error);
-          },
-          async () => {
-            const downloadURL = await getDownloadURL(uploadTask2.snapshot.ref);
-            downloadURLs = { ...downloadURLs, backgroundpicture: downloadURL };
-            if (!fileName1) {
-              updateProfile(downloadURLs);
-            }
+    const uploadTasks = [];
+
+    if (fileName1) {
+      const storageRef1 = ref(storage, fileName1);
+      const uploadTask1 = uploadBytesResumable(storageRef1, selectedProfile);
+      uploadTasks.push(uploadTask1);
+
+      uploadTask1.on(
+        "state_changed",
+        (snapshot) => {
+          const progress =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          console.log("Profile Upload is " + progress + "% done");
+          setUploadPercent(progress);
+        },
+        (error) => {
+          console.log(error);
+        },
+        async () => {
+          const downloadURL = await getDownloadURL(uploadTask1.snapshot.ref);
+          downloadURLs = { ...downloadURLs, profilepicture: downloadURL };
+
+          // Call updateProfile only when all upload tasks are complete
+          if (uploadTasks.every((task) => task.snapshot.state === "success")) {
+            updateProfile(downloadURLs);
           }
-        );
-      }
-    } else {
-      updateProfile({});
+        }
+      );
     }
-  };
+
+    if (fileName2) {
+      const storageRef2 = ref(storage, fileName2);
+      const uploadTask2 = uploadBytesResumable(storageRef2, selectedBackground);
+      uploadTasks.push(uploadTask2);
+
+      uploadTask2.on(
+        "state_changed",
+        (snapshot) => {
+          const progress =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          console.log("Background Upload is " + progress + "% done");
+          setUploadPercent(progress);
+        },
+        (error) => {
+          console.log(error);
+        },
+        async () => {
+          const downloadURL = await getDownloadURL(uploadTask2.snapshot.ref);
+          downloadURLs = { ...downloadURLs, backgroundpicture: downloadURL };
+
+          // Call updateProfile only when all upload tasks are complete
+          if (uploadTasks.every((task) => task.snapshot.state === "success")) {
+            updateProfile(downloadURLs);
+          }
+        }
+      );
+    }
+  } else {
+    updateProfile({});
+  }
+};
+
 
   const updateProfile = (downloadURLs) => {
     fetch(`http://localhost:5000/api/user/update/profile/${id}`, {
