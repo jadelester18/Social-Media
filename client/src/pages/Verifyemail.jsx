@@ -12,6 +12,8 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { VerifyEmail } from '../components/ReduxContainer/ApiCall';
+import Joi from 'joi';
+import { Box } from '@mui/system';
 
 export default function Verifyemail() {
   const [open, setOpen] = useState(false);
@@ -26,7 +28,47 @@ export default function Verifyemail() {
 
   const handleOTP = (e) => {
     e.preventDefault();
-    VerifyEmail(dispatch, { OTP: OTP, user: id });
+    // VerifyEmail(dispatch, { ...form, user: id });
+    VerifyEmail(dispatch, { ...form, OTP: form.otp, user: id });
+  };
+
+  const [form, setForm] = useState({
+    otp: '',
+  });
+
+  const handleChange = ({ currentTarget: input }) => {
+    setForm({
+      ...form,
+      [input.name]: input.value,
+    });
+
+    const result = schema
+      .extract(input.name)
+      .label(input.name)
+      .validate(input.value);
+
+    if (result.error) {
+      setErrors({ ...errors, [input.name]: result.error.details[0].message });
+    } else {
+      delete errors[input.name];
+      setErrors(errors);
+    }
+  };
+
+  const [errors, setErrors] = useState({
+    form,
+  });
+
+  const schema = Joi.object({
+    otp: Joi.string().length(4).required().messages({
+      'string.length': 'OTP length must be equal to 4',
+    }),
+  });
+
+  const isFormInvalid = () => {
+    const result = schema.validate(form);
+
+    return !!result.error;
   };
 
   return (
@@ -62,20 +104,25 @@ export default function Verifyemail() {
             The OTP has been sent to your email!
           </Typography>
 
-          <form>
+          <Box component="form" noValidate>
             <TextField
-              type="number"
-              placeholder="Enter Your OTP"
+              name="otp"
+              placeholder="Enter your One Time Password"
+              error={!!errors.otp}
+              helperText={errors.otp}
+              onChange={handleChange}
+              value={form.otp}
+              // onChange={(e) => setOTP(e.target.value)}
               size="small"
               fullWidth
               sx={{ paddingTop: '20px' }}
-              onChange={(e) => setOTP(e.target.value)}
             />
             <Button
               sx={{ margin: '20px auto' }}
               variant="contained"
               fullWidth
               onClick={handleOTP}
+              disabled={isFormInvalid()}
             >
               Confirm OTP
             </Button>
@@ -85,7 +132,7 @@ export default function Verifyemail() {
             >
               <Typography>Check your email for the OTP</Typography>
             </Link>
-          </form>
+          </Box>
         </Stack>
       </Card>
     </Container>

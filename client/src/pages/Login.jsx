@@ -31,7 +31,7 @@ export default function Login() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    login(dispatch, { form });
+    login(dispatch, form);
     console.log(form);
   };
 
@@ -117,7 +117,7 @@ export default function Login() {
               onChange={handleChange}
               value={form.email}
               fullWidth
-              id="email"
+              // id="email"
               label="Email"
               autoComplete="email"
             />
@@ -129,8 +129,6 @@ export default function Login() {
               label="Password"
               onChange={handleChange}
               value={form.password}
-              type={showPassword ? 'text' : 'password'}
-              id="standard-adornment-password"
               autoComplete="new-password"
               InputProps={{
                 endAdornment: (
