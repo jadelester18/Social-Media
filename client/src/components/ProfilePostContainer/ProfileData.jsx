@@ -35,6 +35,7 @@ import {
   uploadBytesResumable,
   getDownloadURL,
 } from "firebase/storage";
+import LinearProgress from "@mui/material/LinearProgress";
 
 const style = {
   position: "absolute",
@@ -106,6 +107,36 @@ const ProfileData = () => {
     }
   };
 
+  //For Progress Bar Upload Post
+  const [progress, setProgress] = React.useState(0);
+  const [buffer, setBuffer] = React.useState(10);
+  const [uploadPercent, setUploadPercent] = useState(0);
+
+  const progressRef = React.useRef(() => {});
+  React.useEffect(() => {
+    progressRef.current = () => {
+      if (progress > 100) {
+        setProgress(0);
+        setBuffer(10);
+      } else {
+        const diff = uploadPercent;
+        const diff2 = uploadPercent;
+        setProgress(progress + diff);
+        setBuffer(progress + diff + diff2);
+      }
+    };
+  });
+
+  React.useEffect(() => {
+    const timer = setInterval(() => {
+      progressRef.current();
+    }, 500);
+
+    return () => {
+      clearInterval(timer);
+    };
+  }, []);
+
   //For Posting
   const [Firstname, setFirstname] = useState("");
   const [Lastname, setLastname] = useState("");
@@ -139,6 +170,7 @@ const ProfileData = () => {
             const progress =
               (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
             console.log("Profile Upload is " + progress + "% done");
+            setUploadPercent(progress);
           },
           (error) => {
             console.log(error);
@@ -165,6 +197,7 @@ const ProfileData = () => {
             const progress =
               (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
             console.log("Background Upload is " + progress + "% done");
+            setUploadPercent(progress);
           },
           (error) => {
             console.log(error);
@@ -289,7 +322,7 @@ const ProfileData = () => {
               <ShareLocationOutlinedIcon />{" "}
               {userData?.location === undefined
                 ? "Add location"
-                : "+63 " + userData?.location}
+                : userData?.location}
             </Stack>
           </CardContent>
           <CardContent>
@@ -319,6 +352,11 @@ const ProfileData = () => {
         aria-describedby="modal-modal-description"
       >
         <Box sx={style}>
+          <LinearProgress
+            variant="buffer"
+            value={progress}
+            valueBuffer={buffer}
+          />
           <Box sx={{ flexWrap: "wrap" }}>
             <Typography id="modal-modal-title" variant="h6" component="h2">
               Edit Profile
