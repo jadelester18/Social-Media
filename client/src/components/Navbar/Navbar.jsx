@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   alpha,
   AppBar,
@@ -26,6 +26,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../ReduxContainer/UserReducer";
 import LOGO from "../Images/LOGO.png";
+import axios from "axios";
 
 const StyledToolbar = styled(Toolbar)({
   display: "flex",
@@ -132,6 +133,22 @@ const Navbar = () => {
     dispatch(logout());
   };
 
+  //For Get Data of User Profile
+  const [userData, setUserData] = useState([]);
+  useEffect(() => {
+    const getnewFollowers = async () => {
+      try {
+        const res = await axios.get(
+          `http://localhost:5000/api/user/post/user/details/${id}`
+        );
+        setUserData(res.data);
+      } catch (error) {
+        console.log("Get new followers list error.");
+      }
+    };
+    getnewFollowers();
+  }, []);
+
   return (
     <AppBar position="sticky" color="white">
       <StyledToolbar>
@@ -193,7 +210,7 @@ const Navbar = () => {
             color="inherit"
             onClick={handleMenuUser}
           >
-            <Avatar size="large" src={userLogged.other.profilepicture} />
+            <Avatar size="large" src={userData.profilepicture} />
           </IconButton>
         </Icons>
         <UserBox>

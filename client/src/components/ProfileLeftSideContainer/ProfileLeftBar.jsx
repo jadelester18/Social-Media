@@ -98,6 +98,23 @@ const ProfileLeftBar = ({ setThemeMode, mode }) => {
     // console.log(data);
     switchPos = true;
   }
+
+  //For Get Data of User Profile
+  const [userData, setUserData] = useState([]);
+  useEffect(() => {
+    const getnewFollowers = async () => {
+      try {
+        const res = await axios.get(
+          `http://localhost:5000/api/user/post/user/details/${id}`
+        );
+        setUserData(res.data);
+      } catch (error) {
+        console.log("Get new followers list error.");
+      }
+    };
+    getnewFollowers();
+  }, []);
+
   return (
     <Box
       flex={1}
@@ -113,7 +130,7 @@ const ProfileLeftBar = ({ setThemeMode, mode }) => {
               <ListItemAvatar>
                 <Avatar
                   alt={userLogged.other.username}
-                  src={userLogged.other.profilepicture}
+                  src={userData.profilepicture}
                 />
               </ListItemAvatar>
               <ListItemText
