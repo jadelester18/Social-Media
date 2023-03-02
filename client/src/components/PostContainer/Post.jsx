@@ -24,6 +24,7 @@ import {
   getDownloadURL,
 } from "firebase/storage";
 import LinearProgress from "@mui/material/LinearProgress";
+import axios from "axios";
 
 const Post = () => {
   //For Authentication
@@ -228,6 +229,22 @@ const Post = () => {
     }
   };
 
+  //For Get Data of User Profile
+  const [userData, setUserData] = useState([]);
+  useEffect(() => {
+    const getnewFollowers = async () => {
+      try {
+        const res = await axios.get(
+          `http://localhost:5000/api/user/post/user/details/${id}`
+        );
+        setUserData(res.data);
+      } catch (error) {
+        console.log("Get new followers list error.");
+      }
+    };
+    getnewFollowers();
+  }, []);
+
   return (
     <Box flex={4} p={2} sx={{ width: { sm: "100%" } }}>
       <LinearProgress variant="buffer" value={progress} valueBuffer={buffer} />
@@ -236,7 +253,7 @@ const Post = () => {
           avatar={
             <Avatar
               alt={userLogged.other.username}
-              src={userLogged.other.profilepicture}
+              src={userData.profilepicture}
               sx={{ bgcolor: "red" }}
               aria-label="recipe"
               component={Link}
