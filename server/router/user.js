@@ -185,6 +185,7 @@ router.post("/verify/email", async (req, res) => {
 
   mainuser.verified = true;
   await VerificationToken.findByIdAndDelete(token._id);
+
   await mainuser.save();
   const accessToken = jwt.sign(
     {
@@ -195,48 +196,49 @@ router.post("/verify/email", async (req, res) => {
   );
   const { password, ...other } = mainuser._doc;
 
-    const transport = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: process.env.EMAIL,
-        pass: process.env.PASSWORD,
-      },
-    });
+  const transport = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.EMAIL,
+      pass: process.env.PASSWORD,
+    },
+  });
 
-    transport.use(
-      "compile",
-      hbs({
-        viewEngine: {
-          extname: ".handlebars",
-          layoutsDir: "./emailTemplate/",
-          defaultLayout: "Verifyemail",
-        },
-        viewPath: "./emailTemplate/",
-      })
-    );
-
-    var mailConfig = {
-      from: process.env.EMAIL,
-      to: user.email,
-      subject: "Verify your email using OTP",
-      template: "Verifyemail",
-      context: {
-        name:
-          `${mainuser.firstname.charAt(0).toUpperCase() +
-          mainuser.firstname.slice(1) +
-          " " +
-          mainuser.lastname.charAt(0).toUpperCase() +
-          mainuser.lastname.slice(1)}`,
-        company: `${OTP}`,
+  transport.use(
+    "compile",
+    hbs({
+      viewEngine: {
+        extname: ".handlebars",
+        layoutsDir: "./emailTemplate/",
+        defaultLayout: "Verifyemail",
       },
-    };
-    transport.sendMail(mailConfig, (error, info) => {
-      if (error) {
-        console.log(error);
-      } else {
-        console.log("The Email :" + info.response + " Has Successfully Verified");
-      }
-    });
+      viewPath: "./emailTemplate/",
+    })
+  );
+
+  var mailConfig = {
+    from: process.env.EMAIL,
+    to: user.email,
+    subject: "Verify your email using OTP",
+    template: "Verifyemail",
+    context: {
+      name: `${
+        mainuser.firstname.charAt(0).toUpperCase() +
+        mainuser.firstname.slice(1) +
+        " " +
+        mainuser.lastname.charAt(0).toUpperCase() +
+        mainuser.lastname.slice(1)
+      }`,
+      company: `${OTP}`,
+    },
+  };
+  transport.sendMail(mailConfig, (error, info) => {
+    if (error) {
+      console.log(error);
+    } else {
+      console.log("The Email :" + info.response + " Has Successfully Verified");
+    }
+  });
 
   return res.status(200).json({ other, accessToken });
 });
