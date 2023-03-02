@@ -1,37 +1,38 @@
-import * as React from "react";
-import Avatar from "@mui/material/Avatar";
-import Button from "@mui/material/Button";
-import CssBaseline from "@mui/material/CssBaseline";
-import TextField from "@mui/material/TextField";
+import * as React from 'react';
+import Avatar from '@mui/material/Avatar';
+import Button from '@mui/material/Button';
+import CssBaseline from '@mui/material/CssBaseline';
+import TextField from '@mui/material/TextField';
 // import Link from "@mui/material/Link";
-import Grid from "@mui/material/Grid";
-import Box from "@mui/material/Box";
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-import Typography from "@mui/material/Typography";
-import Container from "@mui/material/Container";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
+import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import Typography from '@mui/material/Typography';
+import Container from '@mui/material/Container';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 import {
   Alert,
   IconButton,
   Input,
   InputAdornment,
   Snackbar,
-} from "@mui/material";
-import Visibility from "@mui/icons-material/Visibility";
-import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import { Link } from "react-router-dom";
+} from '@mui/material';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import { Link } from 'react-router-dom';
 
-import { useSelector, useDispatch } from "react-redux";
-import { signup } from "../components/ReduxContainer/ApiCall";
-import { useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
-import app from "../firebase";
+import { useSelector, useDispatch } from 'react-redux';
+import { signup } from '../components/ReduxContainer/ApiCall';
+import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import Joi from 'joi';
+import app from '../firebase';
 import {
   getStorage,
   ref,
   uploadBytesResumable,
   getDownloadURL,
-} from "firebase/storage";
+} from 'firebase/storage';
 
 const theme = createTheme();
 
@@ -39,12 +40,12 @@ export default function Register() {
   const dispatch = useDispatch();
   // const { isFetching, error } = useSelector((state) => state.user);
   const user = useSelector((state) => state.user);
-  const [email, setEmail] = useState("");
-  const [phonenumber, setphonenumber] = useState("");
-  const [username, setusername] = useState("");
-  const [password, setpassword] = useState("");
-  const [firstname, setFirstName] = useState("");
-  const [lastname, setLastName] = useState("");
+  // const [email, setEmail] = useState('');
+  // const [phonenumber, setphonenumber] = useState('');
+  // const [username, setusername] = useState('');
+  // const [password, setpassword] = useState('');
+  // const [firstname, setFirstName] = useState('');
+  // const [lastname, setLastName] = useState('');
   const [file, setfile] = useState(null);
   const userDetails = user.user;
   const navigator = useNavigate();
@@ -52,8 +53,57 @@ export default function Register() {
   const [open2, setOpen2] = React.useState(false);
   const [open3, setOpen3] = React.useState(false);
 
+  const [form, setForm] = useState({
+    firstname: '',
+    lastname: '',
+    username: '',
+    email: '',
+    phonenumber: '',
+    password: '',
+  });
+
+  const handleChange = ({ currentTarget: input }) => {
+    setForm({
+      ...form,
+      [input.name]: input.value,
+    });
+
+    const result = schema
+      .extract(input.name)
+      .label(input.name)
+      .validate(input.value);
+
+    if (result.error) {
+      setErrors({ ...errors, [input.name]: result.error.details[0].message });
+    } else {
+      delete errors[input.name];
+      setErrors(errors);
+    }
+  };
+
+  const [errors, setErrors] = useState({
+    form,
+  });
+
+  const schema = Joi.object({
+    firstname: Joi.string().min(2).max(100).required(),
+    lastname: Joi.string().min(2).max(100).required(),
+    username: Joi.string().min(3).max(100).required(),
+    email: Joi.string()
+      .email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } })
+      .required(),
+    phonenumber: Joi.string().min(6).max(15).allow('').optional(),
+    password: Joi.string().min(6).max(20).required(),
+  });
+
+  const isFormInvalid = () => {
+    const result = schema.validate(form);
+
+    return !!result.error;
+  };
+
   const handleClose = (event, reason) => {
-    if (reason === "clickaway") {
+    if (reason === 'clickaway') {
       return;
     }
 
@@ -70,39 +120,32 @@ export default function Register() {
     // const StorageRef = ref(storage, fileName);
 
     // const uploadTask = uploadBytesResumable(StorageRef, file);
-    if (email && username && firstname && lastname && password && phonenumber) {
-      try {
-        if (userDetails === true) {
-          setOpen3(true);
-        }
-      } catch {
-        console.log("no user");
-      }
-      if (email === username) {
-        signup(dispatch, {
-          firstname,
-          lastname,
-          username,
-          email,
-          password,
-          phonenumber,
-        });
-      } else {
-        setOpen(true);
-      }
-    } else {
-      setOpen2(true);
-    }
+    // if (email && username && firstname && lastname && password && phonenumber) {
+    //   try {
+    //     if (userDetails === true) {
+    //       setOpen3(true);
+    //     }
+    //   } catch {
+    //     console.log('no user');
+    //   }
+    //   if (email === username) {
+    signup(dispatch, form);
+    //   } else {
+    //     setOpen(true);
+    //   }
+    // } else {
+    //   setOpen2(true);
+    // }
   };
 
   try {
-    console.log("USER: " + JSON.stringify(userDetails?.user));
-    console.log("Status: " + userDetails?.Status);
-    if (userDetails?.Status === "Pending") {
-      navigator("/verify/email");
+    console.log('USER: ' + JSON.stringify(userDetails?.user));
+    console.log('Status: ' + userDetails?.Status);
+    if (userDetails?.Status === 'Pending') {
+      navigator('/verify/email');
     }
   } catch {
-    console.log("no data");
+    console.log('no data');
   }
 
   const [showPassword, setShowPassword] = React.useState(false);
@@ -111,6 +154,7 @@ export default function Register() {
   const handleMouseDownPassword = (event) => {
     event.preventDefault();
   };
+
   return (
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">
@@ -119,22 +163,22 @@ export default function Register() {
         <Box
           sx={{
             marginTop: 8,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
           }}
         >
-          <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
+          <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
             Sign up
           </Typography>
-          <Snackbar open={open3} autoHideDuration={2000} onClose={handleClose}>
+          {/* <Snackbar open={open3} autoHideDuration={2000} onClose={handleClose}>
             <Alert
               onClose={handleClose}
               severity="error"
-              sx={{ width: "100%" }}
+              sx={{ width: '100%' }}
             >
               Email Already exist!
             </Alert>
@@ -143,7 +187,7 @@ export default function Register() {
             <Alert
               onClose={handleClose}
               severity="error"
-              sx={{ width: "100%" }}
+              sx={{ width: '100%' }}
             >
               Email does not match!
             </Alert>
@@ -152,11 +196,11 @@ export default function Register() {
             <Alert
               onClose={handleClose}
               severity="error"
-              sx={{ width: "100%" }}
+              sx={{ width: '100%' }}
             >
               Please fill out the form completely
             </Alert>
-          </Snackbar>
+          </Snackbar> */}
           <Box
             component="form"
             noValidate
@@ -172,73 +216,73 @@ export default function Register() {
               </Grid> */}
               <Grid item xs={12} sm={6}>
                 <TextField
-                  autoComplete="given-name"
-                  name="firstName"
-                  required
-                  fullWidth
-                  id="firstName"
+                  name="firstname"
                   label="First Name"
-                  onChange={(e) => setFirstName(e.target.value)}
-                  autoFocus
+                  error={!!errors.firstname}
+                  helperText={errors.firstname}
+                  onChange={handleChange}
+                  value={form.firstname}
+                  autoComplete="given-name"
+                  fullWidth
                 />
               </Grid>
 
               <Grid item xs={12} sm={6}>
                 <TextField
-                  required
-                  fullWidth
-                  id="lastName"
+                  name="lastname"
+                  error={!!errors.lastname}
+                  helperText={errors.lastname}
+                  onChange={handleChange}
+                  value={form.lastname}
                   label="Last Name"
-                  name="lastName"
-                  onChange={(e) => setLastName(e.target.value)}
                   autoComplete="family-name"
+                  fullWidth
                 />
               </Grid>
               <Grid item xs={12}>
                 <TextField
-                  required
-                  fullWidth
-                  id="username"
-                  label="Email Address"
                   name="username"
+                  label="Username"
+                  error={!!errors.username}
+                  helperText={errors.username}
+                  onChange={handleChange}
+                  value={form.username}
                   autoComplete="username"
-                  onChange={(e) => setusername(e.target.value)}
+                  fullWidth
                 />
               </Grid>
               <Grid item xs={12}>
                 <TextField
-                  required
-                  fullWidth
-                  id="email"
-                  label="Confirm Email "
                   name="email"
+                  label="Email"
+                  error={!!errors.email}
+                  helperText={errors.email}
+                  onChange={handleChange}
+                  value={form.email}
                   autoComplete="email"
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  type="number"
-                  autoComplete="given-name"
-                  name="phone"
-                  required
                   fullWidth
-                  id="phone"
-                  label="Contact Number"
-                  onChange={(e) => setphonenumber(e.target.value)}
-                  autoFocus
                 />
               </Grid>
               <Grid item xs={12}>
                 <TextField
-                  required
+                  name="phonenumber"
+                  error={!!errors.phonenumber}
+                  helperText={errors.phonenumber}
+                  onChange={handleChange}
+                  value={form.phonenumber}
                   fullWidth
+                  label="Phone Number"
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
                   name="password"
                   label="Password"
-                  type={showPassword ? "text" : "password"}
-                  id="standard-adornment-password"
-                  autoComplete="new-password"
-                  onChange={(e) => setpassword(e.target.value)}
+                  error={!!errors.password}
+                  helperText={errors.password}
+                  onChange={handleChange}
+                  value={form.password}
+                  fullWidth
                   InputProps={{
                     endAdornment: (
                       <InputAdornment position="end">

@@ -18,32 +18,73 @@ import { useSelector, useDispatch } from 'react-redux';
 
 import { useState } from 'react';
 import { login } from '../components/ReduxContainer/ApiCall';
+import Joi from 'joi';
+
 const theme = createTheme();
 
 export default function Login() {
-  //For Login Auth
   const dispatch = useDispatch();
   const { isFetching, error } = useSelector((state) => state.user);
 
-  const [email, setemail] = useState('');
-  const [password, setPassword] = useState('');
+  // const [email, setemail] = useState('');
+  // const [password, setPassword] = useState('');
 
-  const handleLoginSubmit = (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    login(dispatch, { email, password });
+    login(dispatch, form);
+    console.log(form);
   };
 
   const handleClick = (e) => {
     e.preventDefault();
-    console.log(email, password);
   };
   const [showPassword, setShowPassword] = React.useState(false);
-
   const handleClickShowPassword = () => setShowPassword((show) => !show);
-
   const handleMouseDownPassword = (event) => {
     event.preventDefault();
   };
+
+  const [form, setForm] = useState({
+    email: '',
+    password: '',
+  });
+
+  const handleChange = ({ currentTarget: input }) => {
+    setForm({
+      ...form,
+      [input.name]: input.value,
+    });
+
+    const result = schema
+      .extract(input.name)
+      .label(input.name)
+      .validate(input.value);
+
+    if (result.error) {
+      setErrors({ ...errors, [input.name]: result.error.details[0].message });
+    } else {
+      delete errors[input.name];
+      setErrors(errors);
+    }
+  };
+
+  const [errors, setErrors] = useState({
+    form,
+  });
+
+  const schema = Joi.object({
+    email: Joi.string()
+      .email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } })
+      .required(),
+    password: Joi.string().min(6).max(20).required(),
+  });
+
+  const isFormInvalid = () => {
+    const result = schema.validate(form);
+
+    return !!result.error;
+  };
+
   return (
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">
@@ -70,23 +111,24 @@ export default function Login() {
           >
             <TextField
               margin="normal"
-              required
-              fullWidth
-              id="email"
-              label="Email Address"
+              error={!!errors.email}
+              helperText={errors.email}
               name="email"
+              onChange={handleChange}
+              value={form.email}
+              fullWidth
+              // id="email"
+              label="Email"
               autoComplete="email"
-              onChange={(e) => setemail(e.target.value)}
-              autoFocus
             />
             <TextField
-              required
               fullWidth
+              error={!!errors.password}
+              helperText={errors.password}
               name="password"
               label="Password"
-              onChange={(e) => setPassword(e.target.value)}
-              type={showPassword ? 'text' : 'password'}
-              id="standard-adornment-password"
+              onChange={handleChange}
+              value={form.password}
               autoComplete="new-password"
               InputProps={{
                 endAdornment: (
@@ -108,7 +150,8 @@ export default function Login() {
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
-              onClick={handleLoginSubmit}
+              onClick={handleSubmit}
+              disabled={isFormInvalid()}
             >
               Log In
             </Button>
