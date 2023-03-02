@@ -166,6 +166,81 @@ router.post(
   }
 );
 
+//verify email
+router.post("/verify/email", async (req, res) => {
+  const { user, OTP } = req.body;
+  const mainuser = await User.findById(user);
+  if (!mainuser) return res.status(400).json("User not found");
+  if (mainuser.verified === true) {
+    return res.status(400).json("User already verified");
+  }
+  const token = await VerificationToken.findOne({ user: mainuser._id });
+  if (!token) {
+    return res.status(400).json("Sorry token not found");
+  }
+  const isMatch = await bcrypt.compareSync(OTP, token.token);
+  if (!isMatch) {
+    return res.status(400).json("Token is not valid");
+  }
+
+  mainuser.verified = true;
+  await VerificationToken.findByIdAndDelete(token._id);
+  await mainuser.save();
+  const accessToken = jwt.sign(
+    {
+      id: mainuser._id,
+      username: mainuser.username,
+    },
+    JWTSEC
+  );
+  const { password, ...other } = mainuser._doc;
+
+    const transport = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.EMAIL,
+        pass: process.env.PASSWORD,
+      },
+    });
+
+    transport.use(
+      "compile",
+      hbs({
+        viewEngine: {
+          extname: ".handlebars",
+          layoutsDir: "./emailTemplate/",
+          defaultLayout: "Verifyemail",
+        },
+        viewPath: "./emailTemplate/",
+      })
+    );
+
+    var mailConfig = {
+      from: process.env.EMAIL,
+      to: user.email,
+      subject: "Verify your email using OTP",
+      template: "Verifyemail",
+      context: {
+        name:
+          `${mainuser.firstname.charAt(0).toUpperCase() +
+          mainuser.firstname.slice(1) +
+          " " +
+          mainuser.lastname.charAt(0).toUpperCase() +
+          mainuser.lastname.slice(1)}`,
+        company: `${OTP}`,
+      },
+    };
+    transport.sendMail(mailConfig, (error, info) => {
+      if (error) {
+        console.log(error);
+      } else {
+        console.log("The Email :" + info.response + " Has Successfully Verified");
+      }
+    });
+
+  return res.status(200).json({ other, accessToken });
+});
+
 //Trying to Follow Specific User
 router.patch("/follow/:id", verifyToken, async (req, res) => {
   if (req.params.id !== req.body.user) {
@@ -263,50 +338,7 @@ router.patch("/update/:id", verifyToken, async (req, res) => {
   }
 });
 
-//verify email
-router.post("/verify/email", async (req, res) => {
-  const { user, OTP } = req.body;
-  const mainuser = await User.findById(user);
-  if (!mainuser) return res.status(400).json("User not found");
-  if (mainuser.verified === true) {
-    return res.status(400).json("User already verified");
-  }
-  const token = await VerificationToken.findOne({ user: mainuser._id });
-  if (!token) {
-    return res.status(400).json("Sorry token not found");
-  }
-  const isMatch = await bcrypt.compareSync(OTP, token.token);
-  if (!isMatch) {
-    return res.status(400).json("Token is not valid");
-  }
 
-  mainuser.verified = true;
-  await VerificationToken.findByIdAndDelete(token._id);
-  await mainuser.save();
-  const accessToken = jwt.sign(
-    {
-      id: mainuser._id,
-      username: mainuser.username,
-    },
-    JWTSEC
-  );
-  const { password, ...other } = mainuser._doc;
-  const transport = nodemailer.createTransport({
-    host: "smtp.mailtrap.io",
-    port: 2525,
-    auth: {
-      user: process.env.USER,
-      pass: process.env.PASS,
-    },
-  });
-  transport.sendMail({
-    from: "sociaMedia@gmail.com",
-    to: mainuser.email,
-    subject: "Successfully verify your email",
-    html: `Now you can login in social app`,
-  });
-  return res.status(200).json({ other, accessToken });
-});
 //Update Profile
 router.patch("/update/profile/:id", verifyToken, async (req, res) => {
   try {
