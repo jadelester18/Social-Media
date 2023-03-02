@@ -148,6 +148,13 @@ const Navbar = () => {
     };
     getnewFollowers();
   }, [id]);
+  const handleScrollTop = () => {
+    window.scrollTo({
+      top: 0,
+      left: 100,
+      behavior: "smooth",
+    });
+  };
 
   return (
     <AppBar position="sticky" color="white">
@@ -155,6 +162,7 @@ const Navbar = () => {
         <Logo>
           <Link to={`/`}>
             <Avatar
+              onClick={handleScrollTop}
               src={`${LOGO}`}
               sx={{ display: { xs: "none", sm: "block" } }}
             />

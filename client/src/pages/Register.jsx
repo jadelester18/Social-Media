@@ -1,38 +1,38 @@
-import * as React from 'react';
-import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
-import CssBaseline from '@mui/material/CssBaseline';
-import TextField from '@mui/material/TextField';
+import * as React from "react";
+import Avatar from "@mui/material/Avatar";
+import Button from "@mui/material/Button";
+import CssBaseline from "@mui/material/CssBaseline";
+import TextField from "@mui/material/TextField";
 // import Link from "@mui/material/Link";
-import Grid from '@mui/material/Grid';
-import Box from '@mui/material/Box';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import Typography from '@mui/material/Typography';
-import Container from '@mui/material/Container';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import Grid from "@mui/material/Grid";
+import Box from "@mui/material/Box";
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import Typography from "@mui/material/Typography";
+import Container from "@mui/material/Container";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
 import {
   Alert,
   IconButton,
   Input,
   InputAdornment,
   Snackbar,
-} from '@mui/material';
-import Visibility from '@mui/icons-material/Visibility';
-import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import { Link } from 'react-router-dom';
+} from "@mui/material";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import { Link } from "react-router-dom";
 
-import { useSelector, useDispatch } from 'react-redux';
-import { signup } from '../components/ReduxContainer/ApiCall';
-import { useNavigate } from 'react-router-dom';
-import { useState, useEffect } from 'react';
-import Joi from 'joi';
-import app from '../firebase';
+import { useSelector, useDispatch } from "react-redux";
+import { signup } from "../components/ReduxContainer/ApiCall";
+import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import Joi from "joi";
+import app from "../firebase";
 import {
   getStorage,
   ref,
   uploadBytesResumable,
   getDownloadURL,
-} from 'firebase/storage';
+} from "firebase/storage";
 
 const theme = createTheme();
 
@@ -54,12 +54,12 @@ export default function Register() {
   const [open3, setOpen3] = React.useState(false);
 
   const [form, setForm] = useState({
-    firstname: '',
-    lastname: '',
-    username: '',
-    email: '',
-    phonenumber: '',
-    password: '',
+    firstname: "",
+    lastname: "",
+    username: "",
+    email: "",
+    phonenumber: "",
+    password: "",
   });
 
   const handleChange = ({ currentTarget: input }) => {
@@ -90,9 +90,9 @@ export default function Register() {
     lastname: Joi.string().min(2).max(100).required(),
     username: Joi.string().min(3).max(100).required(),
     email: Joi.string()
-      .email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } })
+      .email({ minDomainSegments: 2, tlds: { allow: ["com", "net"] } })
       .required(),
-    phonenumber: Joi.string().min(6).max(15).allow('').optional(),
+    phonenumber: Joi.number().min(6).max(15).allow("").optional(),
     password: Joi.string().min(6).max(20).required(),
   });
 
@@ -103,7 +103,7 @@ export default function Register() {
   };
 
   const handleClose = (event, reason) => {
-    if (reason === 'clickaway') {
+    if (reason === "clickaway") {
       return;
     }
 
@@ -121,13 +121,13 @@ export default function Register() {
 
     // const uploadTask = uploadBytesResumable(StorageRef, file);
     // if (email && username && firstname && lastname && password && phonenumber) {
-    //   try {
-    //     if (userDetails === true) {
-    //       setOpen3(true);
-    //     }
-    //   } catch {
-    //     console.log('no user');
-    //   }
+    try {
+      if (userDetails === true) {
+        setOpen3(true);
+      }
+    } catch {
+      console.log("no user");
+    }
     //   if (email === username) {
     signup(dispatch, form);
     //   } else {
@@ -139,13 +139,13 @@ export default function Register() {
   };
 
   try {
-    console.log('USER: ' + JSON.stringify(userDetails?.user));
-    console.log('Status: ' + userDetails?.Status);
-    if (userDetails?.Status === 'Pending') {
-      navigator('/verify/email');
+    console.log("USER: " + JSON.stringify(userDetails?.user));
+    console.log("Status: " + userDetails?.Status);
+    if (userDetails?.Status === "Pending") {
+      navigator("/verify/email");
     }
   } catch {
-    console.log('no data');
+    console.log("no data");
   }
 
   const [showPassword, setShowPassword] = React.useState(false);
@@ -163,27 +163,27 @@ export default function Register() {
         <Box
           sx={{
             marginTop: 8,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
           }}
         >
-          <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+          <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
             Sign up
           </Typography>
-          {/* <Snackbar open={open3} autoHideDuration={2000} onClose={handleClose}>
+          <Snackbar open={open3} autoHideDuration={2000} onClose={handleClose}>
             <Alert
               onClose={handleClose}
               severity="error"
-              sx={{ width: '100%' }}
+              sx={{ width: "100%" }}
             >
               Email Already exist!
             </Alert>
           </Snackbar>
-          <Snackbar open={open} autoHideDuration={2000} onClose={handleClose}>
+          {/* <Snackbar open={open} autoHideDuration={2000} onClose={handleClose}>
             <Alert
               onClose={handleClose}
               severity="error"
@@ -200,7 +200,7 @@ export default function Register() {
             >
               Please fill out the form completely
             </Alert>
-          </Snackbar> */}
+          </Snackbar>  */}
           <Box
             component="form"
             noValidate
@@ -276,6 +276,7 @@ export default function Register() {
               </Grid>
               <Grid item xs={12}>
                 <TextField
+                  type={showPassword ? "text" : "password"}
                   name="password"
                   label="Password"
                   error={!!errors.password}
