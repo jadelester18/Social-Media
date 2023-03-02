@@ -147,7 +147,7 @@ const Navbar = () => {
       }
     };
     getnewFollowers();
-  }, []);
+  }, [id]);
 
   return (
     <AppBar position="sticky" color="white">

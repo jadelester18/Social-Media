@@ -89,7 +89,7 @@ const ProfileLeftBar = ({ setThemeMode, mode }) => {
       }
     };
     getUserFollowing();
-  }, []);
+  }, [id]);
 
   //For saving dark theme to local storage
   var data = JSON.parse(localStorage.getItem("Theme"));
@@ -113,7 +113,7 @@ const ProfileLeftBar = ({ setThemeMode, mode }) => {
       }
     };
     getnewFollowers();
-  }, []);
+  }, [id]);
 
   return (
     <Box
