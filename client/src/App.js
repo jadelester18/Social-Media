@@ -64,6 +64,8 @@ function App() {
               element={
                 user?.other?.verified === true ? (
                   <Navigate to={"/"} replace={true} />
+                ) : user?.Status === "Pending" ? (
+                  <Verifyemail />
                 ) : (
                   <Login />
                 )
@@ -72,13 +74,16 @@ function App() {
             <Route
               path="/signup"
               element={
-                user?.other?.verified === true ? (
+                user?.Status === "Pending" ? (
+                  <Navigate to={"/verify/email"} />
+                ) : user?.other?.verified === true ? (
                   <Navigate to={"/"} replace={true} />
                 ) : (
-                  <Login />
+                  <Register />
                 )
               }
             />
+
             <Route
               path="/verify/email"
               element={
@@ -87,27 +92,31 @@ function App() {
                 ) : user?.other?.verified === true ? (
                   <Navigate to={"/"} replace={true} />
                 ) : (
-                  <Login />
+                  <Navigate to={"/login"} />
                 )
               }
             ></Route>
             <Route
               path="/forgot/password"
               element={
-                user?.other?.verified === true ? (
+                user === null ? (
+                  <Forgetpassword />
+                ) : user?.other?.verified === true ? (
                   <Navigate to={"/"} replace={true} />
                 ) : (
-                  <Login />
+                  <Navigate to={"/login"} />
                 )
               }
             />
             <Route
               path="/reset/password"
               element={
-                user?.other?.verified === true ? (
+                user === null ? (
+                  <Resetpassword />
+                ) : user?.other?.verified === true ? (
                   <Navigate to={"/"} replace={true} />
                 ) : (
-                  <Login />
+                  <Navigate to={"/login"} />
                 )
               }
             />
