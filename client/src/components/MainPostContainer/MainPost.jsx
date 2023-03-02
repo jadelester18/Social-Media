@@ -16,6 +16,8 @@ import {
   ListItem,
   ListItemAvatar,
   ListItemText,
+  Menu,
+  MenuItem,
   Modal,
   Stack,
   Typography,
@@ -52,6 +54,15 @@ const MainPost = ({ post }) => {
   // console.log(user);
   let id = userLogged.other._id;
   const accesstoken = userLogged.accessToken;
+
+  const [anchorEditPost, setAnchorElUser] = React.useState(null);
+
+  const handleEditPost = (event) => {
+    setAnchorElUser(event.currentTarget);
+  };
+  const handleCloseEditPost = () => {
+    setAnchorElUser(null);
+  };
 
   const [openChat, setOpenChat] = React.useState(false);
   const handleOpenChat = () => setOpenChat(true);
@@ -126,6 +137,34 @@ const MainPost = ({ post }) => {
     addCommentToPost();
   };
 
+  //For Delete Post
+  const [isDeleted, setIsDeleted] = useState(false);
+
+  const handleDelete = async () => {
+    try {
+      await axios.delete(
+        `http://localhost:5000/api/post/delete/post/${post._id}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            token: accesstoken,
+          },
+        }
+      );
+      console.log("Post deleted successfully.");
+      alert("Post deleted successfully.");
+      // Update state to indicate that the post has been deleted
+      setIsDeleted(true);
+    } catch (error) {
+      console.log("Error deleting post:", error);
+    }
+  };
+
+  // If the post has been deleted, don't render anything
+  if (isDeleted) {
+    return null;
+  }
+
   return (
     <Box flex={4} p={2} sx={{ width: { sm: "100%" } }}>
       <Card sx={{ boxShadow: 10 }}>
@@ -143,7 +182,7 @@ const MainPost = ({ post }) => {
             />
           }
           action={
-            <IconButton aria-label="settings">
+            <IconButton aria-label="settings" onClick={handleEditPost}>
               <MoreVertIcon />
             </IconButton>
           }
@@ -303,6 +342,25 @@ const MainPost = ({ post }) => {
         </Box>
       </Modal>
       <ScrollToTop smooth top="10" />
+      <Menu
+        id="user-menu"
+        anchorEl={anchorEditPost}
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+        keepMounted
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+        open={Boolean(anchorEditPost)}
+        onClose={handleCloseEditPost}
+        sx={{ mt: "45px" }}
+      >
+        <MenuItem>Edit</MenuItem>
+        <MenuItem onClick={handleDelete}>Delete</MenuItem>
+      </Menu>
     </Box>
   );
 };
