@@ -47,11 +47,7 @@ const Feeds = () => {
         post &&
         post
           .sort((a, b) => (a.createdat > b.createdat ? -1 : 1))
-          .map((item) => (
-            <Box key={item.createdat}>
-              <MainPost post={item} />
-            </Box>
-          ))
+          .map((item) => <MainPost post={item} key={item._id} />)
       ) : (
         <Spinner />
       )}

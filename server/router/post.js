@@ -117,15 +117,16 @@ router.patch('/comment/post', verifyToken, async (req, res) => {
 router.delete('/delete/post/:id', verifyToken, async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
-    if (post.user === req.user.id) {
-      const deletepost = await Post.findByIdAndDelete(req.params.id);
-      return res.status(200).json('Your post has been deleted.');
+    if (post.user.equals(req.user.id)) {
+      await Post.findByIdAndDelete(req.params.id);
+      return res.status(200).json("Your post has been deleted.");
     } else {
-      return res.status(400).json('You are not allowed to delete this post.');
+      return res.status(400).json("You are not allowed to delete this post.");
     }
   } catch (error) {
     return res.status(500).json('Internal error occurred.');
   }
 });
+
 
 module.exports = router;
