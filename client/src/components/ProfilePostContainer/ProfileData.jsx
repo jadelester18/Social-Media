@@ -322,7 +322,7 @@ const ProfileData = () => {
               <ShareLocationOutlinedIcon />{" "}
               {userData?.location === undefined
                 ? "Add location"
-                : "+63 " + userData?.location}
+                : userData?.location}
             </Stack>
           </CardContent>
           <CardContent>
