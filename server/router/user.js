@@ -29,22 +29,28 @@ router.post(
   async (req, res) => {
     const error = validationResult(req);
     if (!error.isEmpty()) {
-      return res.status(400).json("Some error occured");
+      return res.status(400).json("Some error occurred");
     }
 
     try {
-      //Check if user is exist
+      // Check if user exists
       let user = await User.findOne({ email: req.body.email });
 
       if (user) {
-        return res.status(200).json(true);
+        return res.status(400).json({ message: "Email already exists" });
       }
 
-      //For hashing password
+      user = await User.findOne({ username: req.body.username });
+
+      if (user) {
+        return res.status(400).json({ message: "Username already exists" });
+      }
+
+      // Hash the password
       const salt = await bcrypt.genSalt(10);
       const secpass = await bcrypt.hash(req.body.password, salt);
 
-      //If user doesn't exist this command will work for signup
+      // Create the user
       user = await User.create({
         firstname: req.body.firstname,
         lastname: req.body.lastname,
@@ -54,6 +60,7 @@ router.post(
         phonenumber: req.body.phonenumber,
       });
 
+      // Generate JWT token and send verification email
       const accessToken = jwt.sign(
         {
           id: user._id,
@@ -68,7 +75,6 @@ router.post(
         token: OTP,
       });
       verificationToken.save();
-      await user.save();
 
       const transport = nodemailer.createTransport({
         service: "gmail",
@@ -107,16 +113,14 @@ router.post(
           console.log("Email sent :" + info.response);
         }
       });
+
       return res.status(200).json({
         Status: "Pending",
         msg: "Please check your email",
         user: user._id,
       });
-
-      // await user.save();
-      // res.status(200).json({ user, accessToken });
     } catch (error) {
-      return res.status(400).json("Internal error occurred.");
+      return res.status(400).json({ message: "Internal error occurred" });
     }
   }
 );
@@ -124,33 +128,31 @@ router.post(
 router.post(
   "/login",
   body("email").isEmail(),
-  body("password").isLength({ min: 6 }),
+  // password must be at least 5 chars long
+  body("password").isLength({ min: 5 }),
   async (req, res) => {
+    // const error = validationResult(req);
+    // if (!error.isEmpty()) {
+    //   return res.status(400).json("Some error occured.");
+    // }
+
     try {
-      const emailExists = await User.findOne({ email: req.body.email });
-      if (!emailExists) {
-        return res.status(400).json({ message: "Email not exists" });
-      }
-
-      const usernameExists = await User.findOne({
-        username: req.body.username,
-      });
-      if (!usernameExists) {
-        return res.status(400).json({ message: "Username not exists" });
-      }
-
       const user = await User.findOne({ email: req.body.email });
+
+      //Check if user is not exist
       if (!user) {
-        return res.status(400).json({ message: "User doesn't found" });
+        return res.status(400).json("User doesn't exist.");
       }
 
-      const Comparepassword = await bcrypt.compare(
+      const ComparePassword = await bcrypt.compare(
         req.body.password,
         user.password
       );
-      if (!Comparepassword) {
-        return res.status(400).json({ message: "Password error" });
+
+      if (!ComparePassword) {
+        return res.status(400).json("Password error issue.");
       }
+
       const accessToken = jwt.sign(
         {
           id: user._id,
@@ -158,14 +160,15 @@ router.post(
         },
         JWTSEC
       );
+
       const { password, ...other } = user._doc;
+
       res.status(200).json({ other, accessToken });
     } catch (error) {
-      res.status(500).json({ message: "Internal error occurred" });
+      return res.status(400).json("Internal error occurred.");
     }
   }
 );
-
 
 //verify email
 router.post("/verify/email", async (req, res) => {
