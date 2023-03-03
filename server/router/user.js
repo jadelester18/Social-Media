@@ -131,10 +131,20 @@ router.post(
   // password must be at least 5 chars long
   body("password").isLength({ min: 5 }),
   async (req, res) => {
-    // const error = validationResult(req);
-    // if (!error.isEmpty()) {
-    //   return res.status(400).json("Some error occured.");
-    // }
+
+    try {
+      // const emailExists = await User.findOne({ email: req.body.email });
+      // if (!emailExists) {
+      //   return res.status(400).json({ message: "Email not exists" });
+      // }
+
+      // const usernameExists = await User.findOne({
+      //   username: req.body.username,
+      // });
+      // if (!usernameExists) {
+      //   return res.status(400).json({ message: "Username not exists" });
+      // }
+
 
     try {
       const user = await User.findOne({ email: req.body.email });
@@ -343,7 +353,6 @@ router.patch("/update/:id", verifyToken, async (req, res) => {
     return res.status(500).json("Internal error occurred.");
   }
 });
-
 
 //Update Profile
 router.patch("/update/profile/:id", verifyToken, async (req, res) => {

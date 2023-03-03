@@ -34,7 +34,7 @@ const Home = () => {
   return (
     <ThemeProvider theme={darkTheme}>
       <Box bgcolor={"background.default"} color={"text.primary"}>
-        <Navbar />
+        <Navbar setThemeMode={setMode} mode={mode} />
         <Stack
           direction="row"
           justifyContent="space-between"
@@ -44,7 +44,7 @@ const Home = () => {
             spacing: { xs: 0, sm: 0, md: 2 },
           }}
         >
-          <LeftBar setThemeMode={setMode} mode={mode} />
+          <LeftBar />
           <Feeds />
           <RightBar />
         </Stack>

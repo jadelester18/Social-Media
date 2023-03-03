@@ -9,8 +9,11 @@ import { useSelector } from "react-redux";
 const Profile = () => {
   //For Theme Management
   var data = window.localStorage.getItem("Theme");
-  const [mode, setMode] = useState("light");
-
+  var LD = "light";
+  if (data) {
+    LD = JSON.parse(data);
+  }
+  const [mode, setMode] = useState(LD);
   const darkTheme = createTheme({
     palette: {
       mode: mode,
@@ -31,7 +34,7 @@ const Profile = () => {
   return (
     <ThemeProvider theme={darkTheme}>
       <Box bgcolor={"background.default"} color={"text.primary"}>
-        <Navbar />
+        <Navbar setThemeMode={setMode} mode={mode} />
         <Stack
           direction="row"
           justifyContent="space-between"
@@ -41,7 +44,7 @@ const Profile = () => {
             spacing: { xs: 0, sm: 0, md: 2 },
           }}
         >
-          <ProfileLeftBar setThemeMode={setMode} mode={mode} />
+          <ProfileLeftBar />
           <ProfileFeeds />
           <ProfileRightBar />
         </Stack>

@@ -17,6 +17,8 @@ import {
   styled,
   Toolbar,
   Typography,
+  Switch,
+  FormControlLabel,
 } from "@mui/material";
 import AcUnitIcon from "@mui/icons-material/AcUnit";
 import { Link } from "react-router-dom";
@@ -27,6 +29,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../ReduxContainer/UserReducer";
 import LOGO from "../Images/LOGO.png";
 import axios from "axios";
+import DarkModeSharpIcon from "@mui/icons-material/DarkModeSharp";
+import Brightness4SharpIcon from "@mui/icons-material/Brightness4Sharp";
+const MaterialUISwitch = styled(Switch)(({ theme }) => ({}));
 
 const StyledToolbar = styled(Toolbar)({
   display: "flex",
@@ -103,7 +108,10 @@ const UserBox = styled(Box)(({ theme }) => ({
   },
 }));
 
-const Navbar = () => {
+const Navbar = ({ setThemeMode, mode }) => {
+  //For saving dark theme to local storage
+  var data = JSON.parse(localStorage.getItem("Theme"));
+
   //For Authentication
   const userLoggedinDetails = useSelector((state) => state.user);
   let userLogged = userLoggedinDetails.user;
@@ -172,11 +180,12 @@ const Navbar = () => {
             variant="h6"
             sx={{ display: { xs: "none", sm: "block" } }}
           >
-            Life trends
+            𝕃𝕚𝕗𝕖 𝕋𝕣𝕖𝕟𝕕𝕤
           </Typography>
         </Logo>
         <Link to={`/`}>
           <Avatar
+            onClick={handleScrollTop}
             src={`${LOGO}`}
             sx={{ display: { xs: "block", sm: "none" } }}
           />
@@ -189,27 +198,19 @@ const Navbar = () => {
             <StyledInputBase
               placeholder="Search…"
               inputProps={{ "aria-label": "search" }}
+              sx={{ float: "right" }}
             />
           </Search>
-          <IconButton
-            size="large"
-            aria-label="show 4 new mails"
-            color="inherit"
-          >
-            <Badge badgeContent={4} color="error">
-              <MarkunreadIcon />
-            </Badge>
-          </IconButton>
-          <IconButton
-            size="large"
-            aria-label="show 17 new notifications"
-            color="inherit"
-            onClick={handleMenuNotification}
-          >
-            <Badge badgeContent={17} color="error">
-              <NotificationsIcon />
-            </Badge>
-          </IconButton>
+
+          <FormControlLabel
+            control={<MaterialUISwitch sx={{ visibility: "hidden" }} />}
+            label={
+              data === "dark" ? <Brightness4SharpIcon /> : <DarkModeSharpIcon />
+            }
+            onChange={(e) => {
+              setThemeMode(mode === "light" ? "dark" : "light");
+            }}
+          />
           <IconButton
             size="large"
             edge="end"
@@ -231,6 +232,15 @@ const Navbar = () => {
               inputProps={{ "aria-label": "search" }}
             />
           </Search>
+          <FormControlLabel
+            control={<MaterialUISwitch sx={{ mt: 4, visibility: "hidden" }} />}
+            label={
+              data === "dark" ? <Brightness4SharpIcon /> : <DarkModeSharpIcon />
+            }
+            onChange={(e) => {
+              setThemeMode(mode === "light" ? "dark" : "light");
+            }}
+          />
           <Avatar
             size="large"
             src={userLogged.other.profilepicture}
