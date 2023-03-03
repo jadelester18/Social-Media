@@ -244,7 +244,7 @@ const ProfileData = () => {
         username: Username === "" ? "" : Username,
         bio: Bio === "" ? "" : Bio,
         password: Password === "" ? "" : Password,
-        phoneNumber: PhoneNumber === "" ? "" : PhoneNumber,
+        phonenumber: PhoneNumber === "" ? "" : PhoneNumber,
         location: Location === "" ? "" : Location,
         ...downloadURLs,
       }),

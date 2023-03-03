@@ -1,4 +1,4 @@
-import { Box, Typography } from "@mui/material";
+import { Box, Stack, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import Followers from "./Followers";
 import axios from "axios";
@@ -134,7 +134,9 @@ const RightBar = () => {
           >
             {loading ? (
               newFollowerUser.map((item) => (
-                <Followers followers={item} key={item._id} />
+                <Stack key={item._id}>
+                  <Followers followers={item} />
+                </Stack>
               ))
             ) : (
               <Spinner />
