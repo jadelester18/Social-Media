@@ -99,7 +99,7 @@ function App() {
             <Route
               path="/forgot/password"
               element={
-                user === null ? (
+                user === null || true ? (
                   <Forgetpassword />
                 ) : user?.other?.verified === true ? (
                   <Navigate to={"/"} replace={true} />

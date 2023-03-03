@@ -16,7 +16,7 @@ import { Link } from "react-router-dom";
 //For Login Auth Redux
 import { useSelector, useDispatch } from "react-redux";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { login } from "../components/ReduxContainer/ApiCall";
 import Joi from "joi";
 
@@ -24,13 +24,21 @@ const theme = createTheme();
 
 export default function Login() {
   const dispatch = useDispatch();
+  const user = useSelector((state) => state.user);
+  const userDetails = user.user;
   const { isFetching, error } = useSelector((state) => state.user);
-
+  useEffect(() => {}, [user, userDetails]);
   // const [email, setemail] = useState('');
   // const [password, setPassword] = useState('');
-
+  var emailPWChecker = "";
   const handleSubmit = (e) => {
-    e.preventDefault();
+    // e.preventDefault();
+
+    if (userDetails?.noUser) {
+      emailPWChecker = userDetails?.noUser;
+      alert(emailPWChecker);
+    }
+
     login(dispatch, form);
     console.log(form);
   };
