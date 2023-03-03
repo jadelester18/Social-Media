@@ -16,6 +16,8 @@ import {
   ListItem,
   ListItemAvatar,
   ListItemText,
+  Menu,
+  MenuItem,
   Modal,
   Stack,
   Typography,
@@ -54,6 +56,16 @@ const ProfileMainPost = ({ post }) => {
   //Show Profile Data of Specific User
   let location = useLocation();
   let id = location.pathname.split("/")[2];
+
+  //Showing Post Menu list
+  const [anchorMenuPost, setAnchorElMenuPost] = React.useState(null);
+
+  const handleOpenPostMenu = (event) => {
+    setAnchorElMenuPost(event.currentTarget);
+  };
+  const handleClosePostMenu = () => {
+    setAnchorElMenuPost(null);
+  };
 
   const [openChat, setOpenChat] = React.useState(false);
   const handleOpenChat = () => setOpenChat(true);
@@ -128,6 +140,70 @@ const ProfileMainPost = ({ post }) => {
     addCommentToPost();
   };
 
+  //For Delete Post
+  const [isDeleted, setIsDeleted] = useState(false);
+
+  const handleDelete = async () => {
+    try {
+      await axios.delete(
+        `http://localhost:5000/api/post/delete/post/${post._id}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            token: accesstoken,
+          },
+        }
+      );
+      console.log("Post deleted successfully.");
+      alert("Post deleted successfully.");
+      // Update state to indicate that the post has been deleted
+      setIsDeleted(true);
+    } catch (error) {
+      console.log("Error deleting post:", error);
+    }
+  };
+
+  // If the post has been deleted, don't render anything
+  if (isDeleted) {
+    return null;
+  }
+
+  //For Getting the time of the post
+  const postTimestamp = post.createdat;
+
+  // Convert the post timestamp to a Date object
+  const postDate = new Date(postTimestamp);
+
+  // Get the current time as a Date object in the Philippine time zone
+  const currentDate = new Date().toLocaleString("en-PH", {
+    timeZone: "Asia/Manila",
+  });
+
+  // Convert the current time to a Date object
+  const currentDateTime = new Date(currentDate);
+
+  // Calculate the difference between the current time and the post time in milliseconds
+  const differenceMs = currentDateTime.getTime() - postDate.getTime();
+
+  // Calculate the number of seconds, minutes, hours, and days that have passed
+  const seconds = Math.floor(differenceMs / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+
+  let timeDifference;
+
+  // The output will depend on the number of days, hours, minutes, and seconds that have passed
+  if (days > 0) {
+    timeDifference = `${days} day${days > 1 ? "s" : ""} ago`;
+  } else if (hours > 0) {
+    timeDifference = `${hours} hour${hours > 1 ? "s" : ""} ago`;
+  } else if (minutes > 0) {
+    timeDifference = `${minutes} minute${minutes > 1 ? "s" : ""} ago`;
+  } else {
+    timeDifference = `${seconds} second${seconds > 1 ? "s" : ""} ago`;
+  }
+
   return (
     <Box flex={4} p={2} sx={{ width: { sm: "100%" } }}>
       <Card sx={{ boxShadow: 10 }}>
@@ -143,7 +219,7 @@ const ProfileMainPost = ({ post }) => {
             />
           }
           action={
-            <IconButton aria-label="settings">
+            <IconButton aria-label="settings" onClick={handleOpenPostMenu}>
               <MoreVertIcon />
             </IconButton>
           }
@@ -301,6 +377,33 @@ const ProfileMainPost = ({ post }) => {
           </Stack>
         </Box>
       </Modal>
+      <Menu
+        id="user-menu"
+        anchorEl={anchorMenuPost}
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+        keepMounted
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+        open={Boolean(anchorMenuPost)}
+        onClose={handleClosePostMenu}
+        sx={{ mt: "45px" }}
+      >
+        {/* {id !== post.user ? (
+          ""
+        ) : (
+          <MenuItem onClick={handleOpenEditPost}>Edit</MenuItem>
+        )} */}
+        {id !== post.user ? (
+          ""
+        ) : (
+          <MenuItem onClick={handleDelete}>Delete</MenuItem>
+        )}
+      </Menu>
       <ScrollToTop smooth top="10" />
     </Box>
   );

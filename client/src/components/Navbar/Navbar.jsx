@@ -172,7 +172,7 @@ const Navbar = () => {
             variant="h6"
             sx={{ display: { xs: "none", sm: "block" } }}
           >
-            LIFE TREND
+            Life trends
           </Typography>
         </Logo>
         <Link to={`/`}>

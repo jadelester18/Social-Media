@@ -3,6 +3,7 @@ const Post = require('../Models/Post');
 const { route } = require('./user');
 const { verifyToken } = require('./verifytoken');
 
+//Uploading
 router.post('/user/post', verifyToken, async (req, res) => {
   try {
     let { title, image, video } = req.body;
@@ -18,6 +19,69 @@ router.post('/user/post', verifyToken, async (req, res) => {
     return res.status(500).json('Internal error occured');
   }
 });
+
+router.patch("/update/post/:id", verifyToken, async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.id);
+
+    if (!post) {
+      return res.status(400).json("Post not found");
+    }
+
+    // Only update the fields that are specified in the request body
+    if (req.body.title !== undefined) {
+      post.title = req.body.title;
+    }
+
+    if (req.body.image !== undefined) {
+      post.image = req.body.image;
+    }
+
+    if (req.body.video !== undefined) {
+      post.video = req.body.video;
+    }
+
+    const updatedPost = await post.save();
+
+    res.status(200).json(updatedPost);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json("Internal error occurred");
+  }
+});
+
+
+router.patch("/update/profile/:id", verifyToken, async (req, res) => {
+  try {
+    if (req.params.id === req.user.id) {
+      const updateFields = {};
+
+      if (req.body.firstname) {
+         post.title = req.body.title;
+      }
+      if (req.body.profilepicture) {
+        post.image = req.body.image;
+      }
+      if (req.body.backgroundpicture) {
+        post.video = req.body.video;
+      }
+
+      const updateProfile = await POST.findByIdAndUpdate(req.params.id, {
+        $set: updateFields,
+      });
+
+      await updateProfile.save();
+      res.status(200).json(updateProfile);
+    } else {
+      return res
+        .status(400)
+        .json("You're not allowed to updated this user profile.");
+    }
+  } catch (error) {
+    return res.status(500).json("Internal error occurred.");
+  }
+});
+
 
 //Get post by user id Profile
 router.get('/get/post/:id', async (req, res) => {
@@ -35,26 +99,26 @@ router.get('/get/post/:id', async (req, res) => {
 });
 
 //Update post by user id
-router.patch('/update/post/:id', verifyToken, async (req, res) => {
-  try {
-    let mypost = await Post.findById(req.params.id);
+// router.patch('/update/post/:id', verifyToken, async (req, res) => {
+//   try {
+//     let mypost = await Post.findById(req.params.id);
 
-    //Check if you have any post
-    if (!mypost) {
-      return res.status(400).json('Your post does not found.');
-    }
+//     //Check if you have any post
+//     if (!mypost) {
+//       return res.status(400).json('Your post does not found.');
+//     }
 
-    mypost = await Post.findByIdAndUpdate(req.params.id, {
-      $set: req.body,
-    });
+//     mypost = await Post.findByIdAndUpdate(req.params.id, {
+//       $set: req.body,
+//     });
 
-    let updatePost = await mypost.save();
+//     let updatePost = await mypost.save();
 
-    res.status(200).json(updatePost);
-  } catch (error) {
-    return res.status(400).json('Internal error occurred.');
-  }
-});
+//     res.status(200).json(updatePost);
+//   } catch (error) {
+//     return res.status(400).json('Internal error occurred.');
+//   }
+// });
 
 //For liking post
 router.patch('/:id/like', verifyToken, async (req, res) => {
