@@ -8,7 +8,11 @@ import RightBar from "../components/RightSideContainer/RightBar";
 const Home = () => {
   //For Dark Theme
   var data = window.localStorage.getItem("Theme");
-  const [mode, setMode] = useState(JSON.parse(data));
+  var LD = "light";
+  if (data) {
+    LD = JSON.parse(data);
+  }
+  const [mode, setMode] = useState(LD);
 
   const darkTheme = createTheme({
     palette: {
