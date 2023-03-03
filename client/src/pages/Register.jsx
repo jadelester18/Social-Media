@@ -38,7 +38,9 @@ const theme = createTheme();
 
 export default function Register() {
   const dispatch = useDispatch();
-  // const { isFetching, error } = useSelector((state) => state.user);
+  const { isFetching, error, errorMessage } = useSelector(
+    (state) => state.user
+  );
   const user = useSelector((state) => state.user);
   // const [email, setEmail] = useState('');
   // const [phonenumber, setphonenumber] = useState('');
@@ -250,6 +252,7 @@ export default function Register() {
                   autoComplete="username"
                   fullWidth
                 />
+                {error && errorMessage && <p>{errorMessage}</p>}
               </Grid>
               <Grid item xs={12}>
                 <TextField
