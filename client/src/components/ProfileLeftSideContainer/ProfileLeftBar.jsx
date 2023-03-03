@@ -130,16 +130,16 @@ const ProfileLeftBar = ({ setThemeMode, mode }) => {
               <ListItemAvatar>
                 <Avatar
                   alt={userLogged.other.username}
-                  src={userData.profilepicture}
+                  src={userData?.profilepicture}
                 />
               </ListItemAvatar>
               <ListItemText
                 primary={
-                  userLogged.other.firstname.charAt(0).toUpperCase() +
-                  userLogged.other.firstname.slice(1) +
+                  userData?.firstname?.charAt(0).toUpperCase() +
+                  userData?.firstname?.slice(1) +
                   " " +
-                  userLogged.other.lastname.charAt(0).toUpperCase() +
-                  userLogged.other.lastname.slice(1)
+                  userData?.lastname?.charAt(0).toUpperCase() +
+                  userData?.lastname?.slice(1)
                 }
               />
             </ListItemButton>
