@@ -40,14 +40,27 @@ const Feeds = () => {
 
   // console.log(post);
 
+  //For handling live update of post list
+  const [updateListPosts, setUpdateListPosts] = useState([]);
+
+  const handleNewPost = (newPost) => {
+    setUpdateListPosts([...updateListPosts, newPost]);
+  };
+
   return (
     <Box flex={2} p={2}>
-      <Post />
+      <Post handleNewPost={handleNewPost} />
       {loading ? (
         post &&
         post
           .sort((a, b) => (a.createdat > b.createdat ? -1 : 1))
-          .map((item) => <MainPost post={item} key={item._id} />)
+          .map((item) => (
+            <MainPost
+              post={item}
+              key={item._id}
+              updateListPosts={updateListPosts}
+            />
+          ))
       ) : (
         <Spinner />
       )}

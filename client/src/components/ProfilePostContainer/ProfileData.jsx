@@ -53,8 +53,6 @@ const ProfileData = () => {
   //For Authentication
   const userLoggedinDetails = useSelector((state) => state.user);
   let userLogged = userLoggedinDetails.user;
-  // console.log(user);
-  let idLogged = userLogged?.other._id;
   let accesstoken = userLogged.accessToken;
   // console.log(idLogged);
 
@@ -94,14 +92,14 @@ const ProfileData = () => {
       await fetch(`http://localhost:5000/api/user/follow/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/JSON", token: accesstoken },
-        body: JSON.stringify({ user: `${idLogged}` }),
+        body: JSON.stringify({ user: `${userLogged.other._id}` }),
       });
       setFollowOrUnfollow("UnFollow");
     } else {
       await fetch(`http://localhost:5000/api/user/follow/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/JSON", token: accesstoken },
-        body: JSON.stringify({ user: `${idLogged}` }),
+        body: JSON.stringify({ user: `${userLogged.other._id}` }),
       });
       setFollowOrUnfollow("Follow");
     }
@@ -282,26 +280,15 @@ const ProfileData = () => {
             </Avatar>
           }
           action={
-            id !== idLogged ? (
-              followOrUnfollow == "Follow" ? (
-                <Button
-                  variant="outlined"
-                  size="small"
-                  sx={{ marginTop: 3, marginRight: 2, borderRadius: 10 }}
-                  onClick={handleFollowUser}
-                >
-                  Follow
-                </Button>
-              ) : (
-                <Button
-                  variant="outlined"
-                  size="small"
-                  sx={{ marginTop: 3, marginRight: 2, borderRadius: 10 }}
-                  onClick={handleFollowUser}
-                >
-                  UnFollow
-                </Button>
-              )
+            userLogged?.other._id !== id ? (
+              <Button
+                variant="outlined"
+                size="small"
+                sx={{ marginTop: 3, marginRight: 2, borderRadius: 10 }}
+                onClick={handleFollowUser}
+              >
+                {followOrUnfollow}
+              </Button>
             ) : (
               <Button
                 variant="outlined"

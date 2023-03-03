@@ -8,8 +8,10 @@ export const login = async (dispatch, user) => {
     dispatch(loginSuccess(res.data));
   } catch (error) {
     dispatch(loginFailure());
+    alert(error.response.data.message); // Show error message in an alert
   }
 };
+
 
 export const VerifyEmail = async (dispatch, user) => {
   dispatch(loginStart());
