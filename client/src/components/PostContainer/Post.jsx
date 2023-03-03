@@ -26,7 +26,7 @@ import {
 import LinearProgress from "@mui/material/LinearProgress";
 import axios from "axios";
 
-const Post = () => {
+const Post = ({ handleNewPost }) => {
   //For Authentication
   const userLoggedinDetails = useSelector((state) => state.user);
   let userLogged = userLoggedinDetails.user;
@@ -139,8 +139,10 @@ const Post = () => {
                 image: downloadURL,
                 video: "",
               }),
+              // handleNewPost()
             }).then((data) => {
               // alert("Your Post was upload successfully");
+
               window.location.reload(true);
             });
           });

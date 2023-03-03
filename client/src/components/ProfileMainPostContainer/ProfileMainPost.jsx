@@ -10,8 +10,11 @@ import {
   CardMedia,
   Checkbox,
   Divider,
+  FormControl,
   IconButton,
+  InputAdornment,
   InputBase,
+  InputLabel,
   List,
   ListItem,
   ListItemAvatar,
@@ -19,6 +22,7 @@ import {
   Menu,
   MenuItem,
   Modal,
+  OutlinedInput,
   Stack,
   Typography,
 } from "@mui/material";
@@ -32,6 +36,15 @@ import MarkUnreadChatAltOutlinedIcon from "@mui/icons-material/MarkUnreadChatAlt
 import axios from "axios";
 import { useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
+import {
+  getStorage,
+  ref,
+  uploadBytesResumable,
+  getDownloadURL,
+} from "firebase/storage";
+import app from "../../firebase";
+import SubtitlesOutlinedIcon from "@mui/icons-material/SubtitlesOutlined";
+import CloudUploadOutlinedIcon from "@mui/icons-material/CloudUploadOutlined";
 
 const label = { inputProps: { "aria-label": "Checkbox demo" } };
 
@@ -47,16 +60,30 @@ const styleModal = {
   p: 4,
 };
 
+const style = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 400,
+  bgcolor: "background.paper",
+  boxShadow: 24,
+  borderRadius: 10,
+  p: 4,
+};
+
 const ProfileMainPost = ({ post }) => {
   //For Authentication
   const userLoggedinDetails = useSelector((state) => state.user);
   let userLogged = userLoggedinDetails.user;
+  let iduserLogged = userLogged.other._id;
   const accesstoken = userLogged.accessToken;
 
   //Show Profile Data of Specific User
   let location = useLocation();
   let id = location.pathname.split("/")[2];
 
+  //Showing Post Menu list
   //Showing Post Menu list
   const [anchorMenuPost, setAnchorElMenuPost] = React.useState(null);
 
@@ -65,6 +92,116 @@ const ProfileMainPost = ({ post }) => {
   };
   const handleClosePostMenu = () => {
     setAnchorElMenuPost(null);
+  };
+
+  //Showing Modal For Edit Post
+  const [openEditPost, setOpenEditPost] = React.useState(false);
+  const handleOpenEditPost = () => setOpenEditPost(true);
+  const handleCloseEditPost = () => setOpenEditPost(false);
+
+  // For Editing Post Data
+  const [TitlePostEdit, setTitlePostEdit] = useState("");
+  const [selectedImageVideo, setSelectedImageVideo] = useState(null);
+
+  const handleEditPost = async (e) => {
+    e.preventDefault();
+    let downloadURL = null;
+    let imageFileName = null;
+    let videoFileName = null;
+    let updateObject = {};
+
+    if (selectedImageVideo !== null) {
+      if (selectedImageVideo.type.startsWith("image/")) {
+        imageFileName = new Date().getTime() + selectedImageVideo.name;
+        const storage = getStorage(app);
+        const storageRef = ref(storage, imageFileName);
+        const uploadTask = uploadBytesResumable(storageRef, selectedImageVideo);
+        uploadTask.on(
+          "state_changed",
+          (snapshot) => {
+            const progress =
+              (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            console.log("Upload is " + progress + "% done");
+          },
+          (error) => {
+            console.log(error);
+          },
+          async () => {
+            downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+            updateObject = {
+              image: downloadURL,
+              imageFileName,
+            };
+            if (TitlePostEdit !== post.title) {
+              updateObject.title = TitlePostEdit;
+            }
+            updatePostContent(updateObject);
+          }
+        );
+      } else if (selectedImageVideo.type.startsWith("video/")) {
+        videoFileName = new Date().getTime() + selectedImageVideo.name;
+        const storage = getStorage(app);
+        const storageRef = ref(storage, videoFileName);
+        const uploadTask = uploadBytesResumable(storageRef, selectedImageVideo);
+        uploadTask.on(
+          "state_changed",
+          (snapshot) => {
+            const progress =
+              (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            console.log("Upload is " + progress + "% done");
+          },
+          (error) => {
+            console.log(error);
+          },
+          async () => {
+            downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+            updateObject = {
+              video: downloadURL,
+              videoFileName,
+            };
+            if (TitlePostEdit !== post.title) {
+              updateObject.title = TitlePostEdit;
+            }
+            updatePostContent(updateObject);
+          }
+        );
+      }
+    } else {
+      if (TitlePostEdit !== post.title) {
+        updateObject.title = TitlePostEdit;
+        updatePostContent(updateObject);
+      }
+    }
+  };
+
+  const updatePostContent = async (updateObject) => {
+    try {
+      const formData = new FormData();
+      formData.append("title", updateObject.title);
+      if (updateObject.imageFileName !== null) {
+        formData.append("image", updateObject.image);
+        formData.append("imageFileName", updateObject.imageFileName);
+      }
+      if (updateObject.videoFileName !== null) {
+        formData.append("video", updateObject.video);
+        formData.append("videoFileName", updateObject.videoFileName);
+      }
+      const response = await fetch(
+        `http://localhost:5000/api/post/update/post/${post._id}`,
+        {
+          method: "PATCH",
+          headers: {
+            token: accesstoken,
+          },
+          body: formData,
+        }
+      );
+      const data = await response.json();
+      console.log("Post updated successfully");
+      window.location.reload(true);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const [openChat, setOpenChat] = React.useState(false);
@@ -389,21 +526,93 @@ const ProfileMainPost = ({ post }) => {
           vertical: "top",
           horizontal: "right",
         }}
-        open={Boolean(anchorMenuPost)}
+        open={Boolean(iduserLogged !== post.user ? "" : anchorMenuPost)}
         onClose={handleClosePostMenu}
         sx={{ mt: "45px" }}
       >
-        {/* {id !== post.user ? (
-          ""
-        ) : (
-          <MenuItem onClick={handleOpenEditPost}>Edit</MenuItem>
-        )} */}
-        {id !== post.user ? (
-          ""
-        ) : (
-          <MenuItem onClick={handleDelete}>Delete</MenuItem>
-        )}
+        <MenuItem onClick={handleOpenEditPost}>Edit</MenuItem>
+
+        <MenuItem onClick={handleDelete}>Delete</MenuItem>
       </Menu>
+      <Modal
+        open={openEditPost}
+        onClose={handleCloseEditPost}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style}>
+          <Box sx={{ flexWrap: "wrap" }}>
+            <Typography id="modal-modal-title" variant="h6" component="h2">
+              Edit Post
+              <Button
+                variant="contained"
+                sx={{ float: "right", borderRadius: 10 }}
+                onClick={handleEditPost}
+              >
+                Save
+              </Button>
+            </Typography>
+          </Box>
+          <Box sx={{ display: "flex", flexWrap: "wrap", mt: 2 }}>
+            <div>
+              <FormControl fullWidth sx={{ mt: 1 }}>
+                <Card>
+                  {post.image !== "" ? (
+                    <CardMedia
+                      component="img"
+                      height="20%"
+                      image={post.image}
+                      alt={post.title}
+                    />
+                  ) : post.video !== "" ? (
+                    <CardMedia
+                      component="video"
+                      image={post.video}
+                      alt={post.title}
+                      controls
+                      // autoPlay
+                    />
+                  ) : (
+                    ""
+                  )}
+                </Card>
+              </FormControl>
+              <FormControl fullWidth sx={{ mt: 3 }}>
+                <InputLabel htmlFor="outlined-adornment-amount">
+                  Title
+                </InputLabel>
+                <OutlinedInput
+                  id="outlined-adornment-amount"
+                  onChange={(e) => setTitlePostEdit(e.target.value)}
+                  defaultValue={post.title}
+                  startAdornment={
+                    <InputAdornment position="start">
+                      <SubtitlesOutlinedIcon />
+                    </InputAdornment>
+                  }
+                  label="Amount"
+                />
+              </FormControl>
+              <FormControl fullWidth sx={{ mt: 1 }}>
+                <Button
+                  variant="outlined"
+                  component="label"
+                  startIcon={<CloudUploadOutlinedIcon />}
+                >
+                  Edit Post Video/Image
+                  <input
+                    hidden
+                    accept="image/*,video/*"
+                    onChange={(e) => setSelectedImageVideo(e.target.files[0])}
+                    multiple
+                    type="file"
+                  />
+                </Button>
+              </FormControl>
+            </div>
+          </Box>
+        </Box>
+      </Modal>
       <ScrollToTop smooth top="10" />
     </Box>
   );

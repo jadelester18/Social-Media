@@ -124,31 +124,33 @@ router.post(
 router.post(
   "/login",
   body("email").isEmail(),
-  // password must be at least 5 chars long
-  body("password").isLength({ min: 5 }),
+  body("password").isLength({ min: 6 }),
   async (req, res) => {
-    // const error = validationResult(req);
-    // if (!error.isEmpty()) {
-    //   return res.status(400).json("Some error occured.");
-    // }
-
     try {
-      const user = await User.findOne({ email: req.body.email });
-
-      //Check if user is not exist
-      if (!user) {
-        return res.status(400).json("User doesn't exist.");
+      const emailExists = await User.findOne({ email: req.body.email });
+      if (!emailExists) {
+        return res.status(400).json({ message: "Email not exists" });
       }
 
-      const ComparePassword = await bcrypt.compare(
+      const usernameExists = await User.findOne({
+        username: req.body.username,
+      });
+      if (!usernameExists) {
+        return res.status(400).json({ message: "Username not exists" });
+      }
+
+      const user = await User.findOne({ email: req.body.email });
+      if (!user) {
+        return res.status(400).json({ message: "User doesn't found" });
+      }
+
+      const Comparepassword = await bcrypt.compare(
         req.body.password,
         user.password
       );
-
-      if (!ComparePassword) {
-        return res.status(400).json("Password error issue.");
+      if (!Comparepassword) {
+        return res.status(400).json({ message: "Password error" });
       }
-
       const accessToken = jwt.sign(
         {
           id: user._id,
@@ -156,15 +158,14 @@ router.post(
         },
         JWTSEC
       );
-
       const { password, ...other } = user._doc;
-
       res.status(200).json({ other, accessToken });
     } catch (error) {
-      return res.status(400).json("Internal error occurred.");
+      res.status(500).json({ message: "Internal error occurred" });
     }
   }
 );
+
 
 //verify email
 router.post("/verify/email", async (req, res) => {

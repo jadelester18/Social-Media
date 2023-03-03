@@ -44,7 +44,7 @@ const ProfileRightBar = () => {
       }
     };
     getUserPosted();
-  }, []);
+  }, [id]);
 
   //Getting image post of user logged in
   const [post, setPost] = useState([]);
@@ -59,7 +59,7 @@ const ProfileRightBar = () => {
       } catch (error) {}
     };
     getPost();
-  }, []);
+  }, [id]);
 
   //For Get List Of All Following of user logged in
   const [following, setFollowing] = useState([]);
@@ -75,7 +75,7 @@ const ProfileRightBar = () => {
       }
     };
     getUserFollowing();
-  }, []);
+  }, [id]);
 
   return (
     <Box

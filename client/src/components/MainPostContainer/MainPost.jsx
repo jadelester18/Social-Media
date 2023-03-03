@@ -289,7 +289,7 @@ const MainPost = ({ post }) => {
         }
       );
       console.log("Post deleted successfully.");
-      alert("Post deleted successfully.");
+      // alert("Post deleted successfully.");
       // Update state to indicate that the post has been deleted
       setIsDeleted(true);
     } catch (error) {
@@ -527,20 +527,13 @@ const MainPost = ({ post }) => {
           vertical: "top",
           horizontal: "right",
         }}
-        open={Boolean(anchorMenuPost)}
+        open={Boolean(id !== post.user ? "" : anchorMenuPost)}
         onClose={handleClosePostMenu}
         sx={{ mt: "45px" }}
       >
-        {/* {id !== post.user ? (
-          ""
-        ) : (
-          <MenuItem onClick={handleOpenEditPost}>Edit</MenuItem>
-        )} */}
-        {id !== post.user ? (
-          ""
-        ) : (
-          <MenuItem onClick={handleDelete}>Delete</MenuItem>
-        )}
+        <MenuItem onClick={handleOpenEditPost}>Edit</MenuItem>
+
+        <MenuItem onClick={handleDelete}>Delete</MenuItem>
       </Menu>
       <Modal
         open={openEditPost}
