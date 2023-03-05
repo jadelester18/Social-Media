@@ -293,7 +293,7 @@ const Post = ({ handleNewPost }) => {
           <TextField
             multiline
             rows={2}
-            placeholder="What's on your mind?"
+            placeholder="How's life going?"
             variant="standard"
             sx={{ width: "100%" }}
             onChange={(e) => setTile(e.target.value)}
