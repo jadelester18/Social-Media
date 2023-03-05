@@ -80,7 +80,9 @@ const Post = ({ handleNewPost }) => {
   }, [selectedImage, selectedVideo]);
 
   //For Posting
+  const [key, setKey] = useState(0);
   const handlePost = (e) => {
+    setKey(key + 1);
     e.preventDefault();
     if (selectedImage !== null) {
       const fileName = new Date().getTime() + selectedImage?.name;
@@ -142,8 +144,7 @@ const Post = ({ handleNewPost }) => {
               // handleNewPost()
             }).then((data) => {
               // alert("Your Post was upload successfully");
-
-              window.location.reload(true);
+              // window.location.reload(true);
             });
           });
         }
@@ -207,7 +208,7 @@ const Post = ({ handleNewPost }) => {
               }),
             }).then((data) => {
               // alert("Your Post was upload successfully");
-              window.location.reload(true);
+              // window.location.reload(true);
             });
           });
         }
@@ -226,7 +227,7 @@ const Post = ({ handleNewPost }) => {
         }),
       }).then((data) => {
         // alert("Your Post was upload successfully");
-        window.location.reload(true);
+        // window.location.reload(true);
       });
     }
   };
@@ -248,7 +249,7 @@ const Post = ({ handleNewPost }) => {
   }, [id]);
 
   return (
-    <Box flex={4} p={2} sx={{ width: { sm: "100%" } }}>
+    <Box flex={4} p={2} sx={{ width: { sm: "100%" } }} key={key}>
       <LinearProgress variant="buffer" value={progress} valueBuffer={buffer} />
       <Card sx={{ boxShadow: 5 }}>
         <CardHeader
