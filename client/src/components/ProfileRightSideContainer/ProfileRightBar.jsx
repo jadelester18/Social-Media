@@ -139,7 +139,7 @@ const ProfileRightBar = () => {
             sx={{ letterSpacing: "0.1rem" }}
             fontSize=".8rem"
           >
-            Following
+            {userDetails?.firstname} Following
           </Typography>
           <Box
             sx={{

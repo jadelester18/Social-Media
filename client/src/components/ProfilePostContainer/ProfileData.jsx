@@ -87,7 +87,11 @@ const ProfileData = () => {
   const [followOrUnfollow, setFollowOrUnfollow] = useState([
     userLogged.other.following.includes(userData._id) ? "UnFollow" : "Follow",
   ]);
-
+  useEffect(() => {
+    userData._id
+      ? setFollowOrUnfollow("Follow")
+      : setFollowOrUnfollow("Unfollow");
+  }, [setFollowOrUnfollow]);
   const handleFollowUser = async () => {
     if (followOrUnfollow === "Follow") {
       await fetch(`http://localhost:5000/api/user/follow/${userData._id}`, {

@@ -113,7 +113,7 @@ const RightBar = () => {
             sx={{ letterSpacing: "0.1rem" }}
             fontSize=".8rem"
           >
-            New Followers
+           My Followers
           </Typography>
           <Box
             sx={{
