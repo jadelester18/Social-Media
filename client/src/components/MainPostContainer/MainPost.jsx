@@ -550,6 +550,7 @@ const MainPost = ({ post }) => {
                 variant="contained"
                 sx={{ float: "right", borderRadius: 10 }}
                 onClick={handlePostUpdate}
+                // disabled={!this.state.email}
               >
                 Save
               </Button>
