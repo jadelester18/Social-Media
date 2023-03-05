@@ -185,7 +185,7 @@ const ProfileMainPost = ({ post }) => {
         return response.json();
       })
       .then((data) => {
-        alert("Post updated successfully.");
+        // alert("Post updated successfully.");
         handleCloseEditPost(true);
         handleClosePostMenu(true);
         setTitle("");
@@ -194,7 +194,7 @@ const ProfileMainPost = ({ post }) => {
       })
       .catch((error) => {
         console.error(error);
-        alert("Failed to update post.");
+        // alert("Failed to update post.");
       });
   };
 
@@ -286,7 +286,7 @@ const ProfileMainPost = ({ post }) => {
         }
       );
       console.log("Post deleted successfully.");
-      alert("Post deleted successfully.");
+      // alert("Post deleted successfully.");
       // Update state to indicate that the post has been deleted
       setIsDeleted(true);
     } catch (error) {
