@@ -94,7 +94,7 @@ export default function Register() {
       .required(),
     phonenumber: Joi.number().min(10),
     password: Joi.string().min(6).max(50).required(),
-    confirmPassword: Joi.valid("password"),
+    confirmPassword: Joi.equal(form.password),
   });
 
   const handleClose = (event, reason) => {
