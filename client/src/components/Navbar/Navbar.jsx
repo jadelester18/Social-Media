@@ -69,7 +69,8 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
     width: "0ch",
     "&:focus": {
       backgroundColor: alpha(theme.palette.common.white, 0.15),
-      width: "20ch",
+      width: "15ch",
+      marginRight: "1ch",
     },
     [theme.breakpoints.up("sm")]: {
       width: "0ch",
@@ -203,7 +204,11 @@ const Navbar = ({ setThemeMode, mode }) => {
           </Search>
 
           <FormControlLabel
-            control={<MaterialUISwitch sx={{ visibility: "hidden" }} />}
+            control={
+              <MaterialUISwitch
+                sx={{ visibility: "hidden", display: "none" }}
+              />
+            }
             label={
               data === "dark" ? <Brightness4SharpIcon /> : <DarkModeSharpIcon />
             }
@@ -233,7 +238,11 @@ const Navbar = ({ setThemeMode, mode }) => {
             />
           </Search>
           <FormControlLabel
-            control={<MaterialUISwitch sx={{ mt: 4, visibility: "hidden" }} />}
+            control={
+              <MaterialUISwitch
+                sx={{ mt: 4, visibility: "hidden", display: "none" }}
+              />
+            }
             label={
               data === "dark" ? <Brightness4SharpIcon /> : <DarkModeSharpIcon />
             }

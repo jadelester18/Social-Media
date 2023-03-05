@@ -36,13 +36,14 @@ import {
   getDownloadURL,
 } from "firebase/storage";
 import LinearProgress from "@mui/material/LinearProgress";
+import { fontSize } from "@mui/system";
 
-const style = {
+const styleModal = {
   position: "absolute",
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: 400,
+  width: { xs: 280, sm: 400 },
   bgcolor: "background.paper",
   boxShadow: 24,
   borderRadius: 10,
@@ -80,23 +81,23 @@ const ProfileData = () => {
       }
     };
     getnewFollowers();
-  }, [id]);
+  }, [id, userData]);
 
   //Trying to Follow or Unfollow Specific User
   const [followOrUnfollow, setFollowOrUnfollow] = useState([
-    userLogged.other.following.includes(id) ? "UnFollow" : "Follow",
+    userLogged.other.following.includes(userData._id) ? "UnFollow" : "Follow",
   ]);
 
   const handleFollowUser = async () => {
     if (followOrUnfollow === "Follow") {
-      await fetch(`http://localhost:5000/api/user/follow/${id}`, {
+      await fetch(`http://localhost:5000/api/user/follow/${userData._id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/JSON", token: accesstoken },
         body: JSON.stringify({ user: `${userLogged.other._id}` }),
       });
       setFollowOrUnfollow("UnFollow");
     } else {
-      await fetch(`http://localhost:5000/api/user/follow/${id}`, {
+      await fetch(`http://localhost:5000/api/user/follow/${userData._id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/JSON", token: accesstoken },
         body: JSON.stringify({ user: `${userLogged.other._id}` }),
@@ -249,7 +250,9 @@ const ProfileData = () => {
     })
       .then((data) => {
         console.log("Profile Updated Successfully");
-        window.location.reload(true);
+        handleClose(true);
+        setUploadPercent(0);
+        // window.location.reload(true);
       })
       .catch((error) => {
         console.log(error);
@@ -320,7 +323,7 @@ const ProfileData = () => {
               <EventAvailableOutlinedIcon /> Joined{" "}
               {userData?.joineddate?.replace("-", " ").slice(0, -14)}
             </Stack>
-            <Stack direction="row" spacing={1}>
+            <Stack direction="row" spacing={1} sx={{ mt: 1 }}>
               <ShareLocationOutlinedIcon />{" "}
               {userData?.location === undefined
                 ? "Add location"
@@ -353,7 +356,7 @@ const ProfileData = () => {
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
-        <Box sx={style}>
+        <Box sx={styleModal}>
           <LinearProgress
             variant="buffer"
             value={progress}

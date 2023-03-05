@@ -1,10 +1,12 @@
 import {
   Avatar,
   Box,
+  Button,
   Card,
   CardActions,
   CardContent,
   CardHeader,
+  Grid,
   IconButton,
   Stack,
   TextField,
@@ -14,6 +16,7 @@ import React, { useEffect, useState } from "react";
 import SendIcon from "@mui/icons-material/Send";
 import VideoCallIcon from "@mui/icons-material/VideoCall";
 import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
+import CancelIcon from "@mui/icons-material/Cancel";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import app from "../../firebase";
@@ -68,16 +71,26 @@ const Post = ({ handleNewPost }) => {
   const [selectedVideo, setSelectedVideo] = useState(null);
   const [title, setTile] = useState("");
   const [imageUrl, setImageUrl] = useState(null);
+  const [videoUrl, setVideoUrl] = useState(null);
   // console.log(selectedImage.name);
 
   useEffect(() => {
-    if (selectedImage) {
+    if (selectedImage !== null) {
       setImageUrl(URL.createObjectURL(selectedImage));
+      setVideoUrl(null);
     }
-    if (selectedVideo) {
-      setImageUrl(URL.createObjectURL(selectedVideo));
+    if (selectedVideo !== null) {
+      setVideoUrl(URL.createObjectURL(selectedVideo));
+      setImageUrl(null);
     }
   }, [selectedImage, selectedVideo]);
+
+  const handleRemoveMedia = () => {
+    setSelectedImage(null);
+    setSelectedVideo(null);
+    setImageUrl(null);
+    setVideoUrl(null);
+  };
 
   //For Posting
   const [key, setKey] = useState(0);
@@ -143,6 +156,8 @@ const Post = ({ handleNewPost }) => {
               }),
               // handleNewPost()
             }).then((data) => {
+              setUploadPercent(0);
+              setSelectedImage(null);
               // alert("Your Post was upload successfully");
               // window.location.reload(true);
             });
@@ -207,6 +222,8 @@ const Post = ({ handleNewPost }) => {
                 image: "",
               }),
             }).then((data) => {
+              setUploadPercent(0);
+              setSelectedVideo(null);
               // alert("Your Post was upload successfully");
               // window.location.reload(true);
             });
@@ -281,34 +298,61 @@ const Post = ({ handleNewPost }) => {
             sx={{ width: "100%" }}
             onChange={(e) => setTile(e.target.value)}
           />
-          {imageUrl && selectedImage && (
+          {(selectedImage || selectedVideo) && (
             <Box
               mt={2}
-              component="img"
               sx={{
+                position: "relative",
                 height: 233,
-                width: 350,
+                width: { xs: "100%", md: 350 },
                 maxHeight: { xs: 233, md: 167 },
                 maxWidth: { xs: 350, md: 350 },
               }}
-              alt={selectedImage.name}
-              src={imageUrl}
-            />
-          )}
-          {imageUrl && selectedVideo && (
-            <Box
-              mt={2}
-              component="video"
-              controls
-              sx={{
-                height: 233,
-                width: "100%",
-                maxHeight: { xs: 233, md: 167 },
-                maxWidth: { xs: 350, md: 350 },
-              }}
-              alt={selectedVideo.name}
-              src={imageUrl}
-            />
+            >
+              {selectedImage && (
+                <Box
+                  component="img"
+                  sx={{
+                    height: "100%",
+                    width: "100%",
+                    objectFit: "contain",
+                  }}
+                  alt={selectedImage.name}
+                  src={imageUrl}
+                />
+              )}
+              {selectedVideo && (
+                <Box
+                  component="video"
+                  sx={{
+                    height: "100%",
+                    width: "100%",
+                    objectFit: "contain",
+                  }}
+                  autoPlay
+                  muted
+                  loop
+                >
+                  <source src={videoUrl} type="video/mp4" />
+                  Your browser does not support the video tag.
+                </Box>
+              )}
+              <Box
+                sx={{
+                  position: "absolute",
+                  top: "0%",
+                  right: "0%",
+                }}
+              >
+                <IconButton
+                  color="primary"
+                  onClick={handleRemoveMedia}
+                  variant="contained"
+                >
+                  <CancelIcon />
+                </IconButton>
+              </Box>
+            </Box>
           )}
         </CardContent>
         <CardActions>

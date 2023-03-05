@@ -158,13 +158,13 @@ const ProfileRightBar = () => {
               },
             }}
           >
-            <Grid container spacing={1}>
+            <Grid container spacing={1} sx={{ mt: 1 }}>
               {loading ? (
                 following &&
                 following.slice(0, 6).map((item) => (
                   <Grid
                     item
-                    xs={5}
+                    xs={4}
                     component={Link}
                     to={`/Profile/${item._id}`}
                     key={item._id}

@@ -45,6 +45,7 @@ import {
   getDownloadURL,
 } from "firebase/storage";
 import app from "../../firebase";
+import LinearProgress from "@mui/material/LinearProgress";
 
 const label = { inputProps: { "aria-label": "Checkbox demo" } };
 
@@ -60,18 +61,6 @@ const styleModal = {
   p: 4,
 };
 
-const style = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 400,
-  bgcolor: "background.paper",
-  boxShadow: 24,
-  borderRadius: 10,
-  p: 4,
-};
-
 const MainPost = ({ post }) => {
   //For Authentication
   const userLoggedinDetails = useSelector((state) => state.user);
@@ -79,6 +68,36 @@ const MainPost = ({ post }) => {
   // console.log(user);
   let id = userLogged.other._id;
   const accesstoken = userLogged.accessToken;
+
+  //For Progress Bar Upload Post
+  const [progress, setProgress] = React.useState(0);
+  const [buffer, setBuffer] = React.useState(10);
+  const [uploadPercent, setUploadPercent] = useState(0);
+
+  const progressRef = React.useRef(() => {});
+  React.useEffect(() => {
+    progressRef.current = () => {
+      if (progress > 100) {
+        setProgress(0);
+        setBuffer(10);
+      } else {
+        const diff = uploadPercent;
+        const diff2 = uploadPercent;
+        setProgress(progress + diff);
+        setBuffer(progress + diff + diff2);
+      }
+    };
+  });
+
+  React.useEffect(() => {
+    const timer = setInterval(() => {
+      progressRef.current();
+    }, 500);
+
+    return () => {
+      clearInterval(timer);
+    };
+  }, []);
 
   //Showing Post Menu list
   const [anchorMenuPost, setAnchorElMenuPost] = React.useState(null);
@@ -96,108 +115,84 @@ const MainPost = ({ post }) => {
   const handleCloseEditPost = () => setOpenEditPost(false);
 
   // For Editing Post Data
-  const [TitlePostEdit, setTitlePostEdit] = useState("");
-  const [selectedImageVideo, setSelectedImageVideo] = useState(null);
+  const [title, setTitle] = useState("");
+  const [selectedFile, setSelectedFile] = useState(null);
 
-  const handleEditPost = async (e) => {
+  const handleFileSelect = (e) => {
+    setSelectedFile(e.target.files[0]);
+  };
+
+  const handlePostUpdate = (e) => {
     e.preventDefault();
-    let downloadURL = null;
-    let imageFileName = null;
-    let videoFileName = null;
-    let updateObject = {};
 
-    if (selectedImageVideo !== null) {
-      if (selectedImageVideo.type.startsWith("image/")) {
-        imageFileName = new Date().getTime() + selectedImageVideo.name;
-        const storage = getStorage(app);
-        const storageRef = ref(storage, imageFileName);
-        const uploadTask = uploadBytesResumable(storageRef, selectedImageVideo);
-        uploadTask.on(
-          "state_changed",
-          (snapshot) => {
-            const progress =
-              (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-            console.log("Upload is " + progress + "% done");
-          },
-          (error) => {
-            console.log(error);
-          },
-          async () => {
-            downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-            updateObject = {
-              image: downloadURL,
-              imageFileName,
-            };
-            if (TitlePostEdit !== post.title) {
-              updateObject.title = TitlePostEdit;
+    let postData = {};
+
+    if (selectedFile) {
+      const fileName = new Date().getTime() + selectedFile.name;
+      const storage = getStorage();
+      const storageRef = ref(storage, fileName);
+      const uploadTask = uploadBytesResumable(storageRef, selectedFile);
+
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          const progress = Math.round(
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+          );
+          setUploadPercent(progress);
+        },
+        (error) => {
+          console.error(error);
+        },
+        () => {
+          getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+            if (selectedFile.type.startsWith("image")) {
+              postData.image = downloadURL;
+              postData.video = "";
+            } else if (selectedFile.type.startsWith("video")) {
+              postData.video = downloadURL;
+              postData.image = "";
             }
-            updatePostContent(updateObject);
-          }
-        );
-      } else if (selectedImageVideo.type.startsWith("video/")) {
-        videoFileName = new Date().getTime() + selectedImageVideo.name;
-        const storage = getStorage(app);
-        const storageRef = ref(storage, videoFileName);
-        const uploadTask = uploadBytesResumable(storageRef, selectedImageVideo);
-        uploadTask.on(
-          "state_changed",
-          (snapshot) => {
-            const progress =
-              (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-            console.log("Upload is " + progress + "% done");
-          },
-          (error) => {
-            console.log(error);
-          },
-          async () => {
-            downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-            updateObject = {
-              video: downloadURL,
-              videoFileName,
-            };
-            if (TitlePostEdit !== post.title) {
-              updateObject.title = TitlePostEdit;
+            if (title.trim()) {
+              postData.title = title.trim();
             }
-            updatePostContent(updateObject);
-          }
-        );
-      }
-    } else {
-      if (TitlePostEdit !== post.title) {
-        updateObject.title = TitlePostEdit;
-        updatePostContent(updateObject);
-      }
+            updatePost(postData);
+          });
+        }
+      );
+    } else if (title.trim()) {
+      postData.title = title.trim();
+      updatePost(postData);
     }
   };
 
-  const updatePostContent = async (updateObject) => {
-    try {
-      const formData = new FormData();
-      formData.append("title", updateObject.title);
-      if (updateObject.imageFileName !== null) {
-        formData.append("image", updateObject.image);
-        formData.append("imageFileName", updateObject.imageFileName);
-      }
-      if (updateObject.videoFileName !== null) {
-        formData.append("video", updateObject.video);
-        formData.append("videoFileName", updateObject.videoFileName);
-      }
-      const response = await fetch(
-        `http://localhost:5000/api/post/update/post/${post._id}`,
-        {
-          method: "PATCH",
-          headers: {
-            token: accesstoken,
-          },
-          body: formData,
+  const updatePost = (postData) => {
+    fetch(`http://localhost:5000/api/post/update/post/${post._id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        token: accesstoken,
+      },
+      body: JSON.stringify(postData),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to update post.");
         }
-      );
-      const data = await response.json();
-      console.log("Post updated successfully");
-      window.location.reload(true);
-    } catch (error) {
-      console.log(error);
-    }
+        return response.json();
+      })
+      .then((data) => {
+        alert("Post updated successfully.");
+        handleCloseEditPost(true);
+        handleClosePostMenu(true);
+        setTitle("");
+        setSelectedFile(null);
+        setUploadPercent(0);
+      })
+      .catch((error) => {
+        console.error(error);
+        alert("Failed to update post.");
+      });
   };
 
   //Showing Modal for Comment
@@ -540,15 +535,21 @@ const MainPost = ({ post }) => {
         onClose={handleCloseEditPost}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
+        sx={{ styleModal }}
       >
-        <Box sx={style}>
+        <Box sx={styleModal}>
+          <LinearProgress
+            variant="buffer"
+            value={progress}
+            valueBuffer={buffer}
+          />
           <Box sx={{ flexWrap: "wrap" }}>
             <Typography id="modal-modal-title" variant="h6" component="h2">
               Edit Post
               <Button
                 variant="contained"
                 sx={{ float: "right", borderRadius: 10 }}
-                onClick={handleEditPost}
+                onClick={handlePostUpdate}
               >
                 Save
               </Button>
@@ -578,13 +579,14 @@ const MainPost = ({ post }) => {
                   )}
                 </Card>
               </FormControl>
+
               <FormControl fullWidth sx={{ mt: 3 }}>
                 <InputLabel htmlFor="outlined-adornment-amount">
                   Title
                 </InputLabel>
                 <OutlinedInput
                   id="outlined-adornment-amount"
-                  onChange={(e) => setTitlePostEdit(e.target.value)}
+                  onChange={(e) => setTitle(e.target.value)}
                   defaultValue={post.title}
                   startAdornment={
                     <InputAdornment position="start">
@@ -604,8 +606,7 @@ const MainPost = ({ post }) => {
                   <input
                     hidden
                     accept="image/*,video/*"
-                    onChange={(e) => setSelectedImageVideo(e.target.files[0])}
-                    multiple
+                    onChange={handleFileSelect}
                     type="file"
                   />
                 </Button>
