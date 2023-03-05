@@ -547,6 +547,7 @@ const MainPost = ({ post }) => {
             <Typography id="modal-modal-title" variant="h6" component="h2">
               Edit Post
               <Button
+                disabled={post.title === title ? true : false}
                 variant="contained"
                 sx={{ float: "right", borderRadius: 10 }}
                 onClick={handlePostUpdate}
@@ -583,7 +584,7 @@ const MainPost = ({ post }) => {
 
               <FormControl fullWidth sx={{ mt: 3 }}>
                 <InputLabel htmlFor="outlined-adornment-amount">
-                  Title
+                  Caption
                 </InputLabel>
                 <OutlinedInput
                   id="outlined-adornment-amount"

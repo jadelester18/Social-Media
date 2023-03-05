@@ -542,9 +542,15 @@ const ProfileMainPost = ({ post }) => {
             valueBuffer={buffer}
           />
           <Box sx={{ flexWrap: "wrap" }}>
-            <Typography id="modal-modal-title" variant="h6" component="h2">
+            <Typography
+              id="modal-modal-title"
+              variant="h6"
+              component="h2"
+              color={"text.primary"}
+            >
               Edit Post
               <Button
+                disabled={post.title === title ? true : false}
                 variant="contained"
                 sx={{ float: "right", borderRadius: 10 }}
                 onClick={handlePostUpdate}
