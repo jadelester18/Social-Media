@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html>
 <head>
-
 <style>
   * {
   box-sizing: border-box;
@@ -56,6 +55,7 @@ margin-bottom: 23px;
     font-style: normal !important; 
   font-weight: normal !important; 
   cursor: pointer;
+  background-color: #1f6ad3;
 }
 .button2 {background-color: #1f6ad3;}
 .button2:hover {
@@ -134,12 +134,8 @@ font-size:28px;
   }
 }
 </style>
-
-
-
 </head>
 <body style="font-family:Verdana;text-align:center;">
-
   <div style="margin: 0px auto;
 background-color: rgb(30, 221, 221, .75);
 box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.75);
@@ -148,16 +144,22 @@ border-radius: 19px;
   padding: 0 20px;
   overflow: hidden;
   text-align:center;">
-   <img src="https://cdn-icons-png.flaticon.com/512/1161/1161724.png"  style="width:50%" >
+  <br>
+  
+  <h1>Reset Password Successfully</h1>
+   <img src="https://cdn-icons-png.flaticon.com/512/9578/9578787.png" style="width:50%" >
    
-    <h1>Here is your One Time Password</h1>
-    <p class="m">to validate your email address</p>
-	  <h2>{{company}}</h2>
-	   <p class="m">Remember, Never share this OTP with anyone.</p>
+		
+ <p class="hello">Hello {{name}}!</p>
+    <p class="ms">Congratulations! Your account has been successfully verified. Your account is now active.</p>
+	 <p class="ms">Please use the link below to login to your account.</p>
+	   <a class="button" href="http://localhost:3000/login"> LOGIN TO YOUR ACCOUNT  </a>
+	  <p class="ms">Thank you for choosing Life Trend.</p>
+   
   </div>
 
   
-
+</div>
 
 
 <div style="text-align:center;margin-top:30px;font-size:12px;"> <p >© 2023 Social Media, Inc. All rights reserved.</p>
@@ -169,6 +171,7 @@ border-radius: 19px;
     <a href="#" ><img src="https://cdn-icons-png.flaticon.com/512/3670/3670291.png" style="max-width: 3%;" /></a>
 	
     <p class="msg"> You recieved this email because you signed up for Life Trend.</p></div>
+
 </body>
 </html>
 
