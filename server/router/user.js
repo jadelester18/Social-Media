@@ -31,7 +31,9 @@ router.post(
   async (req, res) => {
     const error = validationResult(req);
     if (!error.isEmpty()) {
-      return res.status(400).json("Some error occurred");
+      return res
+        .status(400)
+        .json({ message: "Please fill out the form" });
     }
 
     try {
@@ -379,7 +381,7 @@ router.put("/reset/password", async (req, res) => {
     }
   });
 
-  return res.status(200).json("Email has been send");
+  return res.status(200).json("Email has been sent");
 });
 
 //Trying to Follow Specific User

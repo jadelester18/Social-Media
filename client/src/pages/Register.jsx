@@ -92,7 +92,7 @@ export default function Register() {
     email: Joi.string()
       .email({ minDomainSegments: 2, tlds: { allow: ["com", "net"] } })
       .required(),
-    phonenumber: Joi.number().min(10),
+    phonenumber: Joi.number().min(10).required(),
     password: Joi.string().min(6).max(50).required(),
     confirmPassword: Joi.equal(form.password),
   });
