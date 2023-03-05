@@ -59,6 +59,7 @@ export default function Register() {
     email: "",
     phonenumber: "",
     password: "",
+    confirmPassword: "",
   });
 
   const handleChange = ({ currentTarget: input }) => {
@@ -92,7 +93,8 @@ export default function Register() {
       .email({ minDomainSegments: 2, tlds: { allow: ["com", "net"] } })
       .required(),
     phonenumber: Joi.number().min(10),
-    password: Joi.string().min(6).max(20).required(),
+    password: Joi.string().min(6).max(50).required(),
+    confirmPassword: Joi.string().valid(Joi.ref("password")),
   });
 
   const handleClose = (event, reason) => {
@@ -250,6 +252,18 @@ export default function Register() {
                       </InputAdornment>
                     ),
                   }}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  type={"password"}
+                  name="confirmPassword"
+                  label="Confirm Password"
+                  error={!!errors.confirmPassword}
+                  helperText={errors.confirmPassword}
+                  onChange={handleChange}
+                  value={form.confirmPassword}
+                  fullWidth
                 />
               </Grid>
               {/* <Grid item xs={12}>
