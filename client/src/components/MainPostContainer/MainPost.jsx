@@ -194,7 +194,7 @@ const MainPost = ({ post }) => {
       );
       const data = await response.json();
       console.log("Post updated successfully");
-      window.location.reload(true);
+      // window.location.reload(true);
     } catch (error) {
       console.log(error);
     }

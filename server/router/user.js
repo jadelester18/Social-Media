@@ -131,20 +131,18 @@ router.post(
   // password must be at least 5 chars long
   body("password").isLength({ min: 5 }),
   async (req, res) => {
+    // try {
+    // const emailExists = await User.findOne({ email: req.body.email });
+    // if (!emailExists) {
+    //   return res.status(400).json({ message: "Email not exists" });
+    // }
 
-    try {
-      // const emailExists = await User.findOne({ email: req.body.email });
-      // if (!emailExists) {
-      //   return res.status(400).json({ message: "Email not exists" });
-      // }
-
-      // const usernameExists = await User.findOne({
-      //   username: req.body.username,
-      // });
-      // if (!usernameExists) {
-      //   return res.status(400).json({ message: "Username not exists" });
-      // }
-
+    // const usernameExists = await User.findOne({
+    //   username: req.body.username,
+    // });
+    // if (!usernameExists) {
+    //   return res.status(400).json({ message: "Username not exists" });
+    // }
 
     try {
       const user = await User.findOne({ email: req.body.email });
