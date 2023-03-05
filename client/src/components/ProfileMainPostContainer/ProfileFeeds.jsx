@@ -35,7 +35,7 @@ const ProfileFeeds = () => {
       } catch (error) {}
     };
     getPost();
-  }, [id]);
+  }, [id, post]);
 
   return (
     <Box flex={2} p={2}>

@@ -20,7 +20,7 @@ router.post('/user/post', verifyToken, async (req, res) => {
   }
 });
 
-router.patch("/update/post/:id", verifyToken, async (req, res) => {
+router.put("/update/post/:id", verifyToken, async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
 
