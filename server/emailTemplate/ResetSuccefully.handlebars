@@ -40,6 +40,27 @@ font-size:14px;
 font-family:Cambria;
 margin-bottom: 23px;
 }
+.button {
+	
+  border-radius: 10px;
+  border-color: rgb(12, 10, 82,) ;
+  color: rgb(233, 238, 239);
+  padding: 10px 20px;
+  text-align: center;
+  font-family: Verdana;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 15px;
+  margin: 4px 2px;
+    font-style: normal !important; 
+  font-weight: normal !important; 
+  cursor: pointer;
+  background-color: #1f6ad3;
+}
+.button2 {background-color: #1f6ad3;}
+.button2:hover {
+  color: rgb(15, 3, 26);
+}
 .fa {
  margin-top: 20px;
    max-width: 100%;
@@ -96,23 +117,7 @@ font-size:28px;
 	font-weight: bold;
 }
 
-.button {
-	
-   border-radius: 10px;
-  border-color: rgb(12, 10, 82,) ;
-  color: rgb(233, 238, 239);
-  padding: 10px 20px;
-  text-align: center;
-  font-family: Verdana;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 15px;
-  margin: 4px 2px;
-    font-style: normal !important; 
-  font-weight: normal !important; 
-  cursor: pointer;
-  background-color: #1f6ad3;
-}
+
 
 @media only screen and (max-width:800px) {
   /* For tablets: */
@@ -131,7 +136,6 @@ font-size:28px;
 </style>
 </head>
 <body style="font-family:Verdana;text-align:center;">
-
   <div style="margin: 0px auto;
 background-color: rgb(30, 221, 221, .75);
 box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.75);
@@ -140,15 +144,18 @@ border-radius: 19px;
   padding: 0 20px;
   overflow: hidden;
   text-align:center;">
-   <img src="https://cdn-icons-png.flaticon.com/512/6195/6195699.png"  style="width:50%" >
-    <h1>FORGOT YOUR PASSWORD?</h1>
-	<br>
+  <br>
+  
+  <h1>Reset Password Successfully</h1>
+   <img src="https://cdn-icons-png.flaticon.com/512/9578/9578787.png" style="width:50%" >
+   
 		
-    <h1>Hello {{name}}!</h1>
-    <p class="m">Someone requested that the password for your Life Trend account be reset.</p>
-	   <a class="button" href={{company}} > RESET PASSWORD </a>
-	  <p class="m">If you didn't request this, you can ignore this email or let us know.</p>
-       <p class="m">Your password won;t change until you create a new passsword.</p>
+ <p class="hello">Hello {{name}}!</p>
+    <p class="ms">Congratulations! Your account has been successfully verified. Your account is now active.</p>
+	 <p class="ms">Please use the link below to login to your account.</p>
+	   <a class="button" href="http://localhost:3000/login"> LOGIN TO YOUR ACCOUNT  </a>
+	  <p class="ms">Thank you for choosing Life Trend.</p>
+   
   </div>
 
   
