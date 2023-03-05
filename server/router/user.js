@@ -34,16 +34,12 @@ router.post(
 
     try {
       // Check if user exists
-      let user = await User.findOne({ email: req.body.email });
 
-      if (user) {
-        return res.status(400).json({ message: "Email already exists" });
-      }
-
-      user = await User.findOne({ username: req.body.username });
-
-      if (user) {
+      if (await User.findOne({ email: req.body.username })) {
         return res.status(400).json({ message: "Username already exists" });
+      }
+      if (await User.findOne({ email: req.body.email })) {
+        return res.status(400).json({ message: "Email already exists" });
       }
 
       // Hash the password
@@ -51,7 +47,7 @@ router.post(
       const secpass = await bcrypt.hash(req.body.password, salt);
 
       // Create the user
-      user = await User.create({
+      let user = await User.create({
         firstname: req.body.firstname,
         lastname: req.body.lastname,
         username: req.body.username,

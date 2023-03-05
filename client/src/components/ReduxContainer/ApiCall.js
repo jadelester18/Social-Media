@@ -24,16 +24,16 @@ export const VerifyEmail = async (dispatch, user) => {
   }
 };
 
-export const signup = async (dispatch, user) => {
-  dispatch(loginStart());
-  try {
-    const res = await axios.post(
-      "http://localhost:5000/api/user/register/user",
-      user
-    );
-    dispatch(loginSuccess(res.data));
-  } catch (error) {
-    const errorMessage = error.response.data.message;
-    dispatch(loginFailure(errorMessage));
-  }
-};
+// export const signup = async (dispatch, user) => {
+//   dispatch(loginStart());
+//   try {
+//     const res = await axios.post(
+//       "http://localhost:5000/api/user/register/user",
+//       user
+//     );
+//     dispatch(loginSuccess(res.data));
+//   } catch (error) {
+//     const errorMessage = error.response.data.message;
+//     dispatch(loginFailure(errorMessage));
+//   }
+// };

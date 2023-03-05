@@ -10,49 +10,46 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import {
-  Alert,
-  IconButton,
-  Input,
-  InputAdornment,
-  Snackbar,
-} from "@mui/material";
+import { Alert, IconButton, InputAdornment, Snackbar } from "@mui/material";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { Link } from "react-router-dom";
-
 import { useSelector, useDispatch } from "react-redux";
-import { signup } from "../components/ReduxContainer/ApiCall";
 import { useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Joi from "joi";
-import app from "../firebase";
+
+import axios from "axios";
 import {
-  getStorage,
-  ref,
-  uploadBytesResumable,
-  getDownloadURL,
-} from "firebase/storage";
+  loginStart,
+  loginSuccess,
+  loginFailure,
+} from "../components/ReduxContainer/UserReducer";
+//api
 
 const theme = createTheme();
 
 export default function Register() {
   const dispatch = useDispatch();
-  const { isFetching, error, errorMessage } = useSelector(
-    (state) => state.user
-  );
+  const [eroor, setErrorMessage] = useState("");
+  const signup = async (dispatch, user) => {
+    dispatch(loginStart());
+    try {
+      const res = await axios.post(
+        "http://localhost:5000/api/user/register/user",
+        user
+      );
+      dispatch(loginSuccess(res.data));
+    } catch (error) {
+      setErrorMessage(error.response.data.message);
+      setOpen3(true);
+      dispatch(loginFailure(eroor));
+    }
+  };
   const user = useSelector((state) => state.user);
-  // const [email, setEmail] = useState('');
-  // const [phonenumber, setphonenumber] = useState('');
-  // const [username, setusername] = useState('');
-  // const [password, setpassword] = useState('');
-  // const [firstname, setFirstName] = useState('');
-  // const [lastname, setLastName] = useState('');
-  const [file, setfile] = useState(null);
+
   const userDetails = user.user;
   const navigator = useNavigate();
-  const [open, setOpen] = React.useState(false);
-  const [open2, setOpen2] = React.useState(false);
   const [open3, setOpen3] = React.useState(false);
 
   const [form, setForm] = useState({
@@ -98,46 +95,16 @@ export default function Register() {
     password: Joi.string().min(6).max(20).required(),
   });
 
-  const isFormInvalid = () => {
-    const result = schema.validate(form);
-
-    return !!result.error;
-  };
-
   const handleClose = (event, reason) => {
     if (reason === "clickaway") {
       return;
     }
-
-    setOpen(false);
-    setOpen2(false);
     setOpen3(false);
   };
 
   const handleClick = (e) => {
     e.preventDefault();
-
-    // const fileName = new Date().getTime() + file?.name;
-    // const storage = getStorage(app);
-    // const StorageRef = ref(storage, fileName);
-
-    // const uploadTask = uploadBytesResumable(StorageRef, file);
-    // if (email && username && firstname && lastname && password && phonenumber) {
-    try {
-      if (userDetails === true) {
-        setOpen3(true);
-      }
-    } catch {
-      console.log("no user");
-    }
-    //   if (email === username) {
     signup(dispatch, form);
-    //   } else {
-    //     setOpen(true);
-    //   }
-    // } else {
-    //   setOpen2(true);
-    // }
   };
 
   try {
@@ -176,33 +143,16 @@ export default function Register() {
           <Typography component="h1" variant="h5">
             Sign up
           </Typography>
-          <Snackbar open={open3} autoHideDuration={2000} onClose={handleClose}>
+          <Snackbar open={open3} autoHideDuration={4000} onClose={handleClose}>
             <Alert
               onClose={handleClose}
               severity="error"
               sx={{ width: "100%" }}
             >
-              Email Already exist!
+              {eroor}
             </Alert>
           </Snackbar>
-          {/* <Snackbar open={open} autoHideDuration={2000} onClose={handleClose}>
-            <Alert
-              onClose={handleClose}
-              severity="error"
-              sx={{ width: '100%' }}
-            >
-              Email does not match!
-            </Alert>
-          </Snackbar>
-          <Snackbar open={open2} autoHideDuration={2000} onClose={handleClose}>
-            <Alert
-              onClose={handleClose}
-              severity="error"
-              sx={{ width: '100%' }}
-            >
-              Please fill out the form completely
-            </Alert>
-          </Snackbar>  */}
+
           <Box
             component="form"
             noValidate
@@ -252,7 +202,7 @@ export default function Register() {
                   autoComplete="username"
                   fullWidth
                 />
-                {error && errorMessage && <p>{errorMessage}</p>}
+                {/* {error && errorMessage && <p>{errorMessage}</p>} */}
               </Grid>
               <Grid item xs={12}>
                 <TextField
