@@ -57,7 +57,7 @@ const RightBar = () => {
       }
     };
     getnewFollowers();
-  }, [idNewFollowers]);
+  }, [idNewFollowers, newFollowerUser]);
 
   return (
     <Box
