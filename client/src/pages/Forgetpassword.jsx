@@ -34,13 +34,6 @@ function Copyright(props) {
 const theme = createTheme();
 
 export default function ForgetPassword() {
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get("email"),
-    });
-  };
   const [state, setState] = React.useState({
     open: false,
     vertical: "top",
@@ -55,6 +48,23 @@ export default function ForgetPassword() {
   const handleClose = () => {
     setState({ ...state, open: false });
   };
+
+  const [email, setEmail] = React.useState("");
+  const handleclick = async (e) => {
+    e.preventDefault();
+    await fetch(`http://localhost:5000/api/user/forgot/password`, {
+      method: "POST",
+      headers: { "Content-Type": "application/JSON" },
+      body: JSON.stringify({ email: email }),
+    })
+      .then(() => {
+        alert("We sent you a token email");
+      })
+      .catch(() => {
+        alert("Fail to proccess");
+      });
+  };
+
   return (
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">
@@ -73,12 +83,7 @@ export default function ForgetPassword() {
           <Typography component="h1" variant="h5">
             Enter email
           </Typography>
-          <Box
-            component="form"
-            noValidate
-            onSubmit={handleSubmit}
-            sx={{ mt: 3 }}
-          >
+          <Box component="form" noValidate sx={{ mt: 3 }}>
             <Grid container spacing={2}>
               <Grid item xs={12} sm={12}>
                 <TextField
@@ -89,24 +94,15 @@ export default function ForgetPassword() {
                   id="email"
                   label="Email"
                   autoFocus
+                  onChange={(e) => setEmail(e.target.value)}
                 />
               </Grid>
-
-              {/* <Grid item xs={12}>
-                <FormControlLabel
-                  control={<Checkbox value="allowExtraEmails" color="primary" />}
-                  label="I want to receive inspiration, marketing promotions and updates via email."
-                />
-              </Grid> */}
             </Grid>
             <Button
               type="submit"
               fullWidth
               variant="contained"
-              onClick={handleClick({
-                vertical: "top",
-                horizontal: "center",
-              })}
+              onClick={handleclick}
               sx={{ mt: 3, mb: 2, bgcolor: "black" }}
             >
               Send

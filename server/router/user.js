@@ -18,6 +18,8 @@ const ResetToken = require("../Models/ResetToken");
 const nodemailer = require("nodemailer");
 const hbs = require("nodemailer-express-handlebars");
 
+const crypto = require("crypto");
+
 router.post(
   "/register/user",
   body("firstname").isLength({ min: 1 }),
@@ -253,6 +255,148 @@ router.post("/verify/email", async (req, res) => {
   });
 
   return res.status(200).json({ other, accessToken });
+});
+
+//Forgot password
+router.post("/forgot/password", async (req, res) => {
+  const { email } = req.body;
+  const user = await User.findOne({ email: email });
+  if (!user) {
+    return res.status(400).json("User not found");
+  }
+  const token = await ResetToken.findOne({ user: user._id });
+  if (token) {
+    return res
+      .status(400)
+      .json("After one hour you can request for another token");
+  }
+
+  const RandomTxt = crypto.randomBytes(20).toString("hex");
+  const resetToken = new ResetToken({
+    user: user._id,
+    token: RandomTxt,
+  });
+  await resetToken.save();
+
+  const transport = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.EMAIL,
+      pass: process.env.PASSWORD,
+    },
+  });
+
+  transport.use(
+    "compile",
+    hbs({
+      viewEngine: {
+        extname: ".handlebars",
+        layoutsDir: "./emailTemplate/",
+        defaultLayout: "Resetpassword",
+      },
+      viewPath: "./emailTemplate/",
+    })
+  );
+
+  var mailConfig = {
+    from: process.env.EMAIL,
+    to: user.email,
+    subject: "Reset Token",
+    template: "Resetpassword",
+    context: {
+      name: `${
+        user.firstname.charAt(0).toUpperCase() +
+        user.firstname.slice(1) +
+        " " +
+        user.lastname.charAt(0).toUpperCase() +
+        user.lastname.slice(1)
+      }`,
+      company: `http://localhost:3000/reset/password?token=${RandomTxt}&_id=${user._id}`,
+    },
+  };
+  transport.sendMail(mailConfig, (error, info) => {
+    if (error) {
+      console.log(error);
+    } else {
+      console.log("Email sent :" + info.response);
+    }
+  });
+
+  return res.status(200).json("Check your email to reset password");
+});
+
+//reset password
+router.put("/reset/password", async (req, res) => {
+  const { token, _id } = req.query;
+  if (!token || !_id) {
+    return res.status(400).json("Invalid req");
+  }
+  const user = await User.findOne({ _id: _id });
+  if (!user) {
+    return res.status(400).json("user not found");
+  }
+  const resetToken = await ResetToken.findOne({ user: user._id });
+  if (!resetToken) {
+    return res.status(400).json("Reset token is not found");
+  }
+  console.log(resetToken.token);
+  const isMatch = await bcrypt.compareSync(token, resetToken.token);
+  if (!isMatch) {
+    return res.status(400).json("Token is not valid");
+  }
+
+  const { password } = req.body;
+  // const salt = await bcrypt.getSalt(10);
+  const secpass = await bcrypt.hash(password, 10);
+  user.password = secpass;
+  await user.save();
+
+  const transport = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.EMAIL,
+      pass: process.env.PASSWORD,
+    },
+  });
+
+  transport.use(
+    "compile",
+    hbs({
+      viewEngine: {
+        extname: ".handlebars",
+        layoutsDir: "./emailTemplate/",
+        defaultLayout: "ResetSuccefully",
+      },
+      viewPath: "./emailTemplate/",
+    })
+  );
+
+  var mailConfig = {
+    from: process.env.EMAIL,
+    to: user.email,
+    subject: "Your password reset successfully",
+    template: "ResetSuccefully",
+    context: {
+      name: `${
+        user.firstname.charAt(0).toUpperCase() +
+        user.firstname.slice(1) +
+        " " +
+        user.lastname.charAt(0).toUpperCase() +
+        user.lastname.slice(1)
+      }`,
+      // company: `${OTP}`,
+    },
+  };
+
+  transport.sendMail(mailConfig, (error, info) => {
+    if (error) {
+      console.log(error);
+    } else {
+      console.log("Email sent :" + info.response);
+    }
+  });
+
+  return res.status(200).json("Email has been send");
 });
 
 //Trying to Follow Specific User
