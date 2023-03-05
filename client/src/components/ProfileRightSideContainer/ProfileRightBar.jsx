@@ -75,7 +75,7 @@ const ProfileRightBar = () => {
       }
     };
     getUserFollowing();
-  }, [id]);
+  }, [id, following]);
 
   return (
     <Box

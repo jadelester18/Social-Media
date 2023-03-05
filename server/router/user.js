@@ -449,7 +449,7 @@ router.get("/following/:id", async (req, res) => {
       followingList.push(others);
     });
 
-    res.status(200).json(followingList.sort(() => Math.random() - 0.5));
+    res.status(200).json(followingList);
   } catch (error) {
     return res.status(500).json("Internal server error");
   }
