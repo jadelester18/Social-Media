@@ -13,7 +13,12 @@ const Item = styled(Paper)(({ theme }) => ({
 
 const FollowingList = ({ users }) => {
   return (
-    <Item>
+    <Item
+      sx={{
+        height: 90,
+        maxWidth: { xs: 350, md: 250 },
+      }}
+    >
       <Avatar
         sx={{
           bgcolor: deepPurple,
