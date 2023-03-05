@@ -40,7 +40,7 @@ const RightBar = () => {
       }
     };
     getUserPosted();
-  }, [idForSuggestToFollow]);
+  }, [idForSuggestToFollow, user]);
 
   //For Get List Of New Followers
   const [newFollowerUser, setnewFollowerUser] = useState([]);
@@ -113,7 +113,7 @@ const RightBar = () => {
             sx={{ letterSpacing: "0.1rem" }}
             fontSize=".8rem"
           >
-           My Followers
+            My Followers
           </Typography>
           <Box
             sx={{
@@ -133,11 +133,13 @@ const RightBar = () => {
             }}
           >
             {loading ? (
-              newFollowerUser.map((item) => (
-                <Stack key={item._id}>
-                  <Followers followers={item} />
-                </Stack>
-              ))
+              newFollowerUser
+                .map((item) => (
+                  <Stack key={item._id}>
+                    <Followers followers={item} />
+                  </Stack>
+                ))
+                .reverse()
             ) : (
               <Spinner />
             )}
