@@ -230,8 +230,8 @@ router.post("/verify/email", async (req, res) => {
 
   var mailConfig = {
     from: process.env.EMAIL,
-    to: user.email,
-    subject: "Verify your email using OTP",
+    to: mainuser.email,
+    subject: "Successfully Verified",
     template: "Verifyemail",
     context: {
       name: `${
