@@ -182,7 +182,7 @@ const MainPost = ({ post }) => {
         return response.json();
       })
       .then((data) => {
-        alert("Post updated successfully.");
+        // alert("Post updated successfully.");
         handleCloseEditPost(true);
         handleClosePostMenu(true);
         setTitle("");
@@ -191,7 +191,7 @@ const MainPost = ({ post }) => {
       })
       .catch((error) => {
         console.error(error);
-        alert("Failed to update post.");
+        // alert("Failed to update post.");
       });
   };
 

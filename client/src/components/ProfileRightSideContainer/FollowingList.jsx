@@ -1,4 +1,6 @@
-import { Box, Grid, Paper, styled } from "@mui/material";
+import { Avatar, Box, Grid, Paper, styled } from "@mui/material";
+import { deepPurple } from "@mui/material/colors";
+import { auto } from "@popperjs/core";
 import React, { useState } from "react";
 
 const Item = styled(Paper)(({ theme }) => ({
@@ -12,18 +14,21 @@ const Item = styled(Paper)(({ theme }) => ({
 const FollowingList = ({ users }) => {
   return (
     <Item>
-      <Box
-        component="img"
+      <Avatar
         sx={{
+          bgcolor: deepPurple,
           height: 50,
           width: 50,
           maxHeight: { xs: 233, md: 167 },
           maxWidth: { xs: 350, md: 250 },
           borderRadius: "10%",
+          margin: auto,
         }}
         alt={users.profilepicture}
         src={users.profilepicture}
-      />
+      >
+        <Avatar src="/broken-image.jpg" />
+      </Avatar>
 
       <Box
         sx={{
