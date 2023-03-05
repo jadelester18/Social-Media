@@ -25,7 +25,7 @@ const ToFollow = ({ users }) => {
   const [follow, setFollow] = useState(<PersonAddOutlinedIcon />);
 
   const handleFollowUser = async (e) => {
-    await fetch(`http://localhost:5000/api/user/follow/${e}`, {
+    await fetch(`http://localhost:5000/api/user/follow/${users._id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/Json", token: accesstoken },
       body: JSON.stringify({ user: `${id}` }),
