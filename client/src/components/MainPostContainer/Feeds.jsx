@@ -36,7 +36,7 @@ const Feeds = () => {
       } catch (error) {}
     };
     getPost();
-  }, [id, accesstoken]);
+  }, [id, accesstoken, post]);
 
   // console.log(post);
 
