@@ -9,20 +9,50 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { IconButton, InputAdornment } from "@mui/material";
+import { Alert, IconButton, InputAdornment, Snackbar } from "@mui/material";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { Link } from "react-router-dom";
 //For Login Auth Redux
 import { useSelector, useDispatch } from "react-redux";
-
+import axios from "axios";
 import { useState, useEffect } from "react";
-import { login } from "../components/ReduxContainer/ApiCall";
+// import { login } from "../components/ReduxContainer/ApiCall";
 import Joi from "joi";
+import {
+  loginStart,
+  loginFailure,
+  loginSuccess,
+} from "../components/ReduxContainer/UserReducer";
 
 const theme = createTheme();
 
 export default function Login() {
+  const [eroor, setErrorMessage] = useState("");
+  const [open3, setOpen3] = React.useState(false);
+
+  const handleClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setOpen3(false);
+  };
+  const login = async (dispatch, user) => {
+    dispatch(loginStart());
+    try {
+      const res = await axios.post(
+        `http://localhost:5000/api/user/login`,
+        user
+      );
+      dispatch(loginSuccess(res.data));
+    } catch (error) {
+      setErrorMessage(error.response.data.message);
+      setOpen3(true);
+      dispatch(loginFailure(eroor)); 
+    }
+  };
+
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
   const userDetails = user.user;
@@ -97,6 +127,15 @@ export default function Login() {
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">
         <CssBaseline />
+        <Snackbar open={open3} autoHideDuration={4000} onClose={handleClose}>
+            <Alert
+              onClose={handleClose}
+              severity="error"
+              sx={{ width: "100%" }}
+            >
+              {eroor}
+            </Alert>
+          </Snackbar>
         <Box
           sx={{
             marginTop: 8,

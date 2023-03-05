@@ -129,25 +129,12 @@ router.post(
   // password must be at least 5 chars long
   body("password").isLength({ min: 5 }),
   async (req, res) => {
-    // try {
-    // const emailExists = await User.findOne({ email: req.body.email });
-    // if (!emailExists) {
-    //   return res.status(400).json({ message: "Email not exists" });
-    // }
-
-    // const usernameExists = await User.findOne({
-    //   username: req.body.username,
-    // });
-    // if (!usernameExists) {
-    //   return res.status(400).json({ message: "Username not exists" });
-    // }
-
     try {
       const user = await User.findOne({ email: req.body.email });
 
       //Check if user is not exist
       if (!user) {
-        return res.status(400).json("User doesn't exist.");
+        return res.status(400).json({ message: "User does not exist." });
       }
 
       const ComparePassword = await bcrypt.compare(
@@ -156,7 +143,7 @@ router.post(
       );
 
       if (!ComparePassword) {
-        return res.status(400).json("Password error issue.");
+        return res.status(400).json({ message: "Incorrect Password" });
       }
 
       const accessToken = jwt.sign(

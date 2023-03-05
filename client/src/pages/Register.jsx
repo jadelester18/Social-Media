@@ -94,13 +94,14 @@ export default function Register() {
       .required(),
     phonenumber: Joi.number().min(10),
     password: Joi.string().min(6).max(50).required(),
-    confirmPassword: Joi.string().valid(Joi.ref("password")),
+    confirmPassword: Joi.valid("password"),
   });
 
   const handleClose = (event, reason) => {
     if (reason === "clickaway") {
       return;
     }
+
     setOpen3(false);
   };
 
