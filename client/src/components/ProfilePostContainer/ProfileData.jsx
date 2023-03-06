@@ -412,7 +412,7 @@ const ProfileData = () => {
                   label="Amount"
                 />
               </FormControl>
-              <FormControl fullWidth sx={{ mt: 1 }}>
+              <FormControl fullWidth sx={{ mt: 1 }} disabled={true}>
                 <InputLabel htmlFor="outlined-adornment-amount">
                   Username
                 </InputLabel>
