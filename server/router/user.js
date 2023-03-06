@@ -31,18 +31,18 @@ router.post(
   async (req, res) => {
     const error = validationResult(req);
     if (!error.isEmpty()) {
-      return res
-        .status(400)
-        .json({ message: "Please fill out the form" });
+      return res.status(400).json({ message: "Please fill out the form" });
     }
 
     try {
       // Check if user exists
-
-      if (await User.findOne({ email: req.body.username })) {
+      let usernameChecker = await User.findOne({ username: req.body.username });
+      let emailChecker = await User.findOne({ email: req.body.email });
+      
+      if (usernameChecker && usernameChecker.username === req.body.username) {
         return res.status(400).json({ message: "Username already exists" });
       }
-      if (await User.findOne({ email: req.body.email })) {
+      if (emailChecker && emailChecker.email === req.body.email) {
         return res.status(400).json({ message: "Email already exists" });
       }
 
