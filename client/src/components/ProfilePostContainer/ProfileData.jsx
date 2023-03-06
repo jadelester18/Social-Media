@@ -413,22 +413,6 @@ const ProfileData = () => {
                 />
               </FormControl>
               <FormControl fullWidth sx={{ mt: 1 }}>
-                <InputLabel htmlFor="outlined-adornment-amount">
-                  Username
-                </InputLabel>
-                <OutlinedInput
-                  id="outlined-adornment-amount"
-                  onChange={(e) => setUsername(e.target.value)}
-                  defaultValue={userData?.username}
-                  startAdornment={
-                    <InputAdornment position="start">
-                      <Diversity3OutlinedIcon />
-                    </InputAdornment>
-                  }
-                  label="Amount"
-                />
-              </FormControl>
-              <FormControl fullWidth sx={{ mt: 1 }}>
                 <InputLabel htmlFor="outlined-adornment-amount">Bio</InputLabel>
                 <OutlinedInput
                   id="outlined-adornment-amount"
