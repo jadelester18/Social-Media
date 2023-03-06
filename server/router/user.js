@@ -55,7 +55,7 @@ router.post(
         firstname: req.body.firstname,
         lastname: req.body.lastname,
         username: req.body.username,
-        email: req.body.email,
+        email: req.body.email.toLowerCase(),
         password: secpass,
         phonenumber: req.body.phonenumber,
       });
