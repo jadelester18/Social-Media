@@ -47,9 +47,9 @@ export default function Login() {
       );
       dispatch(loginSuccess(res.data));
     } catch (error) {
-      setErrorMessage(error.response.data.message);
+      setErrorMessage("Incorrect email or password");
       setOpen3(true);
-      dispatch(loginFailure(eroor)); 
+      dispatch(loginFailure(eroor));
     }
   };
 
@@ -60,14 +60,9 @@ export default function Login() {
   useEffect(() => {}, [user, userDetails]);
   // const [email, setemail] = useState('');
   // const [password, setPassword] = useState('');
-  var emailPWChecker = "";
+
   const handleSubmit = (e) => {
     // e.preventDefault();
-
-    if (userDetails?.noUser) {
-      emailPWChecker = userDetails?.noUser;
-      alert(emailPWChecker);
-    }
 
     login(dispatch, form);
     console.log(form);
@@ -128,14 +123,10 @@ export default function Login() {
       <Container component="main" maxWidth="xs">
         <CssBaseline />
         <Snackbar open={open3} autoHideDuration={4000} onClose={handleClose}>
-            <Alert
-              onClose={handleClose}
-              severity="error"
-              sx={{ width: "100%" }}
-            >
-              {eroor}
-            </Alert>
-          </Snackbar>
+          <Alert onClose={handleClose} severity="error" sx={{ width: "100%" }}>
+            {eroor}
+          </Alert>
+        </Snackbar>
         <Box
           sx={{
             marginTop: 8,
