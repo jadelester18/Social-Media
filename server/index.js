@@ -1,12 +1,10 @@
-reportWebVitals();
-const express = require("express");
+const express = require("express")
 const app = express();
-const mongo = require("mongoose");
-const dotenv = require("dotenv");
+const mongo = require("mongoose")
+const dotenv = require("dotenv")
 const cors = require("cors");
-const userRouter = require("./server/router/user");
-const postRouter = require("./server/router/post");
-const { default: reportWebVitals } = require("../reportWebVitals");
+const userRouter = require("./router/user");
+const postRouter = require("./router/post");
 dotenv.config();
 
 mongo
@@ -21,3 +19,5 @@ app.use(cors());
 app.use(express.json());
 app.use("/api/user", userRouter);
 app.use("/api/post", postRouter);
+
+app.listen(5000, () => console.log("Server running"))

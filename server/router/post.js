@@ -1,8 +1,7 @@
 const router = require('express').Router();
 const Post = require('../Models/Post');
-const { route, post } = require('./user');
+const { route } = require('./user');
 const { verifyToken } = require('./verifytoken');
-
 
 //Uploading
 router.post('/user/post', verifyToken, async (req, res) => {
@@ -67,7 +66,7 @@ router.patch("/update/profile/:id", verifyToken, async (req, res) => {
         post.video = req.body.video;
       }
 
-      const updateProfile = await Post.findByIdAndUpdate(req.params.id, {
+      const updateProfile = await POST.findByIdAndUpdate(req.params.id, {
         $set: updateFields,
       });
 
