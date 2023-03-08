@@ -13,8 +13,8 @@ const app = express();
 const mongo = require("mongoose");
 const dotenv = require("dotenv");
 const cors = require("cors");
-const userRouter = require("./router/user");
-const postRouter = require("./router/post");
+const userRouter = require("./server/router/user");
+const postRouter = require("./server/router/post");
 dotenv.config();
 
 mongo
