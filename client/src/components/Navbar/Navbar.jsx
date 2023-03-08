@@ -210,7 +210,7 @@ const Navbar = ({ setThemeMode, mode }) => {
               />
             }
             label={
-              data === "dark" ? <Brightness4SharpIcon /> : <DarkModeSharpIcon />
+              mode === "dark" ? <Brightness4SharpIcon /> : <DarkModeSharpIcon />
             }
             onChange={(e) => {
               setThemeMode(mode === "light" ? "dark" : "light");
@@ -244,7 +244,7 @@ const Navbar = ({ setThemeMode, mode }) => {
               />
             }
             label={
-              data === "dark" ? <Brightness4SharpIcon /> : <DarkModeSharpIcon />
+              mode === "dark" ? <Brightness4SharpIcon /> : <DarkModeSharpIcon/>
             }
             onChange={(e) => {
               setThemeMode(mode === "light" ? "dark" : "light");
